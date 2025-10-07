@@ -25,6 +25,8 @@ interface Session {
   is_paid: boolean
   notes: string
   created_at: string
+  is_cancelled: boolean
+  cancelled_by?: "teacher" | "student" | null
 }
 
 export default function SessionsPage() {
@@ -87,7 +89,10 @@ export default function SessionsPage() {
 
     // Apply payment filter
     if (paymentFilter !== "all") {
-      filtered = filtered.filter((session) => (paymentFilter === "paid" ? session.is_paid : !session.is_paid))
+      filtered = filtered.filter((session) => {
+        if (session.is_cancelled) return false
+        return paymentFilter === "paid" ? session.is_paid : !session.is_paid
+      })
     }
 
     setFilteredSessions(filtered)
@@ -104,10 +109,12 @@ export default function SessionsPage() {
   }
 
   // Calculate statistics
+  const cancelledSessions = sessions.filter((s) => s.is_cancelled)
+  const activeSessions = sessions.filter((s) => !s.is_cancelled)
   const totalSessions = sessions.length
   const totalRevenue = sessions.reduce((sum, s) => sum + s.total_amount, 0)
-  const unpaidAmount = sessions.filter((s) => !s.is_paid).reduce((sum, s) => sum + s.total_amount, 0)
-  const totalHours = sessions.reduce((sum, s) => sum + s.duration_minutes, 0) / 60
+  const unpaidAmount = activeSessions.filter((s) => !s.is_paid).reduce((sum, s) => sum + s.total_amount, 0)
+  const totalHours = activeSessions.reduce((sum, s) => sum + s.duration_minutes, 0) / 60
 
   return (
     <SidebarProvider>
@@ -148,6 +155,7 @@ export default function SessionsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalSessions}</div>
+                <p className="text-xs text-muted-foreground">{cancelledSessions.length} cancelled</p>
               </CardContent>
             </Card>
             <Card>

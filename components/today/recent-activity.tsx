@@ -12,6 +12,8 @@ interface RecentSession {
   total_amount: number
   is_paid: boolean
   notes: string
+  is_cancelled: boolean
+  cancelled_by?: "teacher" | "student" | null
 }
 
 interface RecentActivityProps {
@@ -38,12 +40,9 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
   }
 
   const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    if (hours > 0) {
-      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`
-    }
-    return `${mins}m`
+    if (!minutes) return "0h"
+    const hours = minutes / 60
+    return Number.isInteger(hours) ? `${hours}h` : `${Number.parseFloat(hours.toFixed(2))}h`
   }
 
   return (
@@ -72,11 +71,17 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
                   </div>
                   <div>
                     <div className="font-medium">{session.student_name}</div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-2">
-                      <span>{formatDate(session.date)}</span>
-                      <span>•</span>
-                      <span>{formatDuration(session.duration_minutes)}</span>
-                    </div>
+                    {session.is_cancelled ? (
+                      <div className="text-sm text-amber-600 dark:text-amber-300">
+                        Cancelled by {session.cancelled_by === "teacher" ? "teacher" : "student"}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        <span>{formatDate(session.date)}</span>
+                        <span>•</span>
+                        <span>{formatDuration(session.duration_minutes)}</span>
+                      </div>
+                    )}
                     {session.notes && (
                       <div className="text-xs text-muted-foreground mt-1 max-w-[200px] truncate">{session.notes}</div>
                     )}
@@ -84,8 +89,11 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
                 </div>
                 <div className="text-right">
                   <div className="font-semibold">${session.total_amount.toFixed(2)}</div>
-                  <Badge variant={session.is_paid ? "default" : "destructive"} className="text-xs">
-                    {session.is_paid ? "Paid" : "Unpaid"}
+                  <Badge
+                    variant={session.is_cancelled ? "outline" : session.is_paid ? "default" : "destructive"}
+                    className="text-xs"
+                  >
+                    {session.is_cancelled ? "Cancelled" : session.is_paid ? "Paid" : "Unpaid"}
                   </Badge>
                 </div>
               </div>

@@ -28,6 +28,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const items = [
   {
@@ -124,7 +125,10 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border">
+      <SidebarFooter className="border-t border-sidebar-border space-y-2">
+        <div className="px-4 pt-3">
+          <ThemeToggle />
+        </div>
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

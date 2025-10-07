@@ -33,12 +33,9 @@ export function WeeklyCalendar({ scheduledClasses, onEdit, onDelete }: WeeklyCal
   }
 
   const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    if (hours > 0) {
-      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`
-    }
-    return `${mins}m`
+    if (!minutes) return "0h"
+    const hours = minutes / 60
+    return Number.isInteger(hours) ? `${hours}h` : `${Number.parseFloat(hours.toFixed(2))}h`
   }
 
   const getClassesForDay = (dayOfWeek: number) => {

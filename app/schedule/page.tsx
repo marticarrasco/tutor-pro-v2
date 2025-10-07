@@ -12,6 +12,16 @@ import { ScheduleTable } from "@/components/schedule/schedule-table"
 import { ScheduleForm } from "@/components/schedule/schedule-form"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/hooks/use-toast"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface ScheduledClass {
   id: string
@@ -24,11 +34,15 @@ interface ScheduledClass {
   created_at: string
 }
 
+const WEEKDAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
 export default function SchedulePage() {
   const [scheduledClasses, setScheduledClasses] = useState<ScheduledClass[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingClass, setEditingClass] = useState<ScheduledClass | undefined>()
+  const [classToDelete, setClassToDelete] = useState<ScheduledClass | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const fetchScheduledClasses = async () => {
     try {
@@ -72,13 +86,36 @@ export default function SchedulePage() {
   }
 
   const handleDelete = (scheduledClass: ScheduledClass) => {
-    // This will be handled by the individual components
-    console.log("Delete scheduled class:", scheduledClass.id)
+    setClassToDelete(scheduledClass)
   }
 
   const handleFormClose = () => {
     setShowForm(false)
     setEditingClass(undefined)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!classToDelete) return
+    setIsDeleting(true)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.from("scheduled_classes").delete().eq("id", classToDelete.id)
+
+      if (error) throw error
+
+      toast({ title: "Scheduled class deleted successfully" })
+      await fetchScheduledClasses()
+      setClassToDelete(null)
+    } catch (error) {
+      console.error("Error deleting scheduled class:", error)
+      toast({
+        title: "Error",
+        description: "Failed to delete scheduled class. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   // Calculate statistics
@@ -195,6 +232,28 @@ export default function SchedulePage() {
           onOpenChange={handleFormClose}
           onSuccess={fetchScheduledClasses}
         />
+
+        <AlertDialog open={!!classToDelete} onOpenChange={() => setClassToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete scheduled class?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will remove the recurring class for {classToDelete?.student_name} on{" "}
+                {classToDelete !== null ? WEEKDAY_LABELS[classToDelete.day_of_week] : ""} at {classToDelete?.start_time}.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </SidebarInset>
     </SidebarProvider>
   )

@@ -7,6 +7,7 @@ interface QuickStatsProps {
   todayStats: {
     scheduledClasses: number
     completedSessions: number
+    cancelledSessions: number
     totalEarnings: number
     totalHours: number
   }
@@ -30,7 +31,13 @@ export function QuickStats({ todayStats, weekStats }: QuickStatsProps) {
             {todayStats.completedSessions}/{todayStats.scheduledClasses}
           </div>
           <p className="text-xs text-muted-foreground">
-            {todayStats.scheduledClasses - todayStats.completedSessions} remaining
+            {todayStats.cancelledSessions} cancelled •
+            {" "}
+            {Math.max(
+              todayStats.scheduledClasses - todayStats.completedSessions - todayStats.cancelledSessions,
+              0,
+            )}{" "}
+            remaining
           </p>
         </CardContent>
       </Card>

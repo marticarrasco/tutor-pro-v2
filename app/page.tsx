@@ -19,8 +19,12 @@ interface TodayClass {
   student_hourly_rate: number
   start_time: string
   duration_minutes: number
-  has_session: boolean
+  status: "pending" | "completed" | "cancelled"
   session_id?: string
+  session_amount?: number
+  session_is_paid?: boolean
+  session_duration_minutes?: number
+  cancelled_by?: "teacher" | "student" | null
 }
 
 interface RecentSession {
@@ -31,6 +35,8 @@ interface RecentSession {
   total_amount: number
   is_paid: boolean
   notes: string
+  is_cancelled: boolean
+  cancelled_by?: "teacher" | "student" | null
 }
 
 export default function HomePage() {
@@ -41,6 +47,7 @@ export default function HomePage() {
   const [todayStats, setTodayStats] = useState({
     scheduledClasses: 0,
     completedSessions: 0,
+    cancelledSessions: 0,
     totalEarnings: 0,
     totalHours: 0,
   })
@@ -76,7 +83,7 @@ export default function HomePage() {
       // Get today's completed sessions
       const { data: sessionsData, error: sessionsError } = await supabase
         .from("tutoring_sessions")
-        .select("student_id, id")
+        .select("student_id, id, total_amount, is_paid, is_cancelled, cancelled_by, duration_minutes, hourly_rate")
         .eq("date", todayString)
 
       if (sessionsError) throw sessionsError
@@ -84,6 +91,14 @@ export default function HomePage() {
       // Combine scheduled classes with session status
       const todayClassesWithSessions = (scheduledData || []).map((cls: any) => {
         const session = sessionsData?.find((s) => s.student_id === cls.student_id)
+        const status = session ? (session.is_cancelled ? "cancelled" : "completed") : "pending"
+        const durationMinutes = session?.duration_minutes ?? cls.duration_minutes
+        const hourlyRate = session?.hourly_rate ?? cls.students.hourly_rate
+        const sessionAmount = session
+          ? session.is_cancelled
+            ? 0
+            : session.total_amount ?? (hourlyRate * durationMinutes) / 60
+          : undefined
         return {
           id: cls.id,
           student_id: cls.student_id,
@@ -91,24 +106,31 @@ export default function HomePage() {
           student_hourly_rate: cls.students.hourly_rate,
           start_time: cls.start_time,
           duration_minutes: cls.duration_minutes,
-          has_session: !!session,
+          status,
           session_id: session?.id,
+          session_amount: sessionAmount,
+          session_is_paid: session?.is_paid ?? false,
+          session_duration_minutes: durationMinutes,
+          cancelled_by: session?.cancelled_by ?? null,
         }
       })
 
       setTodayClasses(todayClassesWithSessions)
 
       // Calculate today's stats
-      const completedSessions = todayClassesWithSessions.filter((cls) => cls.has_session)
-      const todayEarnings = completedSessions.reduce(
-        (sum, cls) => sum + (cls.student_hourly_rate * cls.duration_minutes) / 60,
-        0,
-      )
-      const todayHours = completedSessions.reduce((sum, cls) => sum + cls.duration_minutes, 0) / 60
+      const completedSessions = todayClassesWithSessions.filter((cls) => cls.status === "completed")
+      const cancelledSessions = todayClassesWithSessions.filter((cls) => cls.status === "cancelled")
+      const todayEarnings = completedSessions.reduce((sum, cls) => sum + (cls.session_amount || 0), 0)
+      const todayHours =
+        completedSessions.reduce(
+          (sum, cls) => sum + (cls.session_duration_minutes ?? cls.duration_minutes ?? 0),
+          0,
+        ) / 60
 
       setTodayStats({
         scheduledClasses: todayClassesWithSessions.length,
         completedSessions: completedSessions.length,
+        cancelledSessions: cancelledSessions.length,
         totalEarnings: todayEarnings,
         totalHours: todayHours,
       })
@@ -133,15 +155,17 @@ export default function HomePage() {
 
       const { data, error } = await supabase
         .from("tutoring_sessions")
-        .select("duration_minutes, total_amount")
+        .select("duration_minutes, total_amount, is_cancelled")
         .gte("date", startOfWeek.toISOString().split("T")[0])
         .lte("date", endOfWeek.toISOString().split("T")[0])
 
       if (error) throw error
 
-      const weekTotalSessions = data?.length || 0
-      const weekTotalEarnings = data?.reduce((sum, session) => sum + session.total_amount, 0) || 0
-      const weekTotalHours = data?.reduce((sum, session) => sum + session.duration_minutes, 0) / 60 || 0
+      const activeSessions = data?.filter((session) => !session.is_cancelled) || []
+      const weekTotalSessions = activeSessions.length
+      const weekTotalEarnings = (data || []).reduce((sum, session) => sum + session.total_amount, 0) || 0
+      const weekTotalHours =
+        activeSessions.reduce((sum, session) => sum + (session.duration_minutes ?? 0), 0) / 60 || 0
 
       setWeekStats({
         totalSessions: weekTotalSessions,
@@ -165,6 +189,8 @@ export default function HomePage() {
           total_amount,
           is_paid,
           notes,
+          is_cancelled,
+          cancelled_by,
           students!inner(name)
         `)
         .order("date", { ascending: false })
@@ -219,6 +245,7 @@ export default function HomePage() {
       setTodayStats({
         scheduledClasses: 0,
         completedSessions: 0,
+        cancelledSessions: 0,
         totalEarnings: 0,
         totalHours: 0,
       })

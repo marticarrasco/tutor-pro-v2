@@ -121,6 +121,9 @@ export function SessionForm({
 
     try {
       const supabase = createClient()
+      const totalAmount = Number(
+        ((formData.hourly_rate * formData.duration_minutes) / 60).toFixed(2),
+      )
 
       if (session?.id) {
         // Update existing session
@@ -131,6 +134,7 @@ export function SessionForm({
             date: formData.date,
             duration_minutes: formData.duration_minutes,
             hourly_rate: formData.hourly_rate,
+            total_amount: totalAmount,
             is_paid: formData.is_paid,
             notes: formData.notes,
             updated_at: new Date().toISOString(),
@@ -141,7 +145,14 @@ export function SessionForm({
         toast({ title: "Session updated successfully" })
       } else {
         // Create new session
-        const { error } = await supabase.from("tutoring_sessions").insert([formData])
+        const { error } = await supabase
+          .from("tutoring_sessions")
+          .insert([
+            {
+              ...formData,
+              total_amount: totalAmount,
+            },
+          ])
 
         if (error) throw error
         toast({ title: "Session created successfully" })
@@ -192,7 +203,7 @@ export function SessionForm({
   }
 
   const totalAmount = ((formData.hourly_rate * formData.duration_minutes) / 60).toFixed(2)
-  const durationHours = (formData.duration_minutes / 60).toFixed(1)
+  const durationHours = (formData.duration_minutes / 60).toFixed(2)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

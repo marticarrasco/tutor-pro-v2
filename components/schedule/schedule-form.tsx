@@ -74,6 +74,18 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
     }
   }, [open])
 
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        student_id: scheduledClass?.student_id || "",
+        day_of_week: scheduledClass?.day_of_week ?? 1,
+        start_time: scheduledClass?.start_time || "14:00",
+        duration_minutes: scheduledClass?.duration_minutes || 60,
+        is_active: scheduledClass?.is_active ?? true,
+      })
+    }
+  }, [scheduledClass, open])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -147,6 +159,14 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
     return `${endHours.toString().padStart(2, "0")}:${endMins.toString().padStart(2, "0")}`
   }
 
+  const hoursValue = formData.duration_minutes / 60
+  const durationHours = Number.isFinite(hoursValue) ? Number.parseFloat(hoursValue.toFixed(2)) : 0
+  const formattedDuration = Number.isFinite(hoursValue)
+    ? Number.isInteger(hoursValue)
+      ? `${hoursValue}h`
+      : `${Number.parseFloat(hoursValue.toFixed(2))}h`
+    : "0h"
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -212,15 +232,23 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="duration_minutes">Duration (minutes)</Label>
+              <Label htmlFor="duration_hours">Duration (hours)</Label>
               <Input
-                id="duration_minutes"
+                id="duration_hours"
                 type="number"
-                min="15"
-                step="15"
-                value={formData.duration_minutes}
-                onChange={(e) => setFormData({ ...formData, duration_minutes: Number.parseInt(e.target.value) || 0 })}
-                placeholder="60"
+                min="0.25"
+                step="0.25"
+                value={durationHours}
+                onChange={(e) => {
+                  const hours = Number.parseFloat(e.target.value)
+                  if (Number.isNaN(hours)) {
+                    setFormData({ ...formData, duration_minutes: 0 })
+                  } else {
+                    const minutes = Math.max(Math.round(hours * 4) * 15, 0)
+                    setFormData({ ...formData, duration_minutes: minutes })
+                  }
+                }}
+                placeholder="1.00"
                 required
               />
             </div>
@@ -228,7 +256,7 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
             <div className="grid gap-2">
               <Label className="text-sm font-medium">Class Time</Label>
               <div className="text-sm text-muted-foreground">
-                {formatTime(formData.start_time)} - {formatTime(endTime())} ({formData.duration_minutes} minutes)
+                {formatTime(formData.start_time)} - {formatTime(endTime())} ({formattedDuration})
               </div>
             </div>
 

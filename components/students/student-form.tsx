@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -43,6 +43,18 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
     is_active: student?.is_active ?? true,
   })
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        name: student?.name || "",
+        email: student?.email || "",
+        phone: student?.phone || "",
+        hourly_rate: student?.hourly_rate || 0,
+        is_active: student?.is_active ?? true,
+      })
+    }
+  }, [student, open])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
