@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
+import { ChartPeriodSelector, ChartPeriod } from "./chart-period-selector"
 
 interface StudentStats {
   id: string
@@ -16,11 +17,13 @@ interface StudentStats {
 
 interface StudentPerformanceProps {
   studentStats: StudentStats[]
+  period: ChartPeriod
+  onPeriodChange: (period: ChartPeriod) => void
 }
 
-export function StudentPerformance({ studentStats }: StudentPerformanceProps) {
-  const maxRevenue = Math.max(...studentStats.map((s) => s.total_revenue))
-  const maxSessions = Math.max(...studentStats.map((s) => s.total_sessions))
+export function StudentPerformance({ studentStats, period, onPeriodChange }: StudentPerformanceProps) {
+  // Removed maxRevenue as revenue progress bar is not needed
+  const maxSessions = studentStats.length > 0 ? Math.max(...studentStats.map((s) => s.total_sessions)) : 0
 
   const formatHours = (minutes: number) => {
     const hours = minutes / 60
@@ -30,8 +33,13 @@ export function StudentPerformance({ studentStats }: StudentPerformanceProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Student Performance</CardTitle>
-        <CardDescription>Revenue and session statistics by student</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Student Performance</CardTitle>
+            <CardDescription>Revenue and session statistics by student</CardDescription>
+          </div>
+          <ChartPeriodSelector value={period} onChange={onPeriodChange} />
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {studentStats.length === 0 ? (
@@ -50,13 +58,7 @@ export function StudentPerformance({ studentStats }: StudentPerformanceProps) {
                   ${student.total_revenue.toFixed(2)} • {student.total_sessions} sessions
                 </div>
               </div>
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Revenue Progress</span>
-                  <span>{((student.total_revenue / maxRevenue) * 100).toFixed(0)}%</span>
-                </div>
-                <Progress value={(student.total_revenue / maxRevenue) * 100} className="h-2" />
-              </div>
+              {/* Revenue progress bar removed as requested */}
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <div className="text-muted-foreground">Hours</div>

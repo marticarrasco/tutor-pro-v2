@@ -3,23 +3,27 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts"
+import { ChartPeriodSelector, ChartPeriod } from "./chart-period-selector"
 
 interface PaymentData {
   name: string
   value: number
   amount: number
+  [key: string]: string | number
 }
 
 interface PaymentOverviewProps {
   paymentData: PaymentData[]
+  period: ChartPeriod
+  onPeriodChange: (period: ChartPeriod) => void
 }
 
 const COLORS = {
-  paid: "hsl(var(--chart-1))",
-  unpaid: "hsl(var(--chart-2))",
+  paid: "#22C55E", // Green
+  unpaid: "#EF4444", // Red
 }
 
-export function PaymentOverview({ paymentData }: PaymentOverviewProps) {
+export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, period, onPeriodChange }) => {
   const chartConfig = {
     paid: {
       label: "Paid",
@@ -29,15 +33,19 @@ export function PaymentOverview({ paymentData }: PaymentOverviewProps) {
       label: "Unpaid",
       color: COLORS.unpaid,
     },
-  }
+  };
 
-  const totalAmount = paymentData.reduce((sum, item) => sum + item.amount, 0)
-
+  const totalAmount = paymentData.reduce((sum, item) => sum + item.amount, 0);
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Payment Status</CardTitle>
-        <CardDescription>Overview of paid vs unpaid sessions</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Payment Status</CardTitle>
+            <CardDescription>Overview of paid vs unpaid sessions</CardDescription>
+          </div>
+          <ChartPeriodSelector value={period} onChange={onPeriodChange} />
+        </div>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -79,5 +87,5 @@ export function PaymentOverview({ paymentData }: PaymentOverviewProps) {
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
