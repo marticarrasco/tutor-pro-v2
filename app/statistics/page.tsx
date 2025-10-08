@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { TrendingUp, DollarSign, Clock, Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -13,6 +13,7 @@ import { TimeAnalysis } from "@/components/statistics/time-analysis"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "@/hooks/use-toast"
 import { ExportDialog } from "@/components/export/export-dialog"
+import { ChartPeriod } from "@/components/statistics/chart-period-selector"
 
 interface OverallStats {
   totalRevenue: number
@@ -36,9 +37,54 @@ export default function StatisticsPage() {
   const [studentStats, setStudentStats] = useState<any[]>([])
   const [paymentData, setPaymentData] = useState<any[]>([])
   const [weeklyData, setWeeklyData] = useState<any[]>([])
-  const [timeRange, setTimeRange] = useState("6months")
   const [isLoading, setIsLoading] = useState(true)
   const [students, setStudents] = useState<any[]>([])
+  
+  // Individual period states for each chart
+  const [revenuePeriod, setRevenuePeriod] = useState<ChartPeriod>({ type: "3months" })
+  const [paymentPeriod, setPaymentPeriod] = useState<ChartPeriod>({ type: "3months" })
+  const [timePeriod, setTimePeriod] = useState<ChartPeriod>({ type: "week" })
+  const [studentPeriod, setStudentPeriod] = useState<ChartPeriod>({ type: "3months" })
+
+  // Helper to get date range from period
+  const getDateRange = (period: ChartPeriod): { startDate: Date; endDate: Date } => {
+    if (period.type === "all") {
+      // Use earliest possible date for all time
+      return {
+        startDate: new Date(2000, 0, 1), // or earliest data in DB
+        endDate: new Date(),
+      }
+    }
+
+    const endDate = new Date()
+    const startDate = new Date()
+
+    if (period.type === "custom" && period.customRange) {
+      return {
+        startDate: period.customRange.from,
+        endDate: period.customRange.to,
+      }
+    }
+
+    switch (period.type) {
+      case "week": {
+        // Set startDate to previous Monday
+        const day = endDate.getDay() === 0 ? 7 : endDate.getDay(); // Sunday as 7
+        startDate.setDate(endDate.getDate() - (day - 1));
+        // Set endDate to next Sunday
+        endDate.setDate(startDate.getDate() + 6);
+        break;
+      }
+      case "month":
+        startDate.setMonth(endDate.getMonth() - 1)
+        break
+      case "3months":
+        startDate.setMonth(endDate.getMonth() - 3)
+        break
+    }
+
+    return { startDate, endDate }
+  }
 
   const fetchStudents = async () => {
     try {
@@ -95,17 +141,16 @@ export default function StatisticsPage() {
     }
   }
 
-  const fetchRevenueData = async () => {
+  const fetchRevenueData = useCallback(async (period: ChartPeriod) => {
     try {
       const supabase = createClient()
-      const monthsBack = timeRange === "6months" ? 6 : 12
-      const startDate = new Date()
-      startDate.setMonth(startDate.getMonth() - monthsBack)
+      const { startDate, endDate } = getDateRange(period)
 
       const { data, error } = await supabase
         .from("tutoring_sessions")
         .select("date, total_amount")
         .gte("date", startDate.toISOString().split("T")[0])
+        .lte("date", endDate.toISOString().split("T")[0])
         .order("date")
 
       if (error) throw error
@@ -135,24 +180,30 @@ export default function StatisticsPage() {
     } catch (error) {
       console.error("Error fetching revenue data:", error)
     }
-  }
+  }, [])
 
-  const fetchStudentStats = async () => {
+  const fetchStudentStats = useCallback(async (period: ChartPeriod) => {
     try {
       const supabase = createClient()
+      const { startDate, endDate } = getDateRange(period)
 
       const { data, error } = await supabase.from("students").select(`
           id,
           name,
           is_active,
-          tutoring_sessions(duration_minutes, total_amount)
+          tutoring_sessions!inner(duration_minutes, total_amount, date)
         `)
 
       if (error) throw error
 
       const studentStats = data
         ?.map((student: any) => {
-          const sessions = student.tutoring_sessions || []
+          // Filter sessions by date range
+          const sessions = (student.tutoring_sessions || []).filter((s: any) => {
+            const sessionDate = new Date(s.date)
+            return sessionDate >= startDate && sessionDate <= endDate
+          })
+          
           const totalSessions = sessions.length
           const totalRevenue = sessions.reduce((sum: number, s: any) => sum + s.total_amount, 0)
           const totalHours = sessions.reduce((sum: number, s: any) => sum + s.duration_minutes, 0)
@@ -175,13 +226,18 @@ export default function StatisticsPage() {
     } catch (error) {
       console.error("Error fetching student stats:", error)
     }
-  }
+  }, [])
 
-  const fetchPaymentData = async () => {
+  const fetchPaymentData = useCallback(async (period: ChartPeriod) => {
     try {
       const supabase = createClient()
+      const { startDate, endDate } = getDateRange(period)
 
-      const { data, error } = await supabase.from("tutoring_sessions").select("is_paid, total_amount")
+      const { data, error } = await supabase
+        .from("tutoring_sessions")
+        .select("is_paid, total_amount, date")
+        .gte("date", startDate.toISOString().split("T")[0])
+        .lte("date", endDate.toISOString().split("T")[0])
 
       if (error) throw error
 
@@ -198,28 +254,31 @@ export default function StatisticsPage() {
     } catch (error) {
       console.error("Error fetching payment data:", error)
     }
-  }
+  }, [])
 
-  const fetchWeeklyData = async () => {
+  const fetchWeeklyData = useCallback(async (period: ChartPeriod) => {
     try {
       const supabase = createClient()
-      const today = new Date()
-      const startOfWeek = new Date(today)
-      startOfWeek.setDate(today.getDate() - 6) // Last 7 days
+      const { startDate, endDate } = getDateRange(period)
 
       const { data, error } = await supabase
         .from("tutoring_sessions")
         .select("date, duration_minutes")
-        .gte("date", startOfWeek.toISOString().split("T")[0])
+        .gte("date", startDate.toISOString().split("T")[0])
+        .lte("date", endDate.toISOString().split("T")[0])
         .order("date")
 
       if (error) throw error
 
-      // Create array for last 7 days
+      // Calculate days between start and end
+      const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+      const daysToShow = Math.min(daysDiff + 1, 31) // Max 31 days for readability
+
+      // Create array for the period, week starts on Monday
       const weekData = []
-      for (let i = 6; i >= 0; i--) {
-        const date = new Date(today)
-        date.setDate(today.getDate() - i)
+      for (let i = 0; i < daysToShow; i++) {
+        const date = new Date(startDate)
+        date.setDate(startDate.getDate() + i)
         const dayName = date.toLocaleDateString("en-US", { weekday: "short" })
         const dateString = date.toISOString().split("T")[0]
 
@@ -237,16 +296,16 @@ export default function StatisticsPage() {
     } catch (error) {
       console.error("Error fetching weekly data:", error)
     }
-  }
+  }, [])
 
   const fetchAllData = async () => {
     setIsLoading(true)
     await Promise.all([
       fetchOverallStats(),
-      fetchRevenueData(),
-      fetchStudentStats(),
-      fetchPaymentData(),
-      fetchWeeklyData(),
+      fetchRevenueData(revenuePeriod),
+      fetchStudentStats(studentPeriod),
+      fetchPaymentData(paymentPeriod),
+      fetchWeeklyData(timePeriod),
       fetchStudents(),
     ])
     setIsLoading(false)
@@ -254,7 +313,7 @@ export default function StatisticsPage() {
 
   useEffect(() => {
     fetchAllData()
-  }, [timeRange])
+  }, [])
 
   if (isLoading) {
     return (
@@ -279,18 +338,7 @@ export default function StatisticsPage() {
               <h1 className="text-3xl font-bold tracking-tight">Statistics</h1>
               <p className="text-muted-foreground">Analyze your tutoring business performance</p>
             </div>
-            <div className="flex items-center gap-2">
-              <ExportDialog students={students} />
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="6months">6 Months</SelectItem>
-                  <SelectItem value="12months">12 Months</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <ExportDialog students={students} />
           </div>
 
           {/* Overall Stats Cards */}
@@ -344,13 +392,41 @@ export default function StatisticsPage() {
 
           {/* Charts Grid */}
           <div className="grid gap-4 md:grid-cols-2">
-            <RevenueChart data={revenueData} />
-            <PaymentOverview paymentData={paymentData} />
+            <RevenueChart 
+              data={revenueData} 
+              period={revenuePeriod}
+              onPeriodChange={(period: ChartPeriod) => {
+                setRevenuePeriod(period)
+                fetchRevenueData(period)
+              }}
+            />
+            <PaymentOverview 
+              paymentData={paymentData}
+              period={paymentPeriod}
+              onPeriodChange={(period: ChartPeriod) => {
+                setPaymentPeriod(period)
+                fetchPaymentData(period)
+              }}
+            />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <TimeAnalysis weeklyData={weeklyData} />
-            <StudentPerformance studentStats={studentStats} />
+            <TimeAnalysis 
+              weeklyData={weeklyData}
+              period={timePeriod}
+              onPeriodChange={(period: ChartPeriod) => {
+                setTimePeriod(period)
+                fetchWeeklyData(period)
+              }}
+            />
+            <StudentPerformance 
+              studentStats={studentStats}
+              period={studentPeriod}
+              onPeriodChange={(period: ChartPeriod) => {
+                setStudentPeriod(period)
+                fetchStudentStats(period)
+              }}
+            />
           </div>
         </div>
       </SidebarInset>
