@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
 interface Session {
@@ -32,6 +33,7 @@ interface Session {
   created_at: string
   is_cancelled: boolean
   cancelled_by?: "teacher" | "student" | null
+  user_id: string
 }
 
 interface SessionsTableProps {
@@ -50,7 +52,12 @@ export function SessionsTable({ sessions, onEdit, onRefresh }: SessionsTableProp
     setIsDeleting(true)
     try {
       const supabase = createClient()
-      const { error } = await supabase.from("tutoring_sessions").delete().eq("id", deleteSession.id)
+      const user = await requireAuthUser(supabase)
+      const { error } = await supabase
+        .from("tutoring_sessions")
+        .delete()
+        .eq("id", deleteSession.id)
+        .eq("user_id", user.id)
 
       if (error) throw error
 
@@ -79,10 +86,12 @@ export function SessionsTable({ sessions, onEdit, onRefresh }: SessionsTableProp
     }
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const { error } = await supabase
         .from("tutoring_sessions")
         .update({ is_paid: !session.is_paid, updated_at: new Date().toISOString() })
         .eq("id", session.id)
+        .eq("user_id", user.id)
 
       if (error) throw error
 

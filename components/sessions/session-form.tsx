@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
@@ -38,6 +39,7 @@ interface Session {
   hourly_rate: number
   is_paid: boolean
   notes: string
+  user_id?: string
 }
 
 interface SessionFormProps {
@@ -76,14 +78,26 @@ export function SessionForm({
   // Fetch students for dropdown
   useEffect(() => {
     const fetchStudents = async () => {
-      const supabase = createClient()
-      const { data } = await supabase
-        .from("students")
-        .select("id, name, hourly_rate")
-        .eq("is_active", true)
-        .order("name")
+      try {
+        const supabase = createClient()
+        const user = await requireAuthUser(supabase)
+        const { data, error } = await supabase
+          .from("students")
+          .select("id, name, hourly_rate")
+          .eq("is_active", true)
+          .eq("user_id", user.id)
+          .order("name")
 
-      setStudents(data || [])
+        if (error) throw error
+        setStudents(data || [])
+      } catch (error) {
+        console.error("Error fetching students for session form:", error)
+        toast({
+          title: "Error",
+          description: "Failed to load students. Please try again.",
+          variant: "destructive",
+        })
+      }
     }
 
     if (open) {
@@ -121,6 +135,7 @@ export function SessionForm({
 
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
 
       if (session?.id) {
         // Update existing session
@@ -136,6 +151,7 @@ export function SessionForm({
             updated_at: new Date().toISOString(),
           })
           .eq("id", session.id)
+          .eq("user_id", user.id)
 
         if (error) throw error
         toast({ title: "Session updated successfully" })
@@ -143,7 +159,12 @@ export function SessionForm({
         // Create new session
         const { error } = await supabase
           .from("tutoring_sessions")
-          .insert([formData])
+          .insert([
+            {
+              ...formData,
+              user_id: user.id,
+            },
+          ])
 
         if (error) throw error
         toast({ title: "Session created successfully" })

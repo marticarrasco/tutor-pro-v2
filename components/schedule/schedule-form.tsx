@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
 interface Student {
@@ -30,6 +31,7 @@ interface ScheduledClass {
   start_time: string
   duration_minutes: number
   is_active: boolean
+  user_id?: string
 }
 
 interface ScheduleFormProps {
@@ -63,10 +65,26 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
   // Fetch students for dropdown
   useEffect(() => {
     const fetchStudents = async () => {
-      const supabase = createClient()
-      const { data } = await supabase.from("students").select("id, name").eq("is_active", true).order("name")
+      try {
+        const supabase = createClient()
+        const user = await requireAuthUser(supabase)
+        const { data, error } = await supabase
+          .from("students")
+          .select("id, name")
+          .eq("is_active", true)
+          .eq("user_id", user.id)
+          .order("name")
 
-      setStudents(data || [])
+        if (error) throw error
+        setStudents(data || [])
+      } catch (error) {
+        console.error("Error fetching students for schedule form:", error)
+        toast({
+          title: "Error",
+          description: "Failed to load students. Please try again.",
+          variant: "destructive",
+        })
+      }
     }
 
     if (open) {
@@ -92,6 +110,7 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
 
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
 
       if (scheduledClass?.id) {
         // Update existing scheduled class
@@ -106,12 +125,18 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
             updated_at: new Date().toISOString(),
           })
           .eq("id", scheduledClass.id)
+          .eq("user_id", user.id)
 
         if (error) throw error
         toast({ title: "Scheduled class updated successfully" })
       } else {
         // Create new scheduled class
-        const { error } = await supabase.from("scheduled_classes").insert([formData])
+        const { error } = await supabase.from("scheduled_classes").insert([
+          {
+            ...formData,
+            user_id: user.id,
+          },
+        ])
 
         if (error) throw error
         toast({ title: "Scheduled class created successfully" })

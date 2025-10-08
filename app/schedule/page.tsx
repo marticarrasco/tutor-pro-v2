@@ -11,6 +11,7 @@ import { WeeklyCalendar } from "@/components/schedule/weekly-calendar"
 import { ScheduleTable } from "@/components/schedule/schedule-table"
 import { ScheduleForm } from "@/components/schedule/schedule-form"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import {
   AlertDialog,
@@ -32,6 +33,7 @@ interface ScheduledClass {
   duration_minutes: number
   is_active: boolean
   created_at: string
+  user_id: string
 }
 
 const WEEKDAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -47,12 +49,14 @@ export default function SchedulePage() {
   const fetchScheduledClasses = async () => {
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const { data, error } = await supabase
         .from("scheduled_classes")
         .select(`
           *,
           students!inner(name)
         `)
+        .eq("user_id", user.id)
         .order("day_of_week")
         .order("start_time")
 
@@ -99,7 +103,12 @@ export default function SchedulePage() {
     setIsDeleting(true)
     try {
       const supabase = createClient()
-      const { error } = await supabase.from("scheduled_classes").delete().eq("id", classToDelete.id)
+      const user = await requireAuthUser(supabase)
+      const { error } = await supabase
+        .from("scheduled_classes")
+        .delete()
+        .eq("id", classToDelete.id)
+        .eq("user_id", user.id)
 
       if (error) throw error
 

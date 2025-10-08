@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
 interface ScheduledClass {
@@ -28,6 +29,7 @@ interface ScheduledClass {
   duration_minutes: number
   is_active: boolean
   created_at: string
+  user_id: string
 }
 
 interface ScheduleTableProps {
@@ -48,7 +50,12 @@ export function ScheduleTable({ scheduledClasses, onEdit, onRefresh }: ScheduleT
     setIsDeleting(true)
     try {
       const supabase = createClient()
-      const { error } = await supabase.from("scheduled_classes").delete().eq("id", deleteClass.id)
+      const user = await requireAuthUser(supabase)
+      const { error } = await supabase
+        .from("scheduled_classes")
+        .delete()
+        .eq("id", deleteClass.id)
+        .eq("user_id", user.id)
 
       if (error) throw error
 
@@ -70,10 +77,12 @@ export function ScheduleTable({ scheduledClasses, onEdit, onRefresh }: ScheduleT
   const toggleActive = async (scheduledClass: ScheduledClass) => {
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const { error } = await supabase
         .from("scheduled_classes")
         .update({ is_active: !scheduledClass.is_active, updated_at: new Date().toISOString() })
         .eq("id", scheduledClass.id)
+        .eq("user_id", user.id)
 
       if (error) throw error
 

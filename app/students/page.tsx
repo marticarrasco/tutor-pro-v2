@@ -10,6 +10,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { StudentsTable } from "@/components/students/students-table"
 import { StudentForm } from "@/components/students/student-form"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
 interface Student {
@@ -20,6 +21,7 @@ interface Student {
   hourly_rate: number
   is_active: boolean
   created_at: string
+  user_id: string
 }
 
 export default function StudentsPage() {
@@ -33,7 +35,12 @@ export default function StudentsPage() {
   const fetchStudents = async () => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase.from("students").select("*").order("name")
+      const user = await requireAuthUser(supabase)
+      const { data, error } = await supabase
+        .from("students")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("name")
 
       if (error) throw error
       setStudents(data || [])

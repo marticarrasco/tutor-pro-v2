@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
 interface Student {
@@ -25,6 +26,7 @@ interface Student {
   phone: string
   hourly_rate: number
   is_active: boolean
+  user_id?: string
 }
 
 interface StudentFormProps {
@@ -63,6 +65,8 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
     try {
       const supabase = createClient()
 
+      const user = await requireAuthUser(supabase)
+
       if (student?.id) {
         // Update existing student
         const { error } = await supabase
@@ -76,12 +80,18 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
             updated_at: new Date().toISOString(),
           })
           .eq("id", student.id)
+          .eq("user_id", user.id)
 
         if (error) throw error
         toast({ title: "Student updated successfully" })
       } else {
         // Create new student
-        const { error } = await supabase.from("students").insert([formData])
+        const { error } = await supabase.from("students").insert([
+          {
+            ...formData,
+            user_id: user.id,
+          },
+        ])
 
         if (error) throw error
         toast({ title: "Student created successfully" })
