@@ -32,7 +32,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 
 const items = [
   {
-    title: "Today",
+    title: "Home",
     url: "/",
     icon: Home,
   },
@@ -55,11 +55,6 @@ const items = [
     title: "Statistics",
     url: "/statistics",
     icon: BarChart3,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
   },
 ]
 

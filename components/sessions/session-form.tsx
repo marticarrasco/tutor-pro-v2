@@ -121,9 +121,6 @@ export function SessionForm({
 
     try {
       const supabase = createClient()
-      const totalAmount = Number(
-        ((formData.hourly_rate * formData.duration_minutes) / 60).toFixed(2),
-      )
 
       if (session?.id) {
         // Update existing session
@@ -134,7 +131,6 @@ export function SessionForm({
             date: formData.date,
             duration_minutes: formData.duration_minutes,
             hourly_rate: formData.hourly_rate,
-            total_amount: totalAmount,
             is_paid: formData.is_paid,
             notes: formData.notes,
             updated_at: new Date().toISOString(),
@@ -147,12 +143,7 @@ export function SessionForm({
         // Create new session
         const { error } = await supabase
           .from("tutoring_sessions")
-          .insert([
-            {
-              ...formData,
-              total_amount: totalAmount,
-            },
-          ])
+          .insert([formData])
 
         if (error) throw error
         toast({ title: "Session created successfully" })
@@ -252,7 +243,13 @@ export function SessionForm({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={calendarDate} onSelect={handleDateSelect} initialFocus />
+                  <Calendar 
+                    mode="single" 
+                    selected={calendarDate} 
+                    onSelect={handleDateSelect} 
+                    initialFocus 
+                    weekStartsOn={1}
+                  />
                 </PopoverContent>
               </Popover>
             </div>

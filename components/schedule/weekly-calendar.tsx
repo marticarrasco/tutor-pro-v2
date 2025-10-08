@@ -23,6 +23,9 @@ interface WeeklyCalendarProps {
 
 const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
+// Reorder days to start with Monday (day 1) and end with Sunday (day 0)
+const DAYS_ORDER = [1, 2, 3, 4, 5, 6, 0] // Monday through Sunday
+
 export function WeeklyCalendar({ scheduledClasses, onEdit, onDelete }: WeeklyCalendarProps) {
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(":")
@@ -46,8 +49,9 @@ export function WeeklyCalendar({ scheduledClasses, onEdit, onDelete }: WeeklyCal
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
-      {DAYS_OF_WEEK.map((day, index) => {
-        const dayClasses = getClassesForDay(index)
+      {DAYS_ORDER.map((dayIndex) => {
+        const day = DAYS_OF_WEEK[dayIndex]
+        const dayClasses = getClassesForDay(dayIndex)
         return (
           <Card key={day} className="min-h-[200px]">
             <CardHeader className="pb-3">

@@ -151,7 +151,6 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
             date: todayString,
             duration_minutes: 0,
             hourly_rate: classToCancel.student_hourly_rate,
-            total_amount: 0,
             is_paid: false,
             is_cancelled: true,
             cancelled_by: cancelledBy,
@@ -190,8 +189,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
             <Clock className="h-5 w-5" />
             Today's Schedule
           </CardTitle>
-          <CardDescription>Your scheduled classes for today</CardDescription>
-        </CardHeader>
+         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
             <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -211,10 +209,9 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
             <Clock className="h-5 w-5" />
             Today's Schedule
           </CardTitle>
-          <CardDescription>Your scheduled classes for today</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {todayClasses.map((todayClass) => {
+         </CardHeader>
+        <CardContent className="space-y-2">
+          {(todayClasses.slice(0, 3)).map((todayClass) => {
             const containerClasses =
               todayClass.status === "completed"
                 ? "bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800"
@@ -223,81 +220,51 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
                 : "bg-card border-border"
 
             return (
-              <div key={todayClass.id} className={`flex items-center justify-between p-4 rounded-lg border ${containerClasses}`}>
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col items-center justify-center w-16 h-16 rounded-lg bg-primary/10 text-primary">
-                    <div className="text-sm font-semibold">{formatTime(todayClass.start_time)}</div>
-                    <div className="text-xs">{formatDuration(todayClass.duration_minutes)}</div>
-                  </div>
+              <div key={todayClass.id} className={`flex items-center justify-between px-2 py-1 rounded-lg border ${containerClasses} min-h-[40px]`}> 
+                <div className="flex items-center gap-2">
+                   
                   <div>
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">{todayClass.student_name}</span>
-                      {todayClass.status === "completed" && (
-                        <Badge variant="default" className="bg-green-600 hover:bg-green-700">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Completed
-                        </Badge>
-                      )}
-                      {todayClass.status === "cancelled" && (
-                        <Badge variant="destructive" className="bg-amber-500 text-amber-950 hover:bg-amber-500/80">
-                          Cancelled
-                        </Badge>
-                      )}
+                    <div className="flex items-center gap-1">
+                      <User className="h-3 w-3 text-muted-foreground" />
+                      <span className="font-medium text-sm">{todayClass.student_name}</span>
+                      <div className="text-xs text-muted-foreground">
+                        {formatTime(todayClass.start_time)} - {getEndTime(todayClass.start_time, todayClass.duration_minutes)}
+                      </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      {formatTime(todayClass.start_time)} - {getEndTime(todayClass.start_time, todayClass.duration_minutes)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Scheduled: ${todayClass.student_hourly_rate.toFixed(2)}/hr • {formatDuration(todayClass.duration_minutes)}
-                    </div>
+                     
                   {todayClass.status === "completed" && todayClass.session_amount !== undefined && (
-                    <div className="text-sm">
+                    <div className="text-xs">
                       Logged: <span className="font-semibold">${todayClass.session_amount.toFixed(2)}</span>{" "}
-                      {todayClass.session_is_paid ? (
-                        <span className="text-green-600 dark:text-green-400">• Paid</span>
-                      ) : (
-                        <span className="text-amber-600 dark:text-amber-400">• Unpaid</span>
-                      )}
+                       
                     </div>
                   )}
-                  {todayClass.status === "completed" && todayClass.session_duration_minutes !== undefined && (
-                    <div className="text-xs text-muted-foreground">
-                      Logged duration: {formatDuration(todayClass.session_duration_minutes)}
-                    </div>
-                  )}
+                   
                     {todayClass.status === "cancelled" && (
-                      <div className="text-xs text-amber-600 dark:text-amber-300">
+                      <div className="text-[10px] text-amber-600 dark:text-amber-300">
                         Cancelled by {todayClass.cancelled_by === "teacher" ? "teacher" : "student"}
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {todayClass.status === "pending" ? (
-                    <Button onClick={() => handleLogSession(todayClass)} size="sm">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Log Session
-                    </Button>
-                  ) : (
-                    <Badge variant="outline" className="text-muted-foreground">
-                      {todayClass.status === "completed" ? "Session logged" : "Session cancelled"}
-                    </Badge>
-                  )}
-                  {todayClass.status !== "cancelled" && (
-                    <Button variant="ghost" size="sm" onClick={() => handleOpenCancelDialog(todayClass)}>
-                      <Ban className="mr-2 h-4 w-4" />
-                      Cancel
-                    </Button>
-                  )}
+                <div className="flex items-center gap-1">
                   <Button
-                    variant="outline"
+                    onClick={() => handleLogSession(todayClass)}
                     size="sm"
-                    onClick={() => handlePayAll(todayClass)}
-                    disabled={payingStudentId === todayClass.student_id}
+                    variant="default"
+                    className={todayClass.status === "completed" ? "bg-green-600 hover:bg-green-700 text-white px-4 py-1 text-xs" : "px-9 py-1 text-xs"}
+                    disabled={todayClass.status === "cancelled"}
                   >
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    {payingStudentId === todayClass.student_id ? "Paying..." : "Pay all"}
+                     {todayClass.status === "completed" ? "Logged" : "Log"}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleOpenCancelDialog(todayClass)}
+                    disabled={todayClass.status === "cancelled"}
+                    className="px-2 py-1 text-xs"
+                  >
+                    <Ban className="mr-1 h-3 w-3" />
+                    Cancel
                   </Button>
                 </div>
               </div>
