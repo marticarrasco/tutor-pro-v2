@@ -11,6 +11,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { SessionsTable } from "@/components/sessions/sessions-table"
 import { SessionForm } from "@/components/sessions/session-form"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { ExportDialog } from "@/components/export/export-dialog"
 
@@ -27,6 +28,7 @@ interface Session {
   created_at: string
   is_cancelled: boolean
   cancelled_by?: "teacher" | "student" | null
+  user_id: string
 }
 
 export default function SessionsPage() {
@@ -41,12 +43,14 @@ export default function SessionsPage() {
   const fetchSessions = async () => {
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const { data, error } = await supabase
         .from("tutoring_sessions")
         .select(`
           *,
           students!inner(name)
         `)
+        .eq("user_id", user.id)
         .order("date", { ascending: false })
 
       if (error) throw error

@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
 interface Student {
@@ -27,6 +28,7 @@ interface Student {
   hourly_rate: number
   is_active: boolean
   created_at: string
+  user_id: string
 }
 
 interface StudentsTableProps {
@@ -45,7 +47,12 @@ export function StudentsTable({ students, onEdit, onRefresh }: StudentsTableProp
     setIsDeleting(true)
     try {
       const supabase = createClient()
-      const { error } = await supabase.from("students").delete().eq("id", deleteStudent.id)
+      const user = await requireAuthUser(supabase)
+      const { error } = await supabase
+        .from("students")
+        .delete()
+        .eq("id", deleteStudent.id)
+        .eq("user_id", user.id)
 
       if (error) throw error
 

@@ -11,6 +11,7 @@ import { StudentPerformance } from "@/components/statistics/student-performance"
 import { PaymentOverview } from "@/components/statistics/payment-overview"
 import { TimeAnalysis } from "@/components/statistics/time-analysis"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { ExportDialog } from "@/components/export/export-dialog"
 import { ChartPeriod } from "@/components/statistics/chart-period-selector"
@@ -89,7 +90,12 @@ export default function StatisticsPage() {
   const fetchStudents = async () => {
     try {
       const supabase = createClient()
-      const { data, error } = await supabase.from("students").select("id, name, email").eq("is_active", true)
+      const user = await requireAuthUser(supabase)
+      const { data, error } = await supabase
+        .from("students")
+        .select("id, name, email")
+        .eq("is_active", true)
+        .eq("user_id", user.id)
 
       if (error) throw error
       setStudents(data || [])
@@ -101,11 +107,13 @@ export default function StatisticsPage() {
   const fetchOverallStats = async () => {
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
 
       // Get all sessions
       const { data: sessions, error: sessionsError } = await supabase
         .from("tutoring_sessions")
         .select("duration_minutes, total_amount, is_paid, student_id")
+        .eq("user_id", user.id)
 
       if (sessionsError) throw sessionsError
 
@@ -114,6 +122,7 @@ export default function StatisticsPage() {
         .from("students")
         .select("id, hourly_rate")
         .eq("is_active", true)
+        .eq("user_id", user.id)
 
       if (studentsError) throw studentsError
 
@@ -145,12 +154,16 @@ export default function StatisticsPage() {
     try {
       const supabase = createClient()
       const { startDate, endDate } = getDateRange(period)
+      const user = await requireAuthUser(supabase)
+      const monthsBack = timeRange === "6months" ? 6 : 12
+      startDate.setMonth(startDate.getMonth() - monthsBack)
 
       const { data, error } = await supabase
         .from("tutoring_sessions")
         .select("date, total_amount")
         .gte("date", startDate.toISOString().split("T")[0])
         .lte("date", endDate.toISOString().split("T")[0])
+        .eq("user_id", user.id)
         .order("date")
 
       if (error) throw error
@@ -186,13 +199,17 @@ export default function StatisticsPage() {
     try {
       const supabase = createClient()
       const { startDate, endDate } = getDateRange(period)
+      const user = await requireAuthUser(supabase)
 
-      const { data, error } = await supabase.from("students").select(`
+      const { data, error } = await supabase
+        .from("students")
+        .select(`
           id,
           name,
           is_active,
           tutoring_sessions!inner(duration_minutes, total_amount, date)
         `)
+        .eq("user_id", user.id)
 
       if (error) throw error
 
@@ -231,13 +248,12 @@ export default function StatisticsPage() {
   const fetchPaymentData = useCallback(async (period: ChartPeriod) => {
     try {
       const supabase = createClient()
-      const { startDate, endDate } = getDateRange(period)
+      const user = await requireAuthUser(supabase)
 
       const { data, error } = await supabase
         .from("tutoring_sessions")
-        .select("is_paid, total_amount, date")
-        .gte("date", startDate.toISOString().split("T")[0])
-        .lte("date", endDate.toISOString().split("T")[0])
+        .select("is_paid, total_amount")
+        .eq("user_id", user.id)
 
       if (error) throw error
 
@@ -260,12 +276,18 @@ export default function StatisticsPage() {
     try {
       const supabase = createClient()
       const { startDate, endDate } = getDateRange(period)
+      const user = await requireAuthUser(supabase)
+      const today = new Date()
+      const startOfWeek = new Date(today)
+      startOfWeek.setDate(today.getDate() - 6) // Last 7 days
 
       const { data, error } = await supabase
         .from("tutoring_sessions")
         .select("date, duration_minutes")
         .gte("date", startDate.toISOString().split("T")[0])
         .lte("date", endDate.toISOString().split("T")[0])
+        .gte("date", startOfWeek.toISOString().split("T")[0])
+        .eq("user_id", user.id)
         .order("date")
 
       if (error) throw error

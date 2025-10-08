@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { SessionForm } from "@/components/sessions/session-form"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { CancelSessionDialog, type CancelSessionForm } from "@/components/today/cancel-session-dialog"
 
@@ -86,12 +87,14 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
     try {
       setPayingStudentId(todayClass.student_id)
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const { error, data } = await supabase
         .from("tutoring_sessions")
         .update({ is_paid: true, updated_at: new Date().toISOString() })
         .eq("student_id", todayClass.student_id)
         .eq("is_paid", false)
         .eq("is_cancelled", false)
+        .eq("user_id", user.id)
         .select("id")
 
       if (error) throw error
@@ -126,6 +129,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
 
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const todayString = new Date().toISOString().split("T")[0]
 
       if (classToCancel.session_id) {
@@ -142,6 +146,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
             updated_at: new Date().toISOString(),
           })
           .eq("id", classToCancel.session_id)
+          .eq("user_id", user.id)
 
         if (error) throw error
       } else {
@@ -156,6 +161,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
             cancelled_by: cancelledBy,
             cancellation_reason: reason || null,
             notes: reason ? reason : `Class cancelled by ${cancelledBy}`,
+            user_id: user.id,
           },
         ])
 

@@ -4,6 +4,7 @@ import { Clock, User } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "@/hooks/use-toast"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
@@ -60,10 +61,12 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
     setUpdatingId(session.id)
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const { error } = await supabase
         .from("tutoring_sessions")
         .update({ is_paid: !session.is_paid })
         .eq("id", session.id)
+        .eq("user_id", user.id)
       if (error) throw error
       toast({
         title: !session.is_paid ? "Marked as paid" : "Marked as unpaid",

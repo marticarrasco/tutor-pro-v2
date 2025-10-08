@@ -1,5 +1,6 @@
 // Utility functions for exporting data to various formats
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 
 export interface SessionData {
   id: string
@@ -159,6 +160,7 @@ export async function fetchSessionsForExport(filters: {
   isPaid?: boolean
 }) {
   const supabase = createClient()
+  const user = await requireAuthUser(supabase)
 
   let query = supabase
     .from("tutoring_sessions")
@@ -175,6 +177,7 @@ export async function fetchSessionsForExport(filters: {
         email
       )
     `)
+    .eq("user_id", user.id)
     .order("date", { ascending: false })
 
   if (filters.studentId) {

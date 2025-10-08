@@ -17,6 +17,7 @@ import { CalendarIcon, Clock, User as UserIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
+import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import type { User } from "@supabase/supabase-js"
 
@@ -39,6 +40,7 @@ interface Student {
   id: string
   name: string
   hourly_rate: number
+  user_id?: string
 }
 
 interface RecentSession {
@@ -70,6 +72,7 @@ export default function HomePage() {
   const fetchTodayData = async () => {
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const today = new Date()
       const dayOfWeek = today.getDay()
       const todayString = today.toISOString().split("T")[0]
@@ -84,6 +87,7 @@ export default function HomePage() {
           duration_minutes,
           students!inner(name, hourly_rate)
         `)
+        .eq("user_id", user.id)
         .eq("day_of_week", dayOfWeek)
         .eq("is_active", true)
         .order("start_time")
@@ -94,6 +98,7 @@ export default function HomePage() {
       const { data: sessionsData, error: sessionsError } = await supabase
         .from("tutoring_sessions")
         .select("*")
+        .eq("user_id", user.id)
         .eq("date", todayString)
 
       if (sessionsError) throw sessionsError
@@ -141,10 +146,12 @@ export default function HomePage() {
     try {
       console.log("📚 Fetching students...")
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const { data, error } = await supabase
         .from("students")
         .select("id, name, hourly_rate")
         .eq("is_active", true)
+        .eq("user_id", user.id)
         .order("name")
 
       if (error) {
@@ -180,6 +187,7 @@ export default function HomePage() {
     setIsSubmitting(true)
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       console.log("✓ Supabase client created")
       
       const selectedStudent = students.find((s) => s.id === selectedStudentId)
@@ -206,6 +214,7 @@ export default function HomePage() {
         hourly_rate: selectedStudent.hourly_rate,
         is_paid: false,
         notes: "",
+        user_id: user.id,
       }
 
       console.log("Inserting new session:", sessionData)
@@ -259,6 +268,7 @@ export default function HomePage() {
   const fetchRecentSessions = async () => {
     try {
       const supabase = createClient()
+      const user = await requireAuthUser(supabase)
       const { data, error } = await supabase
         .from("tutoring_sessions")
         .select(`
@@ -272,6 +282,7 @@ export default function HomePage() {
           cancelled_by,
           students!inner(name)
         `)
+        .eq("user_id", user.id)
         .order("date", { ascending: false })
         .limit(5)
 
