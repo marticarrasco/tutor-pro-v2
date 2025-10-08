@@ -30,6 +30,8 @@ interface Session {
   is_paid: boolean
   notes: string
   created_at: string
+  is_cancelled: boolean
+  cancelled_by?: "teacher" | "student" | null
 }
 
 interface SessionsTableProps {
@@ -68,6 +70,13 @@ export function SessionsTable({ sessions, onEdit, onRefresh }: SessionsTableProp
   }
 
   const togglePayment = async (session: Session) => {
+    if (session.is_cancelled) {
+      toast({
+        title: "Cancelled session",
+        description: "Cancelled sessions cannot be marked as paid.",
+      })
+      return
+    }
     try {
       const supabase = createClient()
       const { error } = await supabase
@@ -102,12 +111,9 @@ export function SessionsTable({ sessions, onEdit, onRefresh }: SessionsTableProp
   }
 
   const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    if (hours > 0) {
-      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`
-    }
-    return `${mins}m`
+    if (!minutes) return "0h"
+    const hours = minutes / 60
+    return Number.isInteger(hours) ? `${hours}h` : `${Number.parseFloat(hours.toFixed(2))}h`
   }
 
   return (
@@ -142,13 +148,19 @@ export function SessionsTable({ sessions, onEdit, onRefresh }: SessionsTableProp
                   <TableCell className="font-mono">${session.hourly_rate.toFixed(2)}/hr</TableCell>
                   <TableCell className="font-mono font-semibold">${session.total_amount.toFixed(2)}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant={session.is_paid ? "default" : "destructive"}
-                      className="cursor-pointer"
-                      onClick={() => togglePayment(session)}
-                    >
-                      {session.is_paid ? "Paid" : "Unpaid"}
-                    </Badge>
+                    {session.is_cancelled ? (
+                      <Badge variant="outline" className="text-amber-600 border-amber-400">
+                        Cancelled
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant={session.is_paid ? "default" : "destructive"}
+                        className="cursor-pointer"
+                        onClick={() => togglePayment(session)}
+                      >
+                        {session.is_paid ? "Paid" : "Unpaid"}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate text-muted-foreground">{session.notes || "—"}</TableCell>
                   <TableCell>
@@ -160,11 +172,11 @@ export function SessionsTable({ sessions, onEdit, onRefresh }: SessionsTableProp
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => togglePayment(session)}>
+                        <DropdownMenuItem onClick={() => togglePayment(session)} disabled={session.is_cancelled}>
                           <DollarSign className="mr-2 h-4 w-4" />
                           {session.is_paid ? "Mark Unpaid" : "Mark Paid"}
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onEdit(session)}>
+                        <DropdownMenuItem onClick={() => onEdit(session)} disabled={session.is_cancelled}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>

@@ -1,6 +1,9 @@
 "use client"
 
 import { Clock, User } from "lucide-react"
+import { useState, useEffect } from "react"
+import { toast } from "@/hooks/use-toast"
+import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
@@ -12,6 +15,8 @@ interface RecentSession {
   total_amount: number
   is_paid: boolean
   notes: string
+  is_cancelled: boolean
+  cancelled_by?: "teacher" | "student" | null
 }
 
 interface RecentActivityProps {
@@ -38,12 +43,47 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
   }
 
   const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    if (hours > 0) {
-      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`
+    if (!minutes) return "0h"
+    const hours = minutes / 60
+    return Number.isInteger(hours) ? `${hours}h` : `${Number.parseFloat(hours.toFixed(2))}h`
+  }
+
+  const [updatingId, setUpdatingId] = useState<string | null>(null)
+  const [sessions, setSessions] = useState(recentSessions)
+
+  // Update local state if prop changes
+  useEffect(() => {
+    setSessions(recentSessions)
+  }, [recentSessions])
+
+  const handleTogglePaid = async (session: RecentSession) => {
+    setUpdatingId(session.id)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from("tutoring_sessions")
+        .update({ is_paid: !session.is_paid })
+        .eq("id", session.id)
+      if (error) throw error
+      toast({
+        title: !session.is_paid ? "Marked as paid" : "Marked as unpaid",
+        description: `Session with ${session.student_name} updated.`,
+      })
+      // Update UI immediately
+      setSessions((prev) =>
+        prev.map((s) =>
+          s.id === session.id ? { ...s, is_paid: !session.is_paid } : s
+        )
+      )
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update payment status. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setUpdatingId(null)
     }
-    return `${mins}m`
   }
 
   return (
@@ -56,7 +96,7 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
         <CardDescription>Your latest tutoring sessions</CardDescription>
       </CardHeader>
       <CardContent>
-        {recentSessions.length === 0 ? (
+  {sessions.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>No recent sessions</p>
@@ -64,29 +104,42 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
           </div>
         ) : (
           <div className="space-y-4">
-            {recentSessions.map((session) => (
+            {sessions.map((session) => (
               <div key={session.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary">
                     <User className="h-4 w-4" />
                   </div>
                   <div>
-                    <div className="font-medium">{session.student_name}</div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-2">
-                      <span>{formatDate(session.date)}</span>
-                      <span>•</span>
-                      <span>{formatDuration(session.duration_minutes)}</span>
+                    <div className="font-medium flex items-center gap-2">
+                      {session.student_name}
+                      <span className="text-xs text-muted-foreground flex items-center gap-2">
+                        {formatDate(session.date)}
+                        <span>•</span>
+                        {formatDuration(session.duration_minutes)}
+                      </span>
                     </div>
+                    {session.is_cancelled ? (
+                      <div className="text-sm text-amber-600 dark:text-amber-300">
+                        Cancelled by {session.cancelled_by === "teacher" ? "teacher" : "student"}
+                      </div>
+                    ) : null}
                     {session.notes && (
                       <div className="text-xs text-muted-foreground mt-1 max-w-[200px] truncate">{session.notes}</div>
                     )}
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="font-semibold">${session.total_amount.toFixed(2)}</div>
-                  <Badge variant={session.is_paid ? "default" : "destructive"} className="text-xs">
-                    {session.is_paid ? "Paid" : "Unpaid"}
-                  </Badge>
+                <div className="text-right flex flex-col items-end gap-1">
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={session.is_cancelled ? "outline" : session.is_paid ? "default" : "destructive"}
+                      className={`text-xs cursor-pointer${updatingId === session.id ? ' opacity-50 pointer-events-none' : ''}`}
+                      onClick={() => updatingId !== session.id && handleTogglePaid(session)}
+                    >
+                      {session.is_cancelled ? "Cancelled" : session.is_paid ? "Paid" : "Unpaid"}
+                    </Badge>
+                    <span className="font-semibold">${session.total_amount.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
             ))}

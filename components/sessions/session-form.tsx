@@ -141,7 +141,9 @@ export function SessionForm({
         toast({ title: "Session updated successfully" })
       } else {
         // Create new session
-        const { error } = await supabase.from("tutoring_sessions").insert([formData])
+        const { error } = await supabase
+          .from("tutoring_sessions")
+          .insert([formData])
 
         if (error) throw error
         toast({ title: "Session created successfully" })
@@ -192,7 +194,7 @@ export function SessionForm({
   }
 
   const totalAmount = ((formData.hourly_rate * formData.duration_minutes) / 60).toFixed(2)
-  const durationHours = (formData.duration_minutes / 60).toFixed(1)
+  const durationHours = (formData.duration_minutes / 60).toFixed(2)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -241,7 +243,13 @@ export function SessionForm({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={calendarDate} onSelect={handleDateSelect} initialFocus />
+                  <Calendar 
+                    mode="single" 
+                    selected={calendarDate} 
+                    onSelect={handleDateSelect} 
+                    initialFocus 
+                    weekStartsOn={1}
+                  />
                 </PopoverContent>
               </Popover>
             </div>

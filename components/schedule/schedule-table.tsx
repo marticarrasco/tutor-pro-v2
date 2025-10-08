@@ -33,7 +33,7 @@ interface ScheduledClass {
 interface ScheduleTableProps {
   scheduledClasses: ScheduledClass[]
   onEdit: (scheduledClass: ScheduledClass) => void
-  onRefresh: () => void
+  onRefresh: () => void | Promise<void>
 }
 
 const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -53,7 +53,7 @@ export function ScheduleTable({ scheduledClasses, onEdit, onRefresh }: ScheduleT
       if (error) throw error
 
       toast({ title: "Scheduled class deleted successfully" })
-      onRefresh()
+      await onRefresh()
       setDeleteClass(null)
     } catch (error) {
       console.error("Error deleting scheduled class:", error)
@@ -81,7 +81,7 @@ export function ScheduleTable({ scheduledClasses, onEdit, onRefresh }: ScheduleT
         title: scheduledClass.is_active ? "Class deactivated" : "Class activated",
         description: `${scheduledClass.student_name}'s class updated.`,
       })
-      onRefresh()
+      await onRefresh()
     } catch (error) {
       console.error("Error updating class status:", error)
       toast({
@@ -101,12 +101,9 @@ export function ScheduleTable({ scheduledClasses, onEdit, onRefresh }: ScheduleT
   }
 
   const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    if (hours > 0) {
-      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`
-    }
-    return `${mins}m`
+    if (!minutes) return "0h"
+    const hours = minutes / 60
+    return Number.isInteger(hours) ? `${hours}h` : `${Number.parseFloat(hours.toFixed(2))}h`
   }
 
   return (
