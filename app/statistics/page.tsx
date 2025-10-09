@@ -155,8 +155,11 @@ export default function StatisticsPage() {
       const supabase = createClient()
       const { startDate, endDate } = getDateRange(period)
       const user = await requireAuthUser(supabase)
-      const monthsBack = timeRange === "6months" ? 6 : 12
-      startDate.setMonth(startDate.getMonth() - monthsBack)
+      if (period.type === "3months") {
+        startDate.setMonth(startDate.getMonth() - 3)
+      } else if (period.type === "month") {
+        startDate.setMonth(startDate.getMonth() - 1)
+      }
 
       const { data, error } = await supabase
         .from("tutoring_sessions")

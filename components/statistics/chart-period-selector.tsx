@@ -2,11 +2,12 @@
 
 import { useState } from "react"
 import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
+import { format, parse, isValid } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 export type PeriodType = "week" | "month" | "3months" | "custom" | "all"
@@ -31,13 +32,53 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [tempDateFrom, setTempDateFrom] = useState<Date | undefined>(value.customRange?.from)
   const [tempDateTo, setTempDateTo] = useState<Date | undefined>(value.customRange?.to)
+  const [currentStep, setCurrentStep] = useState<"to" | "from">("to")
+  const [dateInputTo, setDateInputTo] = useState(tempDateTo ? format(tempDateTo, "MM/dd/yyyy") : "")
+  const [dateInputFrom, setDateInputFrom] = useState(tempDateFrom ? format(tempDateFrom, "MM/dd/yyyy") : "")
 
   const handlePeriodTypeChange = (type: PeriodType) => {
     if (type === "custom") {
+      setCurrentStep("to")
       setIsCalendarOpen(true)
       onChange({ type, customRange: value.customRange })
     } else {
       onChange({ type })
+    }
+  }
+
+  const handleDateInputToChange = (inputValue: string) => {
+    setDateInputTo(inputValue)
+    const parsedDate = parse(inputValue, "MM/dd/yyyy", new Date())
+    if (isValid(parsedDate) && parsedDate <= new Date()) {
+      setTempDateTo(parsedDate)
+    }
+  }
+
+  const handleDateInputFromChange = (inputValue: string) => {
+    setDateInputFrom(inputValue)
+    const parsedDate = parse(inputValue, "MM/dd/yyyy", new Date())
+    if (isValid(parsedDate) && parsedDate <= new Date() && (!tempDateTo || parsedDate <= tempDateTo)) {
+      setTempDateFrom(parsedDate)
+    }
+  }
+
+  const handleCalendarToSelect = (date: Date | undefined) => {
+    setTempDateTo(date)
+    if (date) {
+      setDateInputTo(format(date, "MM/dd/yyyy"))
+    }
+  }
+
+  const handleCalendarFromSelect = (date: Date | undefined) => {
+    setTempDateFrom(date)
+    if (date) {
+      setDateInputFrom(format(date, "MM/dd/yyyy"))
+    }
+  }
+
+  const handleNextStep = () => {
+    if (currentStep === "to" && tempDateTo) {
+      setCurrentStep("from")
     }
   }
 
@@ -51,6 +92,7 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
         },
       })
       setIsCalendarOpen(false)
+      setCurrentStep("to")
     }
   }
 
@@ -90,11 +132,11 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
       {value.type === "custom" && (
         <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-[240px] justify-start text-left font-normal">
-              <CalendarIcon className="mr-2 h-4 w-4" />
+            <Button variant="outline" className="w-[200px] justify-start text-left font-normal text-sm">
+              <CalendarIcon className="mr-2 h-3.5 w-3.5" />
               {value.customRange ? (
                 <>
-                  {format(value.customRange.from, "MMM d, yyyy")} - {format(value.customRange.to, "MMM d, yyyy")}
+                  {format(value.customRange.from, "MMM d")} - {format(value.customRange.to, "MMM d, yyyy")}
                 </>
               ) : (
                 <span>Pick a date range</span>
@@ -103,28 +145,60 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <div className="p-3 space-y-3">
-              <div>
-                <label className="text-sm font-medium mb-2 block">From Date</label>
-                <Calendar
-                  mode="single"
-                  selected={tempDateFrom}
-                  onSelect={setTempDateFrom}
-                  initialFocus
-                  disabled={(date) => date > new Date() || (tempDateTo ? date > tempDateTo : false)}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">To Date</label>
-                <Calendar
-                  mode="single"
-                  selected={tempDateTo}
-                  onSelect={setTempDateTo}
-                  disabled={(date) => date > new Date() || (tempDateFrom ? date < tempDateFrom : false)}
-                />
-              </div>
-              <Button onClick={handleApplyCustomRange} disabled={!tempDateFrom || !tempDateTo} className="w-full">
-                Apply Range
-              </Button>
+              {currentStep === "to" ? (
+                <>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">To Date (End)</label>
+                    <Input
+                      type="text"
+                      placeholder="MM/DD/YYYY"
+                      value={dateInputTo}
+                      onChange={(e) => handleDateInputToChange(e.target.value)}
+                      className="mb-2 text-sm"
+                    />
+                    <Calendar
+                      mode="single"
+                      selected={tempDateTo}
+                      onSelect={handleCalendarToSelect}
+                      initialFocus
+                      disabled={(date) => date > new Date()}
+                      className="text-sm"
+                    />
+                  </div>
+                  <Button onClick={handleNextStep} disabled={!tempDateTo} className="w-full">
+                    Next: Select Start Date
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">From Date (Start)</label>
+                    <Input
+                      type="text"
+                      placeholder="MM/DD/YYYY"
+                      value={dateInputFrom}
+                      onChange={(e) => handleDateInputFromChange(e.target.value)}
+                      className="mb-2 text-sm"
+                    />
+                    <Calendar
+                      mode="single"
+                      selected={tempDateFrom}
+                      onSelect={handleCalendarFromSelect}
+                      initialFocus
+                      disabled={(date) => date > new Date() || (tempDateTo ? date > tempDateTo : false)}
+                      className="text-sm"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={() => setCurrentStep("to")} variant="outline" className="flex-1">
+                      Back
+                    </Button>
+                    <Button onClick={handleApplyCustomRange} disabled={!tempDateFrom} className="flex-1">
+                      Apply
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           </PopoverContent>
         </Popover>

@@ -85,7 +85,7 @@ export default function HomePage() {
           student_id,
           start_time,
           duration_minutes,
-          students!inner(name, hourly_rate)
+          students!scheduled_classes_student_fk(name, hourly_rate)
         `)
         .eq("user_id", user.id)
         .eq("day_of_week", dayOfWeek)
@@ -280,7 +280,7 @@ export default function HomePage() {
           notes,
           is_cancelled,
           cancelled_by,
-          students!inner(name)
+          students!tutoring_sessions_student_fk(name)
         `)
         .eq("user_id", user.id)
         .order("date", { ascending: false })

@@ -54,7 +54,7 @@ export default function SchedulePage() {
         .from("scheduled_classes")
         .select(`
           *,
-          students!inner(name)
+          students!scheduled_classes_student_fk(name)
         `)
         .eq("user_id", user.id)
         .order("day_of_week")

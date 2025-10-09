@@ -48,7 +48,7 @@ export default function SessionsPage() {
         .from("tutoring_sessions")
         .select(`
           *,
-          students!inner(name)
+          students!tutoring_sessions_student_fk(name)
         `)
         .eq("user_id", user.id)
         .order("date", { ascending: false })
