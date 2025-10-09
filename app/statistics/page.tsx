@@ -3,18 +3,25 @@
 import { useState, useEffect, useCallback } from "react"
 import { TrendingUp, DollarSign, Clock, Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { RevenueChart } from "@/components/statistics/revenue-chart"
 import { StudentPerformance } from "@/components/statistics/student-performance"
 import { PaymentOverview } from "@/components/statistics/payment-overview"
 import { TimeAnalysis } from "@/components/statistics/time-analysis"
+import { CancellationAnalysis } from "@/components/statistics/cancellation-analysis"
+import { SessionDurationChart } from "@/components/statistics/session-duration-chart"
 import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { ExportDialog } from "@/components/export/export-dialog"
 import { ChartPeriod } from "@/components/statistics/chart-period-selector"
+import {
+  CancellationData,
+  PaymentOverviewData,
+  StudentInfo,
+  StudentStat,
+} from "@/types/statistics"
 
 interface OverallStats {
   totalRevenue: number
@@ -35,17 +42,28 @@ export default function StatisticsPage() {
     unpaidAmount: 0,
   })
   const [revenueData, setRevenueData] = useState<any[]>([])
-  const [studentStats, setStudentStats] = useState<any[]>([])
-  const [paymentData, setPaymentData] = useState<any[]>([])
+  const [studentStats, setStudentStats] = useState<StudentStat[]>([])
+  const [paymentData, setPaymentData] = useState<PaymentOverviewData>({
+    overview: [],
+    byStudent: [],
+  })
   const [weeklyData, setWeeklyData] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [students, setStudents] = useState<any[]>([])
+  const [students, setStudents] = useState<StudentInfo[]>([])
+  const [cancellationData, setCancellationData] = useState<CancellationData>({
+    overallRate: 0,
+    byWho: [],
+    byStudent: [],
+  })
+  const [sessionDurationData, setSessionDurationData] = useState<number[]>([])
   
   // Individual period states for each chart
   const [revenuePeriod, setRevenuePeriod] = useState<ChartPeriod>({ type: "3months" })
   const [paymentPeriod, setPaymentPeriod] = useState<ChartPeriod>({ type: "3months" })
   const [timePeriod, setTimePeriod] = useState<ChartPeriod>({ type: "week" })
   const [studentPeriod, setStudentPeriod] = useState<ChartPeriod>({ type: "3months" })
+  const [cancellationPeriod, setCancellationPeriod] = useState<ChartPeriod>({ type: "3months" })
+  const [durationPeriod, setDurationPeriod] = useState<ChartPeriod>({ type: "3months" })
 
   // Helper to get date range from period
   const getDateRange = (period: ChartPeriod): { startDate: Date; endDate: Date } => {
@@ -87,7 +105,7 @@ export default function StatisticsPage() {
     return { startDate, endDate }
   }
 
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async (): Promise<StudentInfo[]> => {
     try {
       const supabase = createClient()
       const user = await requireAuthUser(supabase)
@@ -98,11 +116,15 @@ export default function StatisticsPage() {
         .eq("user_id", user.id)
 
       if (error) throw error
-      setStudents(data || [])
+
+      const studentsData = (data || []) as StudentInfo[]
+      setStudents(studentsData)
+      return studentsData
     } catch (error) {
       console.error("Error fetching students:", error)
+      return []
     }
-  }
+  }, [])
 
   const fetchOverallStats = async () => {
     try {
@@ -223,11 +245,18 @@ export default function StatisticsPage() {
             const sessionDate = new Date(s.date)
             return sessionDate >= startDate && sessionDate <= endDate
           })
-          
+
           const totalSessions = sessions.length
           const totalRevenue = sessions.reduce((sum: number, s: any) => sum + s.total_amount, 0)
           const totalHours = sessions.reduce((sum: number, s: any) => sum + s.duration_minutes, 0)
           const avgSessionDuration = totalSessions > 0 ? totalHours / totalSessions : 0
+          const uniqueMonths = new Set(
+            sessions.map((session: any) => {
+              const date = new Date(session.date)
+              return `${date.getFullYear()}-${date.getMonth()}`
+            }),
+          )
+          const frequency = uniqueMonths.size > 0 ? totalSessions / uniqueMonths.size : 0
 
           return {
             id: student.id,
@@ -237,43 +266,76 @@ export default function StatisticsPage() {
             total_revenue: totalRevenue,
             total_hours: totalHours,
             avg_session_duration: avgSessionDuration,
+            frequency,
           }
         })
         .filter((s: any) => s.total_sessions > 0)
         .sort((a: any, b: any) => b.total_revenue - a.total_revenue)
 
-      setStudentStats(studentStats || [])
+      setStudentStats((studentStats as StudentStat[]) || [])
     } catch (error) {
       console.error("Error fetching student stats:", error)
     }
   }, [])
 
-  const fetchPaymentData = useCallback(async (period: ChartPeriod) => {
-    try {
-      const supabase = createClient()
-      const user = await requireAuthUser(supabase)
+  const fetchPaymentData = useCallback(
+    async (period: ChartPeriod, studentList?: StudentInfo[]) => {
+      try {
+        const supabase = createClient()
+        const { startDate, endDate } = getDateRange(period)
+        const user = await requireAuthUser(supabase)
 
-      const { data, error } = await supabase
-        .from("tutoring_sessions")
-        .select("is_paid, total_amount")
-        .eq("user_id", user.id)
+        const { data, error } = await supabase
+          .from("tutoring_sessions")
+          .select("is_paid, total_amount, student_id")
+          .gte("date", startDate.toISOString().split("T")[0])
+          .lte("date", endDate.toISOString().split("T")[0])
+          .eq("user_id", user.id)
 
-      if (error) throw error
+        if (error) throw error
 
-      const paidSessions = data?.filter((s) => s.is_paid) || []
-      const unpaidSessions = data?.filter((s) => !s.is_paid) || []
+        const paidSessions = data?.filter((s) => s.is_paid) || []
+        const unpaidSessions = data?.filter((s) => !s.is_paid) || []
 
-      const paidAmount = paidSessions.reduce((sum, s) => sum + s.total_amount, 0)
-      const unpaidAmount = unpaidSessions.reduce((sum, s) => sum + s.total_amount, 0)
+        const paidAmount = paidSessions.reduce((sum, s) => sum + (s.total_amount || 0), 0)
+        const unpaidAmount = unpaidSessions.reduce((sum, s) => sum + (s.total_amount || 0), 0)
 
-      setPaymentData([
-        { name: "Paid", value: paidSessions.length, amount: paidAmount },
-        { name: "Unpaid", value: unpaidSessions.length, amount: unpaidAmount },
-      ])
-    } catch (error) {
-      console.error("Error fetching payment data:", error)
-    }
-  }, [])
+        const studentMap = new Map((studentList ?? students).map((student) => [student.id, student.name]))
+        const unpaidByStudent = new Map<string, { total: number; count: number }>()
+
+        unpaidSessions.forEach((session) => {
+          const studentId = session.student_id as string | null
+          if (!studentId) return
+
+          const current = unpaidByStudent.get(studentId) || { total: 0, count: 0 }
+          unpaidByStudent.set(studentId, {
+            total: current.total + (session.total_amount || 0),
+            count: current.count + 1,
+          })
+        })
+
+        const byStudent = Array.from(unpaidByStudent.entries())
+          .map(([studentId, value]) => ({
+            studentId,
+            name: studentMap.get(studentId) || "Unknown",
+            totalUnpaid: value.total,
+            unpaidSessions: value.count,
+          }))
+          .sort((a, b) => b.totalUnpaid - a.totalUnpaid)
+
+        setPaymentData({
+          overview: [
+            { name: "Paid", value: paidSessions.length, amount: paidAmount },
+            { name: "Unpaid", value: unpaidSessions.length, amount: unpaidAmount },
+          ],
+          byStudent,
+        })
+      } catch (error) {
+        console.error("Error fetching payment data:", error)
+      }
+    },
+    [students],
+  )
 
   const fetchWeeklyData = useCallback(async (period: ChartPeriod) => {
     try {
@@ -323,15 +385,139 @@ export default function StatisticsPage() {
     }
   }, [])
 
+  const fetchCancellationData = useCallback(
+    async (period: ChartPeriod, studentList?: StudentInfo[]) => {
+      try {
+        const supabase = createClient()
+        const { startDate, endDate } = getDateRange(period)
+        const user = await requireAuthUser(supabase)
+
+        const { data, error } = await supabase
+          .from("tutoring_sessions")
+          .select("student_id, date, is_cancelled, cancelled_by")
+          .gte("date", startDate.toISOString().split("T")[0])
+          .lte("date", endDate.toISOString().split("T")[0])
+          .eq("user_id", user.id)
+
+        if (error) throw error
+
+        const sessions = data || []
+        const totalSessions = sessions.length
+        const cancelledSessions = sessions.filter((session) => session.is_cancelled)
+        const totalCancelled = cancelledSessions.length
+        const overallRate = totalSessions > 0 ? (totalCancelled / totalSessions) * 100 : 0
+
+        const cancellerCounts = new Map<string, number>()
+        cancelledSessions.forEach((session) => {
+          const canceller = (session.cancelled_by as string | null) || "unknown"
+          cancellerCounts.set(canceller, (cancellerCounts.get(canceller) || 0) + 1)
+        })
+
+        const relevantCancellers: { key: string; label: string }[] = [
+          { key: "student", label: "Student" },
+          { key: "teacher", label: "Teacher" },
+        ]
+
+        const byWho = relevantCancellers
+          .map(({ key, label }) => {
+            const count = cancellerCounts.get(key) || 0
+            return {
+              name: label,
+              value: count,
+              percentage: totalCancelled > 0 ? (count / totalCancelled) * 100 : 0,
+            }
+          })
+          .filter((item) => item.value > 0 || totalCancelled === 0)
+
+        const otherCount = Array.from(cancellerCounts.entries()).reduce((acc, [key, value]) => {
+          if (key === "student" || key === "teacher") {
+            return acc
+          }
+          return acc + value
+        }, 0)
+
+        if (otherCount > 0) {
+          byWho.push({
+            name: "Other",
+            value: otherCount,
+            percentage: totalCancelled > 0 ? (otherCount / totalCancelled) * 100 : 0,
+          })
+        }
+
+        const studentMap = new Map((studentList ?? students).map((student) => [student.id, student.name]))
+        const studentCancellationStats = new Map<
+          string,
+          { total: number; cancelled: number }
+        >()
+
+        sessions.forEach((session) => {
+          const studentId = session.student_id as string | null
+          if (!studentId) return
+
+          const current = studentCancellationStats.get(studentId) || { total: 0, cancelled: 0 }
+          studentCancellationStats.set(studentId, {
+            total: current.total + 1,
+            cancelled: current.cancelled + (session.is_cancelled ? 1 : 0),
+          })
+        })
+
+        const byStudent = Array.from(studentCancellationStats.entries())
+          .map(([studentId, value]) => ({
+            studentId,
+            name: studentMap.get(studentId) || "Unknown",
+            totalSessions: value.total,
+            cancelledSessions: value.cancelled,
+            cancellationRate: value.total > 0 ? (value.cancelled / value.total) * 100 : 0,
+          }))
+          .filter((entry) => entry.totalSessions > 0)
+          .sort((a, b) => b.cancellationRate - a.cancellationRate)
+
+        setCancellationData({
+          overallRate,
+          byWho,
+          byStudent,
+        })
+      } catch (error) {
+        console.error("Error fetching cancellation data:", error)
+      }
+    },
+    [students],
+  )
+
+  const fetchSessionDurationData = useCallback(async (period: ChartPeriod) => {
+    try {
+      const supabase = createClient()
+      const { startDate, endDate } = getDateRange(period)
+      const user = await requireAuthUser(supabase)
+
+      const { data, error } = await supabase
+        .from("tutoring_sessions")
+        .select("duration_minutes")
+        .gte("date", startDate.toISOString().split("T")[0])
+        .lte("date", endDate.toISOString().split("T")[0])
+        .eq("user_id", user.id)
+        .eq("is_cancelled", false)
+
+      if (error) throw error
+
+      const durations = (data || []).map((session) => Number(session.duration_minutes) || 0)
+      setSessionDurationData(durations)
+    } catch (error) {
+      console.error("Error fetching session duration data:", error)
+    }
+  }, [])
+
   const fetchAllData = async () => {
     setIsLoading(true)
+    const loadedStudents = await fetchStudents()
     await Promise.all([
       fetchOverallStats(),
       fetchRevenueData(revenuePeriod),
       fetchStudentStats(studentPeriod),
-      fetchPaymentData(paymentPeriod),
+      fetchPaymentData(paymentPeriod, loadedStudents),
       fetchWeeklyData(timePeriod),
-      fetchStudents(),
+      fetchCancellationData(cancellationPeriod, loadedStudents),
+      fetchSessionDurationData(durationPeriod),
     ])
     setIsLoading(false)
   }
@@ -416,16 +602,16 @@ export default function StatisticsPage() {
           </div>
 
           {/* Charts Grid */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <RevenueChart 
-              data={revenueData} 
+          <div className="grid gap-4 lg:grid-cols-2">
+            <RevenueChart
+              data={revenueData}
               period={revenuePeriod}
               onPeriodChange={(period: ChartPeriod) => {
                 setRevenuePeriod(period)
                 fetchRevenueData(period)
               }}
             />
-            <PaymentOverview 
+            <PaymentOverview
               paymentData={paymentData}
               period={paymentPeriod}
               onPeriodChange={(period: ChartPeriod) => {
@@ -433,10 +619,23 @@ export default function StatisticsPage() {
                 fetchPaymentData(period)
               }}
             />
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <TimeAnalysis 
+            <CancellationAnalysis
+              data={cancellationData}
+              period={cancellationPeriod}
+              onPeriodChange={(period: ChartPeriod) => {
+                setCancellationPeriod(period)
+                fetchCancellationData(period)
+              }}
+            />
+            <SessionDurationChart
+              data={sessionDurationData}
+              period={durationPeriod}
+              onPeriodChange={(period: ChartPeriod) => {
+                setDurationPeriod(period)
+                fetchSessionDurationData(period)
+              }}
+            />
+            <TimeAnalysis
               weeklyData={weeklyData}
               period={timePeriod}
               onPeriodChange={(period: ChartPeriod) => {
@@ -444,7 +643,7 @@ export default function StatisticsPage() {
                 fetchWeeklyData(period)
               }}
             />
-            <StudentPerformance 
+            <StudentPerformance
               studentStats={studentStats}
               period={studentPeriod}
               onPeriodChange={(period: ChartPeriod) => {
