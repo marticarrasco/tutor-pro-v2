@@ -117,7 +117,12 @@ export default function StatisticsPage() {
 
       if (error) throw error
 
-      const studentsData = (data || []) as StudentInfo[]
+      // Ensure email is always a string (default to empty string if undefined or null)
+      const studentsData = (data || []).map((student: any) => ({
+        id: student.id,
+        name: student.name,
+        email: student.email ? student.email : ""
+      })) as StudentInfo[]
       setStudents(studentsData)
       return studentsData
     } catch (error) {
@@ -611,12 +616,12 @@ export default function StatisticsPage() {
                 fetchRevenueData(period)
               }}
             />
-            <PaymentOverview
-              paymentData={paymentData}
-              period={paymentPeriod}
+            <TimeAnalysis
+              weeklyData={weeklyData}
+              period={timePeriod}
               onPeriodChange={(period: ChartPeriod) => {
-                setPaymentPeriod(period)
-                fetchPaymentData(period)
+                setTimePeriod(period)
+                fetchWeeklyData(period)
               }}
             />
             <CancellationAnalysis
@@ -635,12 +640,12 @@ export default function StatisticsPage() {
                 fetchSessionDurationData(period)
               }}
             />
-            <TimeAnalysis
-              weeklyData={weeklyData}
-              period={timePeriod}
+            <PaymentOverview
+              paymentData={paymentData}
+              period={paymentPeriod}
               onPeriodChange={(period: ChartPeriod) => {
-                setTimePeriod(period)
-                fetchWeeklyData(period)
+                setPaymentPeriod(period)
+                fetchPaymentData(period)
               }}
             />
             <StudentPerformance

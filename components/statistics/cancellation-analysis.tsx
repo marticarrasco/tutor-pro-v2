@@ -13,9 +13,9 @@ interface CancellationAnalysisProps {
 }
 
 const CANCEL_COLORS: Record<string, string> = {
-  student: "hsl(var(--chart-1))",
-  teacher: "hsl(var(--chart-2))",
-  other: "hsl(var(--chart-4))",
+  student: "#8B5CF6",
+  teacher: "#10B981",
+  other: "#EC4899",
 }
 
 export function CancellationAnalysis({ data, period, onPeriodChange }: CancellationAnalysisProps) {
@@ -27,9 +27,9 @@ export function CancellationAnalysis({ data, period, onPeriodChange }: Cancellat
   const chartConfig = {
     cancellations: {
       label: "Cancellations",
-      color: "hsl(var(--chart-1))",
+      color: "#8B5CF6",
     },
-  }
+  } satisfies Record<string, { label: string; color: string }>
 
   return (
     <Card>
@@ -103,8 +103,9 @@ export function CancellationAnalysis({ data, period, onPeriodChange }: Cancellat
                         tickFormatter={(value) => `${Number(value).toFixed(0)}%`}
                         axisLine={false}
                         tickLine={false}
+                        stroke="hsl(var(--muted-foreground))"
                       />
-                      <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={140} />
+                      <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} stroke="hsl(var(--muted-foreground))" width={140} />
                       <ChartTooltip
                         content={<ChartTooltipContent />}
                         formatter={(value) => [`${Number(value).toFixed(1)}%`, "Cancellation rate"]}

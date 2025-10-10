@@ -11,47 +11,33 @@ interface SessionDurationChartProps {
   onPeriodChange: (period: ChartPeriod) => void
 }
 
-interface HistogramBin {
-  range: string
+interface DurationData {
+  duration: string
+  durationValue: number
   count: number
 }
 
-const BIN_SIZE = 30
-
-function buildHistogram(values: number[]): HistogramBin[] {
+function buildDistribution(values: number[]): DurationData[] {
   if (values.length === 0) {
     return []
   }
 
-  const maxDuration = Math.max(...values)
-  const binCount = Math.max(1, Math.ceil(maxDuration / BIN_SIZE))
-  const bins = Array.from({ length: binCount }, (_, index) => ({
-    min: index * BIN_SIZE,
-    max: (index + 1) * BIN_SIZE,
-    count: 0,
-  }))
-
+  // Count frequency of each duration
+  const frequencyMap = new Map<number, number>()
   values.forEach((duration) => {
-    const index = Math.min(Math.floor(duration / BIN_SIZE), binCount - 1)
-    bins[index].count += 1
+    frequencyMap.set(duration, (frequencyMap.get(duration) || 0) + 1)
   })
 
-  return bins.map((bin, index) => {
-    const isLast = index === bins.length - 1
-    let rangeLabel: string
-    if (bins.length === 1) {
-      rangeLabel = `0-${BIN_SIZE} min`
-    } else if (isLast) {
-      rangeLabel = `${bin.min}+ min`
-    } else {
-      rangeLabel = `${bin.min}-${bin.max} min`
-    }
+  // Convert to array and sort by duration
+  const distribution = Array.from(frequencyMap.entries())
+    .map(([duration, count]) => ({
+      duration: `${duration}`,
+      durationValue: duration,
+      count,
+    }))
+    .sort((a, b) => a.durationValue - b.durationValue)
 
-    return {
-      range: rangeLabel,
-      count: bin.count,
-    }
-  })
+  return distribution
 }
 
 function calculateSummary(values: number[]) {
@@ -75,7 +61,7 @@ function calculateSummary(values: number[]) {
 }
 
 export function SessionDurationChart({ data, period, onPeriodChange }: SessionDurationChartProps) {
-  const histogram = buildHistogram(data)
+  const distribution = buildDistribution(data)
   const summary = calculateSummary(data)
 
   return (
@@ -90,7 +76,7 @@ export function SessionDurationChart({ data, period, onPeriodChange }: SessionDu
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {histogram.length === 0 ? (
+        {distribution.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             No completed sessions for the selected period.
           </div>
@@ -100,19 +86,35 @@ export function SessionDurationChart({ data, period, onPeriodChange }: SessionDu
               config={{
                 count: {
                   label: "Sessions",
-                  color: "hsl(var(--chart-5))",
+                  color: "#F97316",
                 },
               }}
             >
               <ResponsiveContainer width="100%" height={280}>
-                <BarChart data={histogram} margin={{ top: 8, right: 16, left: 16, bottom: 24 }}>
-                  <XAxis dataKey="range" axisLine={false} tickLine={false} angle={-20} textAnchor="end" />
-                  <YAxis allowDecimals={false} axisLine={false} tickLine={false} />
+                <BarChart data={distribution} margin={{ top: 8, right: 16, left: 16, bottom: 24 }}>
+                  <XAxis 
+                    dataKey="duration" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    stroke="hsl(var(--muted-foreground))" 
+                    angle={-45} 
+                    textAnchor="end"
+                    height={60}
+                    interval={Math.ceil(distribution.length / 15)}
+                  />
+                  <YAxis 
+                    allowDecimals={false} 
+                    axisLine={false} 
+                    tickLine={false} 
+                    stroke="hsl(var(--muted-foreground))"
+                    label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }}
+                  />
                   <ChartTooltip
                     content={<ChartTooltipContent />}
-                    formatter={(value) => [`${value} session${Number(value) === 1 ? "" : "s"}`, "Sessions"]}
+                    formatter={(value) => [`${value} session${Number(value) === 1 ? "" : "s"}`, "Frequency"]}
+                    labelFormatter={(label) => `${label} minutes`}
                   />
-                  <Bar dataKey="count" radius={[4, 4, 0, 0]} fill="hsl(var(--chart-5))" />
+                  <Bar dataKey="count" radius={[4, 4, 0, 0]} fill="#F97316" />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>

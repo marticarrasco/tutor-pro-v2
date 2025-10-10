@@ -33,9 +33,9 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
   const debtChartConfig = {
     totalUnpaid: {
       label: "Outstanding",
-      color: "hsl(var(--chart-2))",
+      color: "#10B981",
     },
-  };
+  } satisfies Record<string, { label: string; color: string }>;
   const barHeight = Math.max(200, paymentData.byStudent.length * 48);
   return (
     <Card>
@@ -108,9 +108,10 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
                     type="number"
                     axisLine={false}
                     tickLine={false}
+                    stroke="hsl(var(--muted-foreground))"
                     tickFormatter={(value) => `$${Number(value).toFixed(0)}`}
                   />
-                  <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={140} />
+                  <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} stroke="hsl(var(--muted-foreground))" width={140} />
                   <ChartTooltip
                     content={<ChartTooltipContent />}
                     formatter={(value) => [`$${Number(value).toFixed(2)}`, "Outstanding"]}

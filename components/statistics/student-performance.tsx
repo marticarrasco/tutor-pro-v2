@@ -24,9 +24,9 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
   const clvChartConfig = {
     total_revenue: {
       label: "CLV",
-      color: "hsl(var(--chart-3))",
+      color: "#F59E0B",
     },
-  }
+  } satisfies Record<string, { label: string; color: string }>
 
   const clvChartHeight = Math.max(200, Math.min(420, clvData.length * 48))
 
@@ -101,9 +101,10 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
                       type="number"
                       axisLine={false}
                       tickLine={false}
+                      stroke="hsl(var(--muted-foreground))"
                       tickFormatter={(value) => `$${Number(value).toFixed(0)}`}
                     />
-                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} width={140} />
+                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} stroke="hsl(var(--muted-foreground))" width={140} />
                     <ChartTooltip
                       content={<ChartTooltipContent />}
                       formatter={(value) => [`$${Number(value).toFixed(2)}`, "CLV"]}

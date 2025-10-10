@@ -1,7 +1,7 @@
 export interface StudentInfo {
   id: string
   name: string
-  email?: string | null
+  email: string
 }
 
 export interface CancellationByWho {
