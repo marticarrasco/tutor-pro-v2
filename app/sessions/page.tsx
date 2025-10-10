@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Plus, Search, DollarSign, Clock, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -40,7 +40,7 @@ export default function SessionsPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingSession, setEditingSession] = useState<Session | undefined>()
 
-  const fetchSessions = async () => {
+  const fetchSessions = useCallback(async () => {
     try {
       const supabase = createClient()
       const user = await requireAuthUser(supabase)
@@ -72,11 +72,47 @@ export default function SessionsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchSessions()
-  }, [])
+  }, [fetchSessions])
+
+  useEffect(() => {
+    const supabase = createClient()
+    let channel: ReturnType<typeof supabase.channel> | null = null
+
+    const setupRealtime = async () => {
+      try {
+        const user = await requireAuthUser(supabase)
+        channel = supabase
+          .channel(`sessions-changes-${user.id}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "tutoring_sessions",
+              filter: `user_id=eq.${user.id}`,
+            },
+            () => {
+              fetchSessions()
+            },
+          )
+          .subscribe()
+      } catch (error) {
+        console.error("Error subscribing to session changes:", error)
+      }
+    }
+
+    setupRealtime()
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel)
+      }
+    }
+  }, [fetchSessions])
 
   useEffect(() => {
     let filtered = sessions

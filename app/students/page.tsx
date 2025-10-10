@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Plus, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,7 +32,7 @@ export default function StudentsPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingStudent, setEditingStudent] = useState<Student | undefined>()
 
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     try {
       const supabase = createClient()
       const user = await requireAuthUser(supabase)
@@ -55,11 +55,47 @@ export default function StudentsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchStudents()
-  }, [])
+  }, [fetchStudents])
+
+  useEffect(() => {
+    const supabase = createClient()
+    let channel: ReturnType<typeof supabase.channel> | null = null
+
+    const setupRealtime = async () => {
+      try {
+        const user = await requireAuthUser(supabase)
+        channel = supabase
+          .channel(`students-changes-${user.id}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "students",
+              filter: `user_id=eq.${user.id}`,
+            },
+            () => {
+              fetchStudents()
+            },
+          )
+          .subscribe()
+      } catch (error) {
+        console.error("Error subscribing to student changes:", error)
+      }
+    }
+
+    setupRealtime()
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel)
+      }
+    }
+  }, [fetchStudents])
 
   useEffect(() => {
     if (!searchQuery) {
