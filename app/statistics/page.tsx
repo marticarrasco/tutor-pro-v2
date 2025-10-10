@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { TrendingUp, DollarSign, Clock, Users } from "lucide-react"
+import { TrendingUp, DollarSign, Clock, Users, CalendarDays } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
@@ -16,6 +16,8 @@ import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { ExportDialog } from "@/components/export/export-dialog"
 import { ChartPeriod } from "@/components/statistics/chart-period-selector"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import {
   CancellationData,
   PaymentOverviewData,
@@ -554,7 +556,15 @@ export default function StatisticsPage() {
               <h1 className="text-3xl font-bold tracking-tight">Statistics</h1>
               <p className="text-muted-foreground">Analyze your tutoring business performance</p>
             </div>
-            <ExportDialog students={students} />
+            <div className="flex gap-2">
+              <Button asChild variant="outline">
+                <Link href="/statistics/montly-earnings">
+                  <CalendarDays className="mr-2 h-4 w-4" />
+                  Monthly Earnings
+                </Link>
+              </Button>
+              <ExportDialog students={students} />
+            </div>
           </div>
 
           {/* Overall Stats Cards */}
