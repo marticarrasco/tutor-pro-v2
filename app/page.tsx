@@ -5,6 +5,8 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { RecentActivity } from "@/components/today/recent-activity"
 import { TodaySchedule } from "@/components/today/today-schedule"
+import { PendingPayments } from "@/components/today/pending-payments"
+import { MonthlyRevenue } from "@/components/today/monthly-revenue"
 import { LandingPage } from "@/components/landing/landing-page"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -43,6 +45,20 @@ interface Student {
   user_id?: string
 }
 
+interface StudentPayment {
+  studentId: string
+  studentName: string
+  totalUnpaid: number
+  unpaidSessions: number
+}
+
+interface StudentRevenue {
+  studentId: string
+  studentName: string
+  totalRevenue: number
+  sessionCount: number
+}
+
 interface RecentSession {
   id: string
   student_name: string
@@ -61,6 +77,8 @@ export default function HomePage() {
   const [todayClasses, setTodayClasses] = useState<TodayClass[]>([])
   const [recentSessions, setRecentSessions] = useState<RecentSession[]>([])
   const [students, setStudents] = useState<Student[]>([])
+  const [pendingPayments, setPendingPayments] = useState<StudentPayment[]>([])
+  const [monthlyRevenue, setMonthlyRevenue] = useState<StudentRevenue[]>([])
   const [isLoading, setIsLoading] = useState(true)
   
   // Form state for Log a Session
@@ -299,10 +317,121 @@ export default function HomePage() {
     }
   }
 
+  const fetchPendingPayments = async () => {
+    try {
+      const supabase = createClient()
+      const user = await requireAuthUser(supabase)
+      
+      // Fetch all unpaid sessions grouped by student
+      const { data, error } = await supabase
+        .from("tutoring_sessions")
+        .select(`
+          student_id,
+          total_amount,
+          students!tutoring_sessions_student_fk(name)
+        `)
+        .eq("user_id", user.id)
+        .eq("is_paid", false)
+        .eq("is_cancelled", false)
+
+      if (error) throw error
+
+      // Group by student and calculate totals
+      const paymentsByStudent = new Map<string, StudentPayment>()
+      
+      data?.forEach((session: any) => {
+        const studentId = session.student_id
+        const studentName = session.students.name
+        const amount = session.total_amount || 0
+
+        if (paymentsByStudent.has(studentId)) {
+          const existing = paymentsByStudent.get(studentId)!
+          existing.totalUnpaid += amount
+          existing.unpaidSessions += 1
+        } else {
+          paymentsByStudent.set(studentId, {
+            studentId,
+            studentName,
+            totalUnpaid: amount,
+            unpaidSessions: 1,
+          })
+        }
+      })
+
+      // Convert to array and sort by amount descending
+      const paymentsArray = Array.from(paymentsByStudent.values())
+        .sort((a, b) => b.totalUnpaid - a.totalUnpaid)
+
+      setPendingPayments(paymentsArray)
+    } catch (error) {
+      console.error("Error fetching pending payments:", error)
+    }
+  }
+
+  const fetchMonthlyRevenue = async () => {
+    try {
+      const supabase = createClient()
+      const user = await requireAuthUser(supabase)
+      
+      // Get current month's date range
+      const now = new Date()
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+      const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+      
+      const startDate = firstDayOfMonth.toISOString().split("T")[0]
+      const endDate = lastDayOfMonth.toISOString().split("T")[0]
+      
+      // Fetch all sessions from this month grouped by student
+      const { data, error } = await supabase
+        .from("tutoring_sessions")
+        .select(`
+          student_id,
+          total_amount,
+          students!tutoring_sessions_student_fk(name)
+        `)
+        .eq("user_id", user.id)
+        .eq("is_cancelled", false)
+        .gte("date", startDate)
+        .lte("date", endDate)
+
+      if (error) throw error
+
+      // Group by student and calculate totals
+      const revenueByStudent = new Map<string, StudentRevenue>()
+      
+      data?.forEach((session: any) => {
+        const studentId = session.student_id
+        const studentName = session.students.name
+        const amount = session.total_amount || 0
+
+        if (revenueByStudent.has(studentId)) {
+          const existing = revenueByStudent.get(studentId)!
+          existing.totalRevenue += amount
+          existing.sessionCount += 1
+        } else {
+          revenueByStudent.set(studentId, {
+            studentId,
+            studentName,
+            totalRevenue: amount,
+            sessionCount: 1,
+          })
+        }
+      })
+
+      // Convert to array and sort by revenue descending
+      const revenueArray = Array.from(revenueByStudent.values())
+        .sort((a, b) => b.totalRevenue - a.totalRevenue)
+
+      setMonthlyRevenue(revenueArray)
+    } catch (error) {
+      console.error("Error fetching monthly revenue:", error)
+    }
+  }
+
   const fetchAllData = async () => {
     console.log("🔄 Fetching all data...")
     setIsLoading(true)
-    await Promise.all([fetchTodayData(), fetchStudents(), fetchRecentSessions()])
+    await Promise.all([fetchTodayData(), fetchStudents(), fetchRecentSessions(), fetchPendingPayments(), fetchMonthlyRevenue()])
     setIsLoading(false)
     console.log("✅ All data fetched")
   }
@@ -339,6 +468,8 @@ export default function HomePage() {
       setTodayClasses([])
       setRecentSessions([])
       setStudents([])
+      setPendingPayments([])
+      setMonthlyRevenue([])
       setIsLoading(false)
     }
   }, [user, authLoading])
@@ -384,6 +515,8 @@ export default function HomePage() {
             </h1>
             <p className="text-muted-foreground">Here's what's happening with your tutoring today</p>
           </div>
+
+          
 
           {/* Top Section - Log a Session and Today's Classes */}
           <div className="grid gap-6 md:grid-cols-2">
@@ -462,6 +595,12 @@ export default function HomePage() {
             </Card>
             {/* Today's Schedule Card */}
             <TodaySchedule todayClasses={todayClasses} onRefresh={fetchAllData} />
+          </div>
+          
+          {/* Pending Payments and Monthly Revenue Section */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <PendingPayments studentsWithPendingPayments={pendingPayments} onRefresh={fetchAllData} />
+            <MonthlyRevenue studentRevenues={monthlyRevenue} />
           </div>
 
           {/* Bottom Section - Recent Activity */}

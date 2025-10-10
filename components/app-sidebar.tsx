@@ -128,15 +128,11 @@ export function AppSidebar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full justify-start gap-2 px-4 py-2 h-auto">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.user_metadata?.avatar_url || "/placeholder.svg"} />
-                  <AvatarFallback className="text-xs">{getUserInitials(user.email || "")}</AvatarFallback>
-                </Avatar>
                 <div className="flex flex-col items-start text-left">
-                  <span className="text-sm font-medium truncate max-w-[120px]">
+                  <span className="text-sm font-medium truncate max-w-[160px]">
                     {user.user_metadata?.full_name || user.email?.split("@")[0]}
                   </span>
-                  <span className="text-xs text-muted-foreground truncate max-w-[120px]">{user.email}</span>
+                  <span className="text-xs text-muted-foreground truncate max-w-[160px]">{user.email}</span>
                 </div>
               </Button>
             </DropdownMenuTrigger>

@@ -21,9 +21,9 @@ export function TimeAnalysis({ weeklyData, period, onPeriodChange }: TimeAnalysi
   const chartConfig = {
     hours: {
       label: "Hours",
-      color: "hsl(var(--chart-1))",
+      color: "#8B5CF6",
     },
-  }
+  } satisfies Record<string, { label: string; color: string }>
 
   const totalHours = weeklyData.reduce((sum, day) => sum + day.hours, 0)
   const avgHoursPerDay = weeklyData.length > 0 ? totalHours / weeklyData.length : 0
@@ -44,9 +44,9 @@ export function TimeAnalysis({ weeklyData, period, onPeriodChange }: TimeAnalysi
         <ChartContainer config={chartConfig}>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={weeklyData}>
-              <XAxis dataKey="day" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+              <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis
-                stroke="#888888"
+                stroke="hsl(var(--muted-foreground))"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
