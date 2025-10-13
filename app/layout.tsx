@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
+import LoadingPage from "@/components/loading/loading-page"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -23,7 +24,17 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} themes={["dark", "light", "clear"]}>
-          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+          <Suspense
+            fallback={
+              <LoadingPage
+                title="Launching TutorPro"
+                description="Polishing the dashboard experience and loading your personalized workspace."
+                tip="Stay tuned—the tools you need to run your tutoring business are seconds away."
+              />
+            }
+          >
+            {children}
+          </Suspense>
           <Toaster />
           <Analytics />
         </ThemeProvider>

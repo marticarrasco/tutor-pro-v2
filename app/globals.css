@@ -159,3 +159,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(-20%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-progress-bar {
+  animation: loading-bar 1.6s ease-in-out infinite;
+}
