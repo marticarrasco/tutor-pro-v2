@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Moon, Sparkles, Sun } from "lucide-react"
+import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,7 +13,6 @@ import {
 
 const themeOptions = [
   { value: "dark", label: "Dark", icon: Moon },
-  { value: "clear", label: "Clear", icon: Sparkles },
   { value: "light", label: "Light", icon: Sun },
 ]
 
