@@ -166,7 +166,18 @@ export default function StudentsPage() {
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="text-center py-8 text-muted-foreground">Loading students...</div>
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center gap-4 p-4 rounded-lg border animate-fade-in" style={{ animationDelay: `${i * 0.1}s` }}>
+                      <div className="h-12 w-12 rounded-full bg-muted animate-skeleton" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 w-[200px] rounded bg-muted animate-skeleton" />
+                        <div className="h-3 w-[150px] rounded bg-muted/70 animate-skeleton" style={{ animationDelay: '0.05s' }} />
+                      </div>
+                      <div className="h-9 w-20 rounded bg-muted animate-skeleton" />
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <StudentsTable students={filteredStudents} onEdit={handleEdit} onRefresh={fetchStudents} />
               )}

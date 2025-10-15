@@ -158,8 +158,16 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
                   variant="outline"
                   onClick={() => fetchSessionDetails(student.studentId, student.studentName)}
                   disabled={isLoadingDetails}
+                  className="relative"
                 >
-                  Show
+                  {isLoadingDetails ? (
+                    <>
+                      <div className="mr-1.5 h-3 w-3 rounded-full border-2 border-foreground/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+                      Loading
+                    </>
+                  ) : (
+                    "Show"
+                  )}
                 </Button>
                 <Button
                   size="sm"

@@ -49,7 +49,13 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
     return (
       fallback || (
         <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="flex flex-col items-center gap-4 animate-fade-in">
+            <div className="relative">
+              <div className="h-12 w-12 rounded-full border-2 border-primary/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+              <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/10 animate-ping" />
+            </div>
+            <p className="text-sm text-muted-foreground animate-pulse">Loading...</p>
+          </div>
         </div>
       )
     )

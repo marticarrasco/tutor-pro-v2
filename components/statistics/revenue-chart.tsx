@@ -209,8 +209,12 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
           </DialogHeader>
 
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="text-muted-foreground">Loading details...</div>
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="relative">
+                <div className="h-12 w-12 rounded-full border-2 border-primary/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+                <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/10 animate-ping" />
+              </div>
+              <div className="text-sm text-muted-foreground animate-pulse">Loading revenue details...</div>
             </div>
           ) : selectedMonth ? (
             <div className="space-y-6">

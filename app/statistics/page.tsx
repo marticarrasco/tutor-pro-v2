@@ -539,7 +539,43 @@ export default function StatisticsPage() {
         <AppSidebar />
         <SidebarInset>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="text-center py-8 text-muted-foreground">Loading statistics...</div>
+            <div className="flex items-center justify-between pt-4 animate-fade-in">
+              <div>
+                <div className="h-9 w-48 rounded bg-muted animate-skeleton mb-2" />
+                <div className="h-5 w-72 rounded bg-muted/70 animate-skeleton" style={{ animationDelay: '0.1s' }} />
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="rounded-lg border bg-card p-6 animate-scale-in" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="h-4 w-32 rounded bg-muted animate-skeleton" />
+                    <div className="h-5 w-5 rounded bg-muted animate-skeleton" />
+                  </div>
+                  <div className="h-8 w-28 rounded bg-muted animate-skeleton mb-2" />
+                  <div className="h-3 w-40 rounded bg-muted/70 animate-skeleton" />
+                </div>
+              ))}
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="rounded-lg border bg-card p-6 animate-scale-in" style={{ animationDelay: `${0.7 + i * 0.1}s` }}>
+                  <div className="h-5 w-40 rounded bg-muted animate-skeleton mb-4" />
+                  <div className="h-[300px] w-full rounded bg-muted/50 animate-skeleton flex items-end justify-around p-4">
+                    {[60, 80, 70, 90, 75, 85].map((height, j) => (
+                      <div
+                        key={j}
+                        className="w-12 rounded-t bg-muted animate-pulse-gentle"
+                        style={{ 
+                          height: `${height}%`,
+                          animationDelay: `${j * 0.1}s`
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </SidebarInset>
       </SidebarProvider>

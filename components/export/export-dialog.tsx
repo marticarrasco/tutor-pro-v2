@@ -228,11 +228,18 @@ export function ExportDialog({ students, trigger }: ExportDialogProps) {
           )}
 
           <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               Cancel
             </Button>
-            <Button onClick={handleExport} disabled={loading}>
-              {loading ? "Exporting..." : exportType === "csv" ? "Download CSV" : "Generate Invoice"}
+            <Button onClick={handleExport} disabled={loading} className="relative">
+              {loading ? (
+                <>
+                  <div className="mr-2 h-4 w-4 rounded-full border-2 border-primary-foreground/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+                  Exporting...
+                </>
+              ) : (
+                exportType === "csv" ? "Download CSV" : "Generate Invoice"
+              )}
             </Button>
           </div>
         </div>

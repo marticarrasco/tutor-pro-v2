@@ -91,8 +91,15 @@ export function CancelSessionDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             Back
           </Button>
-          <Button onClick={() => onConfirm(formState)} disabled={isSubmitting}>
-            {isSubmitting ? "Cancelling..." : "Confirm cancellation"}
+          <Button onClick={() => onConfirm(formState)} disabled={isSubmitting} className="relative">
+            {isSubmitting ? (
+              <>
+                <div className="mr-2 h-4 w-4 rounded-full border-2 border-primary-foreground/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+                Cancelling...
+              </>
+            ) : (
+              "Confirm Cancellation"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

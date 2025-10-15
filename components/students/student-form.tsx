@@ -185,11 +185,18 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : student?.id ? "Update" : "Create"}
+            <Button type="submit" disabled={isLoading} className="relative">
+              {isLoading ? (
+                <>
+                  <div className="mr-2 h-4 w-4 rounded-full border-2 border-primary-foreground/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+                  Saving...
+                </>
+              ) : (
+                student?.id ? "Update Student" : "Create Student"
+              )}
             </Button>
           </DialogFooter>
         </form>

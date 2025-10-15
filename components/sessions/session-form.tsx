@@ -333,11 +333,18 @@ export function SessionForm({
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : session?.id ? "Update" : "Log Session"}
+            <Button type="submit" disabled={isLoading} className="relative">
+              {isLoading ? (
+                <>
+                  <div className="mr-2 h-4 w-4 rounded-full border-2 border-primary-foreground/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+                  Saving...
+                </>
+              ) : (
+                session?.id ? "Update Session" : "Log Session"
+              )}
             </Button>
           </DialogFooter>
         </form>

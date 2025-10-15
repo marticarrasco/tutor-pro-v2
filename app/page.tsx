@@ -479,8 +479,14 @@ export default function HomePage() {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="text-center py-8 text-muted-foreground">Loading...</div>
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 items-center justify-center min-h-[60vh]">
+            <div className="flex flex-col items-center gap-4 animate-fade-in">
+              <div className="relative">
+                <div className="h-12 w-12 rounded-full border-2 border-primary/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+                <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/10 animate-ping" />
+              </div>
+              <p className="text-sm text-muted-foreground animate-pulse">Authenticating...</p>
+            </div>
           </div>
         </SidebarInset>
       </SidebarProvider>
@@ -496,8 +502,99 @@ export default function HomePage() {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="text-center py-8 text-muted-foreground">Loading your dashboard...</div>
+          <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
+            {/* Header skeleton */}
+            <div className="pt-4 animate-fade-in">
+              <div className="h-9 w-64 rounded bg-muted animate-skeleton mb-2" />
+              <div className="h-5 w-96 rounded bg-muted/70 animate-skeleton" style={{ animationDelay: '0.1s' }} />
+            </div>
+
+            {/* Top Section - Log a Session and Today's Classes */}
+            <div className="grid gap-6 md:grid-cols-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              {/* Log a Session Card Skeleton */}
+              <div className="rounded-lg border bg-card animate-scale-in" style={{ animationDelay: '0.3s' }}>
+                <div className="p-6 border-b">
+                  <div className="h-6 w-40 rounded bg-muted animate-skeleton" />
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <div className="h-4 w-16 rounded bg-muted animate-skeleton mb-2" />
+                      <div className="h-10 w-full rounded bg-muted animate-skeleton" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="h-4 w-12 rounded bg-muted animate-skeleton mb-2" />
+                      <div className="h-10 w-full rounded bg-muted animate-skeleton" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="h-4 w-16 rounded bg-muted animate-skeleton mb-2" />
+                    <div className="h-10 w-full rounded bg-muted animate-skeleton" />
+                  </div>
+                  <div className="h-10 w-full rounded bg-muted animate-skeleton" />
+                </div>
+              </div>
+
+              {/* Today's Schedule Card Skeleton */}
+              <div className="rounded-lg border bg-card animate-scale-in" style={{ animationDelay: '0.4s' }}>
+                <div className="p-6 border-b">
+                  <div className="h-6 w-48 rounded bg-muted animate-skeleton" />
+                </div>
+                <div className="p-6 space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded border animate-fade-in" style={{ animationDelay: `${0.5 + i * 0.1}s` }}>
+                      <div className="h-10 w-10 rounded bg-muted animate-skeleton" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 w-32 rounded bg-muted animate-skeleton" />
+                        <div className="h-3 w-24 rounded bg-muted/70 animate-skeleton" />
+                      </div>
+                      <div className="h-8 w-20 rounded bg-muted animate-skeleton" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Pending Payments and Monthly Revenue Section */}
+            <div className="grid gap-6 md:grid-cols-2 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="rounded-lg border bg-card animate-scale-in" style={{ animationDelay: `${0.9 + i * 0.1}s` }}>
+                  <div className="p-6 border-b">
+                    <div className="h-6 w-48 rounded bg-muted animate-skeleton" />
+                  </div>
+                  <div className="p-6 space-y-3">
+                    {[...Array(3)].map((_, j) => (
+                      <div key={j} className="flex items-center gap-3 p-3 rounded">
+                        <div className="flex-1">
+                          <div className="h-4 w-32 rounded bg-muted animate-skeleton mb-2" />
+                          <div className="h-3 w-24 rounded bg-muted/70 animate-skeleton" />
+                        </div>
+                        <div className="h-8 w-20 rounded bg-muted animate-skeleton" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Recent Activity Section */}
+            <div className="rounded-lg border bg-card animate-scale-in" style={{ animationDelay: '1.1s' }}>
+              <div className="p-6 border-b">
+                <div className="h-6 w-40 rounded bg-muted animate-skeleton" />
+              </div>
+              <div className="p-6 space-y-3">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 rounded border">
+                    <div className="h-10 w-10 rounded-full bg-muted animate-skeleton" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-48 rounded bg-muted animate-skeleton" />
+                      <div className="h-3 w-32 rounded bg-muted/70 animate-skeleton" />
+                    </div>
+                    <div className="h-6 w-16 rounded bg-muted animate-skeleton" />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </SidebarInset>
       </SidebarProvider>
@@ -587,9 +684,16 @@ export default function HomePage() {
                 <Button 
                   onClick={handleLogSession} 
                   disabled={isSubmitting} 
-                  className="w-full bg-green-600 hover:bg-green-700 text-white disabled:bg-green-600/50"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white disabled:bg-green-600/50 relative"
                 >
-                  {isSubmitting ? "Submitting..." : "Submit"}
+                  {isSubmitting ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 rounded-full border-2 border-white/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+                      Logging Session...
+                    </>
+                  ) : (
+                    "Log Session"
+                  )}
                 </Button>
               </CardContent>
             </Card>
