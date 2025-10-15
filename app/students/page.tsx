@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Plus, Search } from "lucide-react"
+import { Plus, Search, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,6 +12,7 @@ import { StudentForm } from "@/components/students/student-form"
 import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
+import { PageHeader } from "@/components/page-header"
 
 interface Student {
   id: string
@@ -93,16 +94,18 @@ export default function StudentsPage() {
       <AppSidebar />
       <SidebarInset>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="flex items-center justify-between pt-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Students</h1>
-              <p className="text-muted-foreground">Manage your students and their information</p>
-            </div>
-            <Button onClick={() => setShowForm(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Student
-            </Button>
-          </div>
+          <PageHeader
+            icon={<Users className="h-6 w-6" />}
+            eyebrow="People"
+            title="Student Directory"
+            description="Organize student details, track contact information, and keep billing preferences up to date."
+            action={
+              <Button onClick={() => setShowForm(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add student
+              </Button>
+            }
+          />
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>

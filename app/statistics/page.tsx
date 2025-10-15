@@ -18,6 +18,7 @@ import { ExportDialog } from "@/components/export/export-dialog"
 import { ChartPeriod } from "@/components/statistics/chart-period-selector"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { PageHeader } from "@/components/page-header"
 import {
   CancellationData,
   PaymentOverviewData,
@@ -587,21 +588,23 @@ export default function StatisticsPage() {
       <AppSidebar />
       <SidebarInset>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="flex items-center justify-between pt-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Statistics</h1>
-              <p className="text-muted-foreground">Analyze your tutoring business performance</p>
-            </div>
-            <div className="flex gap-2">
-              <Button asChild variant="outline">
-                <Link href="/statistics/montly-earnings">
-                  <CalendarDays className="mr-2 h-4 w-4" />
-                  Monthly Earnings
-                </Link>
-              </Button>
-              <ExportDialog students={students} />
-            </div>
-          </div>
+          <PageHeader
+            icon={<TrendingUp className="h-6 w-6" />}
+            eyebrow="Insights"
+            title="Performance Analytics"
+            description="Monitor revenue trends, student outcomes, and teaching hours to understand how your tutoring business is evolving."
+            action={
+              <div className="flex gap-2">
+                <Button asChild variant="outline">
+                  <Link href="/statistics/montly-earnings">
+                    <CalendarDays className="mr-2 h-4 w-4" />
+                    Monthly Earnings
+                  </Link>
+                </Button>
+                <ExportDialog students={students} />
+              </div>
+            }
+          />
 
           {/* Overall Stats Cards */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

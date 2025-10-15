@@ -13,6 +13,7 @@ import { ScheduleForm } from "@/components/schedule/schedule-form"
 import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
+import { PageHeader } from "@/components/page-header"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -141,16 +142,18 @@ export default function SchedulePage() {
       <AppSidebar />
       <SidebarInset>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="flex items-center justify-between pt-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Schedule</h1>
-              <p className="text-muted-foreground">Manage your weekly recurring classes</p>
-            </div>
-            <Button onClick={() => setShowForm(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Class
-            </Button>
-          </div>
+          <PageHeader
+            icon={<Calendar className="h-6 w-6" />}
+            eyebrow="Planning"
+            title="Weekly Teaching Schedule"
+            description="Plan recurring lessons, adjust availability, and keep your tutoring week organised."
+            action={
+              <Button onClick={() => setShowForm(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Class
+              </Button>
+            }
+          />
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
