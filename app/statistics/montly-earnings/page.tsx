@@ -19,6 +19,8 @@ import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
+import { PageHeader } from "@/components/page-header"
+import { CalendarDays } from "lucide-react"
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const
 
@@ -242,12 +244,12 @@ export default function MonthlyEarningsPage() {
         <AppSidebar />
         <SidebarInset>
           <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-            <div className="flex flex-col gap-1 pt-4">
-              <h1 className="text-3xl font-bold tracking-tight">Monthly Earnings</h1>
-              <p className="text-muted-foreground">
-                Visualise your lessons and earnings for each day of the month.
-              </p>
-            </div>
+            <PageHeader
+              icon={<CalendarDays className="h-6 w-6" />}
+              eyebrow="Revenue"
+              title="Monthly Earnings Overview"
+              description="Visualise lessons delivered, revenue earned, and student activity across the current month."
+            />
             <div className="text-center py-8 text-muted-foreground">Loading monthly earnings...</div>
           </div>
         </SidebarInset>
@@ -260,12 +262,12 @@ export default function MonthlyEarningsPage() {
       <AppSidebar />
       <SidebarInset>
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-          <div className="flex flex-col gap-1 pt-4">
-            <h1 className="text-3xl font-bold tracking-tight">Monthly Earnings</h1>
-            <p className="text-muted-foreground">
-              Visualise your lessons and earnings for each day of the month.
-            </p>
-          </div>
+          <PageHeader
+            icon={<CalendarDays className="h-6 w-6" />}
+            eyebrow="Revenue"
+            title="Monthly Earnings Overview"
+            description="Visualise lessons delivered, revenue earned, and student activity across the current month."
+          />
 
           <div className="flex flex-1 flex-col gap-6 lg:flex-row">
             <div className="flex-1 rounded-lg border bg-card p-4 shadow-sm">

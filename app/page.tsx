@@ -15,13 +15,14 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Clock, User as UserIcon } from "lucide-react"
+import { CalendarIcon, Clock, Moon, Sun, User as UserIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import type { User } from "@supabase/supabase-js"
+import { PageHeader } from "@/components/page-header"
 
 interface TodayClass {
   id: string
@@ -504,17 +505,25 @@ export default function HomePage() {
     )
   }
 
+  const metadata = (user?.user_metadata as { full_name?: string }) ?? {}
+  const derivedFirstName = metadata.full_name?.trim().split(" ")[0]
+  const firstName = derivedFirstName ?? user?.email?.split("@")[0]
+  const currentHour = new Date().getHours()
+  const timeOfDay =
+    currentHour < 12 ? "morning" : currentHour < 18 ? "afternoon" : currentHour < 22 ? "evening" : "night"
+  const headerIcon = currentHour < 18 ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />
+
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-          <div className="pt-4">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"}!
-            </h1>
-            <p className="text-muted-foreground">Here's what's happening with your tutoring today</p>
-          </div>
+          <PageHeader
+            icon={headerIcon}
+            eyebrow="Dashboard"
+            title={`Good ${timeOfDay}${firstName ? `, ${firstName}` : ""}!`}
+            description="Review today's schedule, log new sessions, and monitor outstanding payments at a glance."
+          />
 
           
 

@@ -1,13 +1,22 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Wrench } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageHeader } from "@/components/page-header"
 
 export default function DebugButtonPage() {
   return (
     <div className="min-h-screen bg-background p-8">
-      <Card className="max-w-2xl mx-auto">
+      <div className="mx-auto flex max-w-3xl flex-col gap-6">
+        <PageHeader
+          className="pt-0"
+          icon={<Wrench className="h-6 w-6" />}
+          eyebrow="Sandbox"
+          title="Button Debug Playground"
+          description="Preview button variants, icons, and spacing treatments used throughout the application."
+        />
+        <Card className="w-full">
         <CardHeader>
           <CardTitle>Button Debug Page</CardTitle>
         </CardHeader>
@@ -59,7 +68,8 @@ export default function DebugButtonPage() {
             </Button>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   )
 }

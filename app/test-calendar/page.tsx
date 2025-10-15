@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { PageHeader } from "@/components/page-header"
 
 export default function TestCalendarPage() {
   const [date, setDate] = useState<Date | undefined>(new Date())
@@ -15,7 +16,15 @@ export default function TestCalendarPage() {
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <Card className="max-w-2xl mx-auto">
+      <div className="mx-auto flex max-w-3xl flex-col gap-6">
+        <PageHeader
+          className="pt-0"
+          icon={<CalendarIcon className="h-6 w-6" />}
+          eyebrow="Sandbox"
+          title="Calendar Component Lab"
+          description="Experiment with the date picker and popover states to verify layout and behaviour across use cases."
+        />
+        <Card className="w-full">
         <CardHeader>
           <CardTitle>Calendar Date Picker Test</CardTitle>
           <CardDescription>
@@ -133,7 +142,8 @@ export default function TestCalendarPage() {
             </div>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   )
 }

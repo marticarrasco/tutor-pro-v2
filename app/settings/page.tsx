@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { User } from "@supabase/supabase-js"
 import { Skeleton } from "@/components/ui/skeleton"
+import { PageHeader } from "@/components/page-header"
+import { Settings as SettingsIcon } from "lucide-react"
 
 export default function SettingsPage() {
   const [user, setUser] = useState<User | null>(null)
@@ -84,10 +86,13 @@ export default function SettingsPage() {
 
   return (
     <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Manage your account settings and preferences</p>
-      </div>
+      <PageHeader
+        className="pt-0"
+        icon={<SettingsIcon className="h-6 w-6" />}
+        eyebrow="Account"
+        title="Settings & Preferences"
+        description="Update your personal information, manage authentication details, and review account history."
+      />
 
       <Card>
         <CardHeader>

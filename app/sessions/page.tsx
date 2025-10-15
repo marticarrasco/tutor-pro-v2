@@ -14,6 +14,7 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { ExportDialog } from "@/components/export/export-dialog"
+import { PageHeader } from "@/components/page-header"
 
 interface Session {
   id: string
@@ -125,31 +126,33 @@ export default function SessionsPage() {
       <AppSidebar />
       <SidebarInset>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="flex items-center justify-between pt-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Sessions</h1>
-              <p className="text-muted-foreground">Track and manage your tutoring sessions</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <ExportDialog
-                students={sessions.reduce((acc: any[], session) => {
-                  const existing = acc.find((s) => s.name === session.student_name)
-                  if (!existing) {
-                    acc.push({
-                      id: session.student_id,
-                      name: session.student_name,
-                      email: `${session.student_name.toLowerCase().replace(" ", ".")}@example.com`,
-                    })
-                  }
-                  return acc
-                }, [])}
-              />
-              <Button onClick={() => setShowForm(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Log Session
-              </Button>
-            </div>
-          </div>
+          <PageHeader
+            icon={<Clock className="h-6 w-6" />}
+            eyebrow="Sessions"
+            title="Session History"
+            description="Filter, edit, and export your tutoring sessions to stay on top of payments and lesson notes."
+            action={
+              <div className="flex items-center gap-2">
+                <ExportDialog
+                  students={sessions.reduce((acc: any[], session) => {
+                    const existing = acc.find((s) => s.name === session.student_name)
+                    if (!existing) {
+                      acc.push({
+                        id: session.student_id,
+                        name: session.student_name,
+                        email: `${session.student_name.toLowerCase().replace(" ", ".")}@example.com`,
+                      })
+                    }
+                    return acc
+                  }, [])}
+                />
+                <Button onClick={() => setShowForm(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Log Session
+                </Button>
+              </div>
+            }
+          />
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
