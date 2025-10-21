@@ -163,6 +163,7 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
                       initialFocus
                       disabled={(date) => date > new Date()}
                       className="text-sm"
+                      weekStartsOn={1}
                     />
                   </div>
                   <Button onClick={handleNextStep} disabled={!tempDateTo} className="w-full">
@@ -187,6 +188,7 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
                       initialFocus
                       disabled={(date) => date > new Date() || (tempDateTo ? date > tempDateTo : false)}
                       className="text-sm"
+                      weekStartsOn={1}
                     />
                   </div>
                   <div className="flex gap-2">
