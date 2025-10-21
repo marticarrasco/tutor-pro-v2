@@ -130,7 +130,7 @@ export function AppSidebar() {
               <Button variant="ghost" className="w-full justify-start gap-2 px-4 py-2 h-auto">
                 <div className="flex flex-col items-start text-left">
                   <span className="text-sm font-medium truncate max-w-[160px]">
-                    {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                    {user.user_metadata?.full_name?.trim() || user.email?.split("@")[0]}
                   </span>
                   <span className="text-xs text-muted-foreground truncate max-w-[160px]">{user.email}</span>
                 </div>
