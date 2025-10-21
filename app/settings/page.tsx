@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { useDocumentTitle, useDocumentMeta } from "@/hooks/use-document-title"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,6 +14,9 @@ import { PageHeader } from "@/components/page-header"
 import { Settings as SettingsIcon } from "lucide-react"
 
 export default function SettingsPage() {
+  useDocumentTitle("Account Settings")
+  useDocumentMeta("Manage your Derno account settings, profile information, and preferences.")
+  
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)

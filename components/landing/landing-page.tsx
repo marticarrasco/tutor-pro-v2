@@ -24,7 +24,7 @@ export function LandingPage() {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center space-x-2">
             <BookOpen className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">TutorPro</span>
+            <span className="text-xl font-bold">Derno</span>
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="ghost" asChild>
@@ -49,7 +49,7 @@ export function LandingPage() {
           </h1>
 
           <p className="text-xl text-muted-foreground text-balance mb-8 max-w-3xl mx-auto">
-            The complete platform for tutors to schedule sessions, track student progress, manage payments, and grow
+            Derno is the complete platform for tutors to schedule sessions, track student progress, manage payments, and grow
             their business. Everything you need in one place.
           </p>
 
@@ -245,7 +245,7 @@ export function LandingPage() {
         <div className="container max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to transform your tutoring business?</h2>
           <p className="text-xl mb-8 opacity-90">
-            Join hundreds of tutors who have already streamlined their business with TutorPro. Start your free trial
+            Join hundreds of tutors who have already streamlined their business with Derno. Start your free trial
             today - no credit card required.
           </p>
 
@@ -276,7 +276,7 @@ export function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <BookOpen className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">TutorPro</span>
+              <span className="text-xl font-bold">Derno</span>
             </div>
 
             <div className="flex items-center space-x-6 text-sm text-muted-foreground">
@@ -293,7 +293,7 @@ export function LandingPage() {
           </div>
 
           <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-            © 2025 TutorPro. All rights reserved.
+            © 2025 Derno. All rights reserved.
           </div>
         </div>
       </footer>

@@ -1,7 +1,7 @@
-# TutorPro Product Overview
+# Derno Product Overview
 
 ## Product mission
-TutorPro is a tutor-facing operations hub that consolidates scheduling, student management, payment tracking, analytics, and personal account settings into a single web experience. The application is built with Next.js and client-side React components, styled with the shared UI system in `components/ui`, and persists data in Supabase (PostgreSQL) with row-level security so each tutor only sees their own records.
+Derno is a tutor-facing operations hub that consolidates scheduling, student management, payment tracking, analytics, and personal account settings into a single web experience. The application is built with Next.js and client-side React components, styled with the shared UI system in `components/ui`, and persists data in Supabase (PostgreSQL) with row-level security so each tutor only sees their own records.
 
 ## Core application surfaces
 

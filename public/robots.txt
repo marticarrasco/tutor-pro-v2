@@ -1,0 +1,14 @@
+# robots.txt for Derno
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /debug-button/
+Disallow: /test-calendar/
+
+# Sitemap
+Sitemap: https://derno.app/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+

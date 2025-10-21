@@ -1,0 +1,48 @@
+{
+  "name": "Derno - Modern Tutoring Management Platform",
+  "short_name": "Derno",
+  "description": "Comprehensive tutoring management platform that helps tutors schedule sessions, track student progress, manage payments, and grow their business.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/squareTabLogo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/squareTabLogo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/",
+      "description": "View your dashboard"
+    },
+    {
+      "name": "Students",
+      "url": "/students",
+      "description": "Manage your students"
+    },
+    {
+      "name": "Sessions",
+      "url": "/sessions",
+      "description": "View and log sessions"
+    },
+    {
+      "name": "Schedule",
+      "url": "/schedule",
+      "description": "Manage your schedule"
+    }
+  ]
+}
+

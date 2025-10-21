@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Plus, Search, Users } from "lucide-react"
+import { useDocumentTitle, useDocumentMeta } from "@/hooks/use-document-title"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,6 +27,9 @@ interface Student {
 }
 
 export default function StudentsPage() {
+  useDocumentTitle("Student Management")
+  useDocumentMeta("Manage your students with detailed records, contact information, and hourly rates. Keep track of all your tutoring relationships.")
+  
   const [students, setStudents] = useState<Student[]>([])
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([])
   const [searchQuery, setSearchQuery] = useState("")

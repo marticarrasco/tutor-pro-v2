@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { TrendingUp, DollarSign, Clock, Users, CalendarDays } from "lucide-react"
+import { useDocumentTitle, useDocumentMeta } from "@/hooks/use-document-title"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
@@ -36,6 +37,9 @@ interface OverallStats {
 }
 
 export default function StatisticsPage() {
+  useDocumentTitle("Statistics & Analytics")
+  useDocumentMeta("Monitor revenue trends, student performance, and teaching hours with comprehensive analytics. Understand how your tutoring business is evolving.")
+  
   const [overallStats, setOverallStats] = useState<OverallStats>({
     totalRevenue: 0,
     totalSessions: 0,

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Plus, Search, DollarSign, Clock, Users } from "lucide-react"
+import { useDocumentTitle, useDocumentMeta } from "@/hooks/use-document-title"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -33,6 +34,9 @@ interface Session {
 }
 
 export default function SessionsPage() {
+  useDocumentTitle("Session Management")
+  useDocumentMeta("View, edit, and export your tutoring sessions. Track payment status and manage lesson notes for all your sessions.")
+  
   const [sessions, setSessions] = useState<Session[]>([])
   const [filteredSessions, setFilteredSessions] = useState<Session[]>([])
   const [searchQuery, setSearchQuery] = useState("")

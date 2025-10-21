@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -64,14 +65,21 @@ export default function SignUpPage() {
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-background">
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Tutoring Manager</h1>
-            <p className="text-muted-foreground">Create your tutoring account</p>
+          <div className="flex flex-col items-center text-center">
+            <Image
+              src="/logo derno.png"
+              alt="Derno Logo"
+              width={150}
+              height={120}
+              className="mb-2"
+              priority
+            />
+            <p className="text-muted-foreground">Create your account</p>
           </div>
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Sign up</CardTitle>
-              <CardDescription>Create a new tutoring account</CardDescription>
+              <CardDescription>Create a new Derno account</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSignUp}>

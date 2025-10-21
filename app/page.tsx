@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useDocumentTitle, useDocumentMeta } from "@/hooks/use-document-title"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { RecentActivity } from "@/components/today/recent-activity"
@@ -73,6 +74,9 @@ interface RecentSession {
 }
 
 export default function HomePage() {
+  useDocumentTitle("Dashboard")
+  useDocumentMeta("Your Derno dashboard - Review today's schedule, log new sessions, and monitor outstanding payments at a glance.")
+  
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [todayClasses, setTodayClasses] = useState<TodayClass[]>([])

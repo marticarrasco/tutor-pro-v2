@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Plus, Calendar, Clock, Users, ToggleLeft } from "lucide-react"
+import { useDocumentTitle, useDocumentMeta } from "@/hooks/use-document-title"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -40,6 +41,9 @@ interface ScheduledClass {
 const WEEKDAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
 export default function SchedulePage() {
+  useDocumentTitle("Schedule Management")
+  useDocumentMeta("Manage your tutoring schedule with recurring classes and weekly calendar view. Plan lessons and adjust availability.")
+  
   const [scheduledClasses, setScheduledClasses] = useState<ScheduledClass[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
