@@ -218,7 +218,7 @@ export default function HomePage() {
       }
 
       const durationMinutes = Math.round(parseFloat(hours) * 60)
-      const dateString = selectedDate.toISOString().split("T")[0]
+      const dateString = format(selectedDate, "yyyy-MM-dd")
 
       console.log("Calculated values:", {
         durationMinutes,
