@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useTheme } from "next-themes"
 
 const items = [
   {
@@ -63,6 +64,7 @@ export function AppSidebar() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const router = useRouter()
   const supabase = createClient()
+  const { theme } = useTheme()
 
   useEffect(() => {
     // Get initial user
@@ -99,7 +101,7 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center px-4 py-3">
           <Image
-            src="/logo derno.png"
+            src={theme === "dark" ? "/logo derno_dark.png" : "/logo derno.png"}
             alt="Derno Logo"
             width={100}
             height={80}
