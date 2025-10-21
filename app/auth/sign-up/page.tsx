@@ -10,22 +10,12 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { COUNTRIES } from "@/lib/constants/countries"
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("")
   const [fullName, setFullName] = useState("")
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
-  const [age, setAge] = useState("")
-  const [country, setCountry] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -38,19 +28,6 @@ export default function SignUpPage() {
 
     if (!fullName.trim()) {
       setError("Please enter your name")
-      setIsLoading(false)
-      return
-    }
-
-    const parsedAge = Number(age)
-    if (!Number.isInteger(parsedAge) || parsedAge <= 0) {
-      setError("Please enter a valid age")
-      setIsLoading(false)
-      return
-    }
-
-    if (!country) {
-      setError("Please select your country")
       setIsLoading(false)
       return
     }
@@ -69,8 +46,8 @@ export default function SignUpPage() {
           emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/`,
           data: {
             full_name: fullName.trim(),
-            age: parsedAge,
-            country,
+            age: 0,
+            country: "N/A",
           },
         },
       })
@@ -120,32 +97,6 @@ export default function SignUpPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="age">Age</Label>
-                    <Input
-                      id="age"
-                      type="number"
-                      min={1}
-                      required
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="country">Country</Label>
-                    <Select value={country} onValueChange={setCountry}>
-                      <SelectTrigger id="country">
-                        <SelectValue placeholder="Select your country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {COUNTRIES.map((item) => (
-                          <SelectItem key={item.code} value={item.code}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </div>
                   <div className="grid gap-2">
                     <div className="flex items-center">

@@ -11,22 +11,12 @@ import { User } from "@supabase/supabase-js"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageHeader } from "@/components/page-header"
 import { Settings as SettingsIcon } from "lucide-react"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { COUNTRIES } from "@/lib/constants/countries"
 
 export default function SettingsPage() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [fullName, setFullName] = useState("")
-  const [age, setAge] = useState("")
-  const [country, setCountry] = useState("")
   const [email, setEmail] = useState("")
   const { toast } = useToast()
   const supabase = createClient()
@@ -38,8 +28,6 @@ export default function SettingsPage() {
       } = await supabase.auth.getUser()
       setUser(user)
       setFullName(user?.user_metadata?.full_name || "")
-      setAge(user?.user_metadata?.age ? String(user.user_metadata.age) : "")
-      setCountry(user?.user_metadata?.country || "")
       setEmail(user?.email || "")
       setLoading(false)
     }
@@ -61,17 +49,8 @@ export default function SettingsPage() {
         throw new Error("Please enter your name")
       }
 
-      const parsedAge = Number(age)
-      if (!Number.isInteger(parsedAge) || parsedAge <= 0) {
-        throw new Error("Please enter a valid age")
-      }
-
-      if (!country) {
-        throw new Error("Please select your country")
-      }
-
       const { data, error } = await supabase.auth.updateUser({
-        data: { full_name: trimmedName, age: parsedAge, country },
+        data: { full_name: trimmedName, age: 0, country: "N/A" },
       })
 
       if (error) throw error
@@ -83,8 +62,8 @@ export default function SettingsPage() {
           id: user.id,
           email: user.email,
           full_name: trimmedName,
-          age: parsedAge,
-          country,
+          age: 0,
+          country: "N/A",
           updated_at: new Date().toISOString(),
         },
         { onConflict: "id" }
@@ -156,32 +135,6 @@ export default function SettingsPage() {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Enter your full name"
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="age">Age</Label>
-              <Input
-                id="age"
-                type="number"
-                min={1}
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                placeholder="Enter your age"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Select value={country} onValueChange={setCountry}>
-                <SelectTrigger id="country">
-                  <SelectValue placeholder="Select your country" />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRIES.map((item) => (
-                    <SelectItem key={item.code} value={item.code}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
