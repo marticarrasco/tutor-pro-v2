@@ -22,7 +22,7 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
+import { format, parse } from "date-fns"
 import { cn } from "@/lib/utils"
 
 interface Student {
@@ -64,7 +64,7 @@ export function SessionForm({
   const [students, setStudents] = useState<Student[]>([])
   const [formData, setFormData] = useState<Session>({
     student_id: session?.student_id || prefilledStudentId || "",
-    date: session?.date || new Date().toISOString().split("T")[0],
+    date: session?.date || format(new Date(), "yyyy-MM-dd"),
     duration_minutes: session?.duration_minutes || prefilledDuration || 60,
     hourly_rate: session?.hourly_rate || prefilledHourlyRate || 0,
     is_paid: session?.is_paid || false,
@@ -72,7 +72,7 @@ export function SessionForm({
   })
   const [isLoading, setIsLoading] = useState(false)
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(
-    session?.date ? new Date(session.date) : new Date(),
+    session?.date ? parse(session.date, "yyyy-MM-dd", new Date()) : new Date(),
   )
 
   // Fetch students for dropdown
@@ -109,13 +109,15 @@ export function SessionForm({
     if (open) {
       setFormData({
         student_id: session?.student_id || prefilledStudentId || "",
-        date: session?.date || new Date().toISOString().split("T")[0],
+        date: session?.date || format(new Date(), "yyyy-MM-dd"),
         duration_minutes: session?.duration_minutes || prefilledDuration || 60,
         hourly_rate: session?.hourly_rate || prefilledHourlyRate || 0,
         is_paid: session?.is_paid || false,
         notes: session?.notes || "",
       })
-      setCalendarDate(session?.date ? new Date(session.date) : new Date())
+      setCalendarDate(
+        session?.date ? parse(session.date, "yyyy-MM-dd", new Date()) : new Date(),
+      )
     }
   }, [session, prefilledStudentId, prefilledHourlyRate, prefilledDuration, open])
 
@@ -177,7 +179,7 @@ export function SessionForm({
       if (!session?.id) {
         setFormData({
           student_id: "",
-          date: new Date().toISOString().split("T")[0],
+          date: format(new Date(), "yyyy-MM-dd"),
           duration_minutes: 60,
           hourly_rate: 0,
           is_paid: false,
@@ -210,7 +212,7 @@ export function SessionForm({
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       setCalendarDate(date)
-      setFormData({ ...formData, date: date.toISOString().split("T")[0] })
+      setFormData({ ...formData, date: format(date, "yyyy-MM-dd") })
     }
   }
 
