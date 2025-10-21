@@ -28,3 +28,33 @@ SELECT pg_get_functiondef('public.handle_new_user'::regprocedure);
 
 Any new user created through the application should now populate the profile record with name, age, and country.
 
+## 3. Manually backfill existing tutors
+
+If a tutor signed up before you collected the new metadata, update both the `auth.users` record and the corresponding
+`public.profiles` row so the application sees consistent values. The following snippet shows how to backfill the tutor you
+mentioned:
+
+```sql
+-- Enrich the Supabase auth metadata
+UPDATE auth.users
+SET
+  raw_user_meta_data = raw_user_meta_data || jsonb_build_object(
+    'full_name', 'Martí Carrasco',
+    'age', 18,
+    'country', 'Spain'
+  ),
+  updated_at = now()
+WHERE id = '91a82c59-ec3a-4d9a-80e4-137d9fe71682';
+
+-- Mirror the same data to the public profile
+UPDATE public.profiles
+SET
+  full_name = 'Martí Carrasco',
+  age = 18,
+  country = 'Spain',
+  updated_at = now()
+WHERE id = '91a82c59-ec3a-4d9a-80e4-137d9fe71682';
+```
+
+Repeat the pattern for any other legacy tutors—just change the `id` and demographic values to match each account.
+
