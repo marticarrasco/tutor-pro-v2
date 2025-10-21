@@ -1,6 +1,7 @@
 "use client"
 
 import { Calendar, Home, Users, BookOpen, BarChart3, Settings, GraduationCap, LogOut, User } from "lucide-react"
+import Image from "next/image"
 import {
   Sidebar,
   SidebarContent,
@@ -96,9 +97,14 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-2 px-4 py-2">
-          <GraduationCap className="h-6 w-6 text-primary" />
-          <span className="font-semibold text-lg">TutorPro</span>
+        <div className="flex items-center px-4 py-3">
+          <Image
+            src="/logo derno.png"
+            alt="Derno Logo"
+            width={100}
+            height={80}
+            className="object-contain"
+          />
         </div>
       </SidebarHeader>
       <SidebarContent>
