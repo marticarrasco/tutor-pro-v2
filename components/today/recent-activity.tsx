@@ -1,6 +1,6 @@
 "use client"
 
-import { Clock, User } from "lucide-react"
+import { Clock } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "@/hooks/use-toast"
 import { createClient } from "@/lib/supabase/client"
@@ -99,7 +99,7 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
         <CardDescription>Your latest tutoring sessions</CardDescription>
       </CardHeader>
       <CardContent>
-  {sessions.length === 0 ? (
+        {sessions.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>No recent sessions</p>
@@ -109,10 +109,7 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
           <div className="space-y-4">
             {sessions.map((session) => (
               <div key={session.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary">
-                    <User className="h-4 w-4" />
-                  </div>
+                <div className="flex items-center">
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       {session.student_name}

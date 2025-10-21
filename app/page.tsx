@@ -81,7 +81,7 @@ export default function HomePage() {
   const [pendingPayments, setPendingPayments] = useState<StudentPayment[]>([])
   const [monthlyRevenue, setMonthlyRevenue] = useState<StudentRevenue[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  
+
   // Form state for Log a Session
   const [selectedStudentId, setSelectedStudentId] = useState("")
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
@@ -124,7 +124,7 @@ export default function HomePage() {
 
       const todayClassesList = (scheduledData || []).map((cls: any) => {
         const session = (sessionsData || []).find((s: any) => s.student_id === cls.student_id)
-        
+
         let status: "pending" | "completed" | "cancelled" = "pending"
         if (session) {
           if (session.is_cancelled) {
@@ -208,10 +208,10 @@ export default function HomePage() {
       const supabase = createClient()
       const user = await requireAuthUser(supabase)
       console.log("✓ Supabase client created")
-      
+
       const selectedStudent = students.find((s) => s.id === selectedStudentId)
       console.log("Selected student:", selectedStudent)
-      
+
       if (!selectedStudent) {
         console.error("❌ Student not found in list")
         throw new Error("Student not found")
@@ -219,7 +219,7 @@ export default function HomePage() {
 
       const durationMinutes = Math.round(parseFloat(hours) * 60)
       const dateString = selectedDate.toISOString().split("T")[0]
-      
+
       console.log("Calculated values:", {
         durationMinutes,
         dateString,
@@ -253,7 +253,7 @@ export default function HomePage() {
         throw error
       } else {
         console.log("✅ Session inserted successfully:", insertedData)
-        toast({ 
+        toast({
           title: "Session logged successfully",
           description: `Logged ${hours}h session for ${selectedStudent.name}`
         })
@@ -303,7 +303,7 @@ export default function HomePage() {
         `)
         .eq("user_id", user.id)
         .order("date", { ascending: false })
-        .limit(5)
+        .limit(20)
 
       if (error) throw error
 
@@ -322,7 +322,7 @@ export default function HomePage() {
     try {
       const supabase = createClient()
       const user = await requireAuthUser(supabase)
-      
+
       // Fetch all unpaid sessions grouped by student
       const { data, error } = await supabase
         .from("tutoring_sessions")
@@ -339,7 +339,7 @@ export default function HomePage() {
 
       // Group by student and calculate totals
       const paymentsByStudent = new Map<string, StudentPayment>()
-      
+
       data?.forEach((session: any) => {
         const studentId = session.student_id
         const studentName = session.students.name
@@ -373,15 +373,15 @@ export default function HomePage() {
     try {
       const supabase = createClient()
       const user = await requireAuthUser(supabase)
-      
+
       // Get current month's date range
       const now = new Date()
       const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
       const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-      
+
       const startDate = firstDayOfMonth.toISOString().split("T")[0]
       const endDate = lastDayOfMonth.toISOString().split("T")[0]
-      
+
       // Fetch all sessions from this month grouped by student
       const { data, error } = await supabase
         .from("tutoring_sessions")
@@ -399,7 +399,7 @@ export default function HomePage() {
 
       // Group by student and calculate totals
       const revenueByStudent = new Map<string, StudentRevenue>()
-      
+
       data?.forEach((session: any) => {
         const studentId = session.student_id
         const studentName = session.students.name
@@ -622,7 +622,7 @@ export default function HomePage() {
             description="Review today's schedule, log new sessions, and monitor outstanding payments at a glance."
           />
 
-          
+
 
           {/* Top Section - Log a Session and Today's Classes */}
           <div className="grid gap-6 md:grid-cols-2">
@@ -630,7 +630,7 @@ export default function HomePage() {
             <Card>
               <CardHeader>
                 <CardTitle>Log a Session</CardTitle>
-               </CardHeader>
+              </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-4 items-end mb-2">
                   <div className="flex flex-col flex-1 min-w-[200px]">
@@ -690,9 +690,9 @@ export default function HomePage() {
                   />
                 </div>
 
-                <Button 
-                  onClick={handleLogSession} 
-                  disabled={isSubmitting} 
+                <Button
+                  onClick={handleLogSession}
+                  disabled={isSubmitting}
                   className="w-full bg-green-600 hover:bg-green-700 text-white disabled:bg-green-600/50 relative"
                 >
                   {isSubmitting ? (
@@ -709,7 +709,7 @@ export default function HomePage() {
             {/* Today's Schedule Card */}
             <TodaySchedule todayClasses={todayClasses} onRefresh={fetchAllData} />
           </div>
-          
+
           {/* Pending Payments and Monthly Revenue Section */}
           <div className="grid gap-6 md:grid-cols-2">
             <PendingPayments studentsWithPendingPayments={pendingPayments} onRefresh={fetchAllData} />
