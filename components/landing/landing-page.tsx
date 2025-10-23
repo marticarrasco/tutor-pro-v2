@@ -25,29 +25,84 @@ export function LandingPage() {
   const card3Y = useTransform(scrollYProgress, [0, 0.3], [0, -50])
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!showcaseRef.current || !showcaseScrollRef.current) return
+    const scrollContainer = showcaseScrollRef.current
+    if (!scrollContainer) return
 
-      const showcaseRect = showcaseRef.current.getBoundingClientRect()
-      const isInViewport = showcaseRect.top < window.innerHeight && showcaseRect.bottom > 0
+    let scrollSpeed = 0.4 // Slower, more comfortable viewing speed
+    let isPaused = false
+    let animationFrameId: number
+    let velocity = 0
+    let targetScroll = 0
 
-      if (isInViewport) {
-        const scrollProgress = Math.max(
-          0,
-          Math.min(1, (window.innerHeight - showcaseRect.top) / (window.innerHeight + showcaseRect.height)),
-        )
-        const maxScroll = showcaseScrollRef.current.scrollWidth - showcaseScrollRef.current.clientWidth
-        showcaseScrollRef.current.scrollLeft = scrollProgress * maxScroll
+    const autoScroll = () => {
+      if (!scrollContainer) return
+
+      if (!isPaused) {
+        scrollContainer.scrollLeft += scrollSpeed
+      } else if (Math.abs(velocity) > 0.1) {
+        // Apply momentum/inertia when manually scrolling
+        scrollContainer.scrollLeft += velocity
+        velocity *= 0.95 // Friction/deceleration
       }
+
+      // Seamless infinite scroll: Reset to start when halfway through duplicated content
+      const maxScroll = scrollContainer.scrollWidth / 2 // Since content is duplicated
+      
+      if (scrollContainer.scrollLeft >= maxScroll) {
+        // Seamlessly jump back to the start of the original content
+        scrollContainer.scrollLeft = 0
+        targetScroll = 0
+      } else if (scrollContainer.scrollLeft <= 0) {
+        // If scrolling backwards, jump to the end of the original set
+        scrollContainer.scrollLeft = maxScroll - 10
+        targetScroll = maxScroll - 10
+      }
+
+      animationFrameId = requestAnimationFrame(autoScroll)
     }
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
+    // Start auto-scrolling after a brief delay
+    const startDelay = setTimeout(() => {
+      animationFrameId = requestAnimationFrame(autoScroll)
+    }, 500)
+
+    // Pause on hover and enable manual scrolling
+    const handleMouseEnter = () => {
+      isPaused = true
+      velocity = 0
+    }
+
+    const handleMouseLeave = () => {
+      isPaused = false
+      velocity = 0
+    }
+
+    // Handle manual wheel scrolling with smoother feel
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      
+      // Reduce the scroll amount for finer control and add to velocity
+      const scrollAmount = e.deltaY * 0.5 // Smoother, less jumpy
+      velocity = scrollAmount
+      scrollContainer.scrollLeft += scrollAmount
+    }
+
+    scrollContainer.addEventListener('mouseenter', handleMouseEnter)
+    scrollContainer.addEventListener('mouseleave', handleMouseLeave)
+    scrollContainer.addEventListener('wheel', handleWheel, { passive: false })
+
+    return () => {
+      clearTimeout(startDelay)
+      cancelAnimationFrame(animationFrameId)
+      scrollContainer.removeEventListener('mouseenter', handleMouseEnter)
+      scrollContainer.removeEventListener('mouseleave', handleMouseLeave)
+      scrollContainer.removeEventListener('wheel', handleWheel)
+    }
   }, [])
 
   return (
     <div 
-      className="light min-h-screen bg-[oklch(0.98_0_0)] text-[oklch(0.15_0_0)]" 
+      className="light min-h-screen bg-[oklch(0.98_0_0)] text-[oklch(0.15_0_0)] overflow-x-hidden" 
       style={{ 
         colorScheme: 'light',
         // Force light theme CSS variables
@@ -64,7 +119,7 @@ export function LandingPage() {
     >
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container mx-auto px-4 md:px-6 flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Image
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo%20derno-1sUi8Fj2TJz0cauKBsQ5MEmdBm8vxw.png"
@@ -87,7 +142,7 @@ export function LandingPage() {
 
       {/* Hero Section */}
       <section ref={heroRef} className="relative overflow-hidden py-20 md:py-32">
-        <div className="container">
+        <div className="container mx-auto px-4 md:px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Text Content */}
             <motion.div
@@ -214,12 +269,12 @@ export function LandingPage() {
       </section>
 
       <section ref={showcaseRef} className="py-20 md:py-32 overflow-hidden min-h-screen flex items-center">
-        <div className="container">
+        <div className="w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isShowcaseInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16 space-y-4"
+            className="text-center mb-16 space-y-4 px-4 md:px-6"
           >
             <span className="text-sm font-bold text-primary tracking-widest uppercase">See It In Action</span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
@@ -234,14 +289,14 @@ export function LandingPage() {
           <div className="relative">
             <div
               ref={showcaseScrollRef}
-              className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide scroll-smooth"
+              className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide pl-4 md:pl-6"
             >
               {/* Dashboard Preview */}
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 animate={isShowcaseInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="flex-shrink-0 w-[90%] md:w-[600px] snap-center"
+                className="flex-shrink-0 w-[90%] md:w-[600px]"
               >
                 <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
                   <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
@@ -286,7 +341,7 @@ export function LandingPage() {
                 initial={{ opacity: 0, x: -50 }}
                 animate={isShowcaseInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="flex-shrink-0 w-[90%] md:w-[600px] snap-center"
+                className="flex-shrink-0 w-[90%] md:w-[600px]"
               >
                 <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
                   <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
@@ -357,7 +412,7 @@ export function LandingPage() {
                 initial={{ opacity: 0, x: -50 }}
                 animate={isShowcaseInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex-shrink-0 w-[90%] md:w-[600px] snap-center"
+                className="flex-shrink-0 w-[90%] md:w-[600px]"
               >
                 <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
                   <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
@@ -419,7 +474,7 @@ export function LandingPage() {
                 initial={{ opacity: 0, x: -50 }}
                 animate={isShowcaseInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="flex-shrink-0 w-[90%] md:w-[600px] snap-center"
+                className="flex-shrink-0 w-[90%] md:w-[600px]"
               >
                 <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
                   <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
@@ -456,14 +511,208 @@ export function LandingPage() {
                   </div>
                 </div>
               </motion.div>
-            </div>
 
-            {/* Scroll indicator */}
-            <div className="flex justify-center gap-2 mt-8">
-              <div className="h-2 w-2 rounded-full bg-primary" />
-              <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-              <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-              <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
+              {/* Duplicate set for seamless infinite scroll */}
+              {/* Dashboard Preview - Duplicate */}
+              <div className="flex-shrink-0 w-[90%] md:w-[600px]">
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+                  <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium ml-4">Dashboard</span>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-bold">Welcome back, Alex!</h3>
+                      <Button size="sm">New Session</Button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="rounded-lg bg-primary/10 p-4">
+                        <p className="text-sm text-muted-foreground mb-1">Today</p>
+                        <p className="text-3xl font-bold">5</p>
+                        <p className="text-xs text-muted-foreground">sessions</p>
+                      </div>
+                      <div className="rounded-lg bg-green-500/10 p-4">
+                        <p className="text-sm text-muted-foreground mb-1">This Week</p>
+                        <p className="text-3xl font-bold">$850</p>
+                        <p className="text-xs text-muted-foreground">earned</p>
+                      </div>
+                      <div className="rounded-lg bg-amber-500/10 p-4">
+                        <p className="text-sm text-muted-foreground mb-1">Active</p>
+                        <p className="text-3xl font-bold">12</p>
+                        <p className="text-xs text-muted-foreground">students</p>
+                      </div>
+                    </div>
+                    <div className="h-32 rounded-lg bg-muted/50 flex items-center justify-center">
+                      <BarChart3 className="h-12 w-12 text-muted-foreground/30" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sessions View - Duplicate */}
+              <div className="flex-shrink-0 w-[90%] md:w-[600px]">
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+                  <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium ml-4">Sessions</span>
+                  </div>
+                  <div className="p-8 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-bold">Recent Sessions</h3>
+                      <Button size="sm" variant="outline">
+                        Filter
+                      </Button>
+                    </div>
+                    {[
+                      {
+                        student: "Sarah Johnson",
+                        subject: "Mathematics",
+                        time: "2:00 PM - 3:00 PM",
+                        status: "Completed",
+                        amount: "$50",
+                      },
+                      {
+                        student: "David Chen",
+                        subject: "Physics",
+                        time: "3:30 PM - 4:30 PM",
+                        status: "Completed",
+                        amount: "$60",
+                      },
+                      {
+                        student: "Emma Wilson",
+                        subject: "Chemistry",
+                        time: "5:00 PM - 6:00 PM",
+                        status: "Upcoming",
+                        amount: "$55",
+                      },
+                    ].map((session, i) => (
+                      <div
+                        key={`dup-${i}`}
+                        className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Calendar className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-semibold">{session.student}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {session.subject} • {session.time}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">{session.amount}</p>
+                          <p className="text-xs text-muted-foreground">{session.status}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Payments View - Duplicate */}
+              <div className="flex-shrink-0 w-[90%] md:w-[600px]">
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+                  <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium ml-4">Payments</span>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-bold">Payment Tracking</h3>
+                      <Button size="sm">Export</Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="rounded-lg bg-green-500/10 p-4 border border-green-500/20">
+                        <p className="text-sm text-muted-foreground mb-1">Total Received</p>
+                        <p className="text-3xl font-bold text-green-600 dark:text-green-400">$3,240</p>
+                        <p className="text-xs text-muted-foreground mt-1">This month</p>
+                      </div>
+                      <div className="rounded-lg bg-amber-500/10 p-4 border border-amber-500/20">
+                        <p className="text-sm text-muted-foreground mb-1">Outstanding</p>
+                        <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">$420</p>
+                        <p className="text-xs text-muted-foreground mt-1">3 pending</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      {[
+                        { name: "Michael Brown", amount: "$75", status: "Paid", date: "Jan 15" },
+                        { name: "Lisa Anderson", amount: "$60", status: "Paid", date: "Jan 14" },
+                        { name: "James Taylor", amount: "$50", status: "Pending", date: "Jan 13" },
+                      ].map((payment, i) => (
+                        <div key={`dup-${i}`} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                          <div className="flex items-center gap-3">
+                            <DollarSign className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                              <p className="font-medium">{payment.name}</p>
+                              <p className="text-xs text-muted-foreground">{payment.date}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold">{payment.amount}</p>
+                            <p
+                              className={`text-xs ${payment.status === "Paid" ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}
+                            >
+                              {payment.status}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Analytics View - Duplicate */}
+              <div className="flex-shrink-0 w-[90%] md:w-[600px]">
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+                  <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium ml-4">Analytics</span>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-bold">Growth Insights</h3>
+                      <Button size="sm" variant="outline">
+                        This Month
+                      </Button>
+                    </div>
+                    <div className="h-48 rounded-lg bg-muted/50 flex items-center justify-center relative overflow-hidden">
+                      <TrendingUp className="h-16 w-16 text-muted-foreground/20" />
+                      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-primary/20 to-transparent" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Total Hours</p>
+                        <p className="text-2xl font-bold">124.5</p>
+                        <p className="text-xs text-green-600 dark:text-green-400">↑ 12% from last month</p>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Avg. Rate</p>
+                        <p className="text-2xl font-bold">$52/hr</p>
+                        <p className="text-xs text-green-600 dark:text-green-400">↑ 8% from last month</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -471,7 +720,7 @@ export function LandingPage() {
 
       {/* Demo User Section */}
       <section ref={demoRef} className="py-20 md:py-32 bg-muted/30">
-        <div className="container">
+        <div className="container mx-auto px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isDemoInView ? { opacity: 1, y: 0 } : {}}
@@ -512,7 +761,7 @@ export function LandingPage() {
 
       {/* Features Section */}
       <section ref={featuresRef} id="features" className="py-20 md:py-32 bg-muted/30">
-        <div className="container">
+        <div className="container mx-auto px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
@@ -587,7 +836,7 @@ export function LandingPage() {
 
       {/* CTA Section */}
       <section className="py-20 md:py-32">
-        <div className="container">
+        <div className="container mx-auto px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -628,7 +877,7 @@ export function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-border py-12">
-        <div className="container">
+        <div className="container mx-auto px-4 md:px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center">
               <Image

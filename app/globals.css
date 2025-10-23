@@ -382,3 +382,27 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* Light scrollbar for landing page */
+.light {
+  scrollbar-color: #e5e5e5 #f5f5f5;  /* Firefox: thumb track */
+  scrollbar-width: thin;  /* Firefox */
+}
+
+.light::-webkit-scrollbar {
+  width: 12px;  /* Width of scrollbar */
+}
+
+.light::-webkit-scrollbar-track {
+  background: #f5f5f5;  /* Light gray track */
+}
+
+.light::-webkit-scrollbar-thumb {
+  background-color: #d1d1d1;  /* Medium gray thumb */
+  border-radius: 6px;  /* Rounded corners */
+  border: 2px solid #f5f5f5;  /* Padding around thumb */
+}
+
+.light::-webkit-scrollbar-thumb:hover {
+  background-color: #b0b0b0;  /* Darker on hover */
+}
