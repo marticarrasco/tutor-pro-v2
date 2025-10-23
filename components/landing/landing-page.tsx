@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import React, { useRef, useEffect } from "react"
 import { motion, useScroll, useTransform, useInView } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Calendar, DollarSign, TrendingUp, Clock, Users, BarChart3, Play } from "lucide-react"
@@ -46,9 +46,24 @@ export function LandingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background px-4 md:px-8 lg:px-12">
+    <div 
+      className="light min-h-screen bg-[oklch(0.98_0_0)] text-[oklch(0.15_0_0)] px-4 md:px-8 lg:px-12" 
+      style={{ 
+        colorScheme: 'light',
+        // Force light theme CSS variables
+        '--background': 'oklch(0.98 0 0)',
+        '--foreground': 'oklch(0.15 0 0)',
+        '--card': 'oklch(1 0 0)',
+        '--card-foreground': 'oklch(0.15 0 0)',
+        '--muted': 'oklch(0.96 0 0)',
+        '--muted-foreground': 'oklch(0.45 0 0)',
+        '--border': 'oklch(0.88 0 0)',
+        '--primary': 'oklch(0.65 0.2 280)',
+        '--primary-foreground': 'oklch(0.98 0 0)',
+      } as React.CSSProperties}
+    >
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Image
@@ -94,7 +109,7 @@ export function LandingPage() {
                 </motion.div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-balance">
                   Track sessions. Manage payments. Grow your tutoring.
-                </h1>
+          </h1>
                 <p className="text-lg text-muted-foreground text-pretty max-w-2xl mx-auto lg:mx-0">
                   Streamline your tutoring business with powerful session logging, payment tracking, and analytics.
                   Focus on teaching while Derno handles the rest.
@@ -103,11 +118,11 @@ export function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button size="lg" className="text-base" asChild>
                   <Link href="/auth/sign-up">Start Free Trial</Link>
-                </Button>
+            </Button>
                 <Button size="lg" variant="outline" className="text-base bg-transparent" asChild>
                   <Link href="/auth/login">See Demo</Link>
-                </Button>
-              </div>
+            </Button>
+          </div>
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
                   Join over 1,000+ tutors organizing their business with Derno
@@ -186,12 +201,12 @@ export function LandingPage() {
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">Total Sessions</p>
                     <p className="text-2xl font-bold">42</p>
-                  </div>
+            </div>
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">Revenue</p>
                     <p className="text-2xl font-bold">$2,450</p>
-                  </div>
-                </div>
+            </div>
+            </div>
               </motion.div>
             </div>
           </div>
@@ -252,13 +267,13 @@ export function LandingPage() {
                         <p className="text-sm text-muted-foreground mb-1">This Week</p>
                         <p className="text-3xl font-bold">$850</p>
                         <p className="text-xs text-muted-foreground">earned</p>
-                      </div>
+          </div>
                       <div className="rounded-lg bg-amber-500/10 p-4">
                         <p className="text-sm text-muted-foreground mb-1">Active</p>
                         <p className="text-3xl font-bold">12</p>
                         <p className="text-xs text-muted-foreground">students</p>
-                      </div>
-                    </div>
+          </div>
+        </div>
                     <div className="h-32 rounded-lg bg-muted/50 flex items-center justify-center">
                       <BarChart3 className="h-12 w-12 text-muted-foreground/30" />
                     </div>
@@ -320,21 +335,21 @@ export function LandingPage() {
                           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                             <Calendar className="h-5 w-5 text-primary" />
                           </div>
-                          <div>
+                  <div>
                             <p className="font-semibold">{session.student}</p>
                             <p className="text-sm text-muted-foreground">
                               {session.subject} • {session.time}
                             </p>
-                          </div>
-                        </div>
+                  </div>
+                </div>
                         <div className="text-right">
                           <p className="font-bold">{session.amount}</p>
                           <p className="text-xs text-muted-foreground">{session.status}</p>
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 </div>
+                    ))}
+              </div>
+            </div>
               </motion.div>
 
               {/* Payments View */}
@@ -354,7 +369,7 @@ export function LandingPage() {
                     <span className="text-sm font-medium ml-4">Payments</span>
                   </div>
                   <div className="p-8 space-y-6">
-                    <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                       <h3 className="text-2xl font-bold">Payment Tracking</h3>
                       <Button size="sm">Export</Button>
                     </div>
@@ -369,8 +384,8 @@ export function LandingPage() {
                         <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">$420</p>
                         <p className="text-xs text-muted-foreground mt-1">3 pending</p>
                       </div>
-                    </div>
-                    <div className="space-y-3">
+                  </div>
+                  <div className="space-y-3">
                       {[
                         { name: "Michael Brown", amount: "$75", status: "Paid", date: "Jan 15" },
                         { name: "Lisa Anderson", amount: "$60", status: "Paid", date: "Jan 14" },
@@ -391,12 +406,12 @@ export function LandingPage() {
                             >
                               {payment.status}
                             </p>
-                          </div>
-                        </div>
+                      </div>
+                    </div>
                       ))}
+                      </div>
                     </div>
                   </div>
-                </div>
               </motion.div>
 
               {/* Analytics View */}
@@ -593,16 +608,16 @@ export function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                 <Button size="lg" variant="secondary" className="text-base" asChild>
                   <Link href="/auth/sign-up">Start Free Trial</Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
                   className="text-base bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10"
-                  asChild
-                >
+              asChild
+            >
                   <Link href="/auth/login">Launch Demo Account</Link>
-                </Button>
-              </div>
+            </Button>
+          </div>
             </div>
             {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
