@@ -47,7 +47,7 @@ export function LandingPage() {
 
   return (
     <div 
-      className="light min-h-screen bg-[oklch(0.98_0_0)] text-[oklch(0.15_0_0)] px-4 md:px-8 lg:px-12" 
+      className="light min-h-screen bg-[oklch(0.98_0_0)] text-[oklch(0.15_0_0)]" 
       style={{ 
         colorScheme: 'light',
         // Force light theme CSS variables
