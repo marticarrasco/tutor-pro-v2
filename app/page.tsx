@@ -77,6 +77,7 @@ export default function HomePage() {
   useDocumentTitle("Dashboard")
   useDocumentMeta("Your Derno dashboard - Review today's schedule, log new sessions, and monitor outstanding payments at a glance.")
   
+  const [mounted, setMounted] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [todayClasses, setTodayClasses] = useState<TodayClass[]>([])
@@ -442,7 +443,14 @@ export default function HomePage() {
   }
 
 
+  // Ensure component is mounted before showing content (prevents hydration flash)
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     console.log("🔐 Initializing auth...")
     const supabase = createClient()
 
@@ -463,7 +471,7 @@ export default function HomePage() {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [mounted])
 
   useEffect(() => {
     if (user && !authLoading) {
@@ -479,22 +487,18 @@ export default function HomePage() {
     }
   }, [user, authLoading])
 
-  if (authLoading) {
+  // Show loading screen while mounting or checking auth
+  if (!mounted || authLoading) {
     return (
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 items-center justify-center min-h-[60vh]">
-            <div className="flex flex-col items-center gap-4 animate-fade-in">
-              <div className="relative">
-                <div className="h-12 w-12 rounded-full border-2 border-primary/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
-                <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/10 animate-ping" />
-              </div>
-              <p className="text-sm text-muted-foreground animate-pulse">Authenticating...</p>
-            </div>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4 animate-fade-in">
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full border-2 border-primary/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
+            <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/10 animate-ping" />
           </div>
-        </SidebarInset>
-      </SidebarProvider>
+          <p className="text-sm text-muted-foreground animate-pulse">Loading...</p>
+        </div>
+      </div>
     )
   }
 

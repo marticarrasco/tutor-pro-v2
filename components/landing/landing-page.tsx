@@ -1,299 +1,630 @@
+"use client"
+
+import { useRef, useEffect } from "react"
+import { motion, useScroll, useTransform, useInView } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Calendar, DollarSign, TrendingUp, Clock, Users, BarChart3, Play } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
-import {
-  Calendar,
-  Users,
-  DollarSign,
-  BarChart3,
-  Clock,
-  CheckCircle,
-  Star,
-  ArrowRight,
-  BookOpen,
-  Target,
-  TrendingUp,
-} from "lucide-react"
 
 export function LandingPage() {
+  const { scrollYProgress } = useScroll()
+  const heroRef = useRef(null)
+  const featuresRef = useRef(null)
+  const showcaseRef = useRef<HTMLElement>(null)
+  const showcaseScrollRef = useRef<HTMLDivElement>(null)
+  const demoRef = useRef(null)
+  const isHeroInView = useInView(heroRef, { once: false, amount: 0.3 })
+  const isFeaturesInView = useInView(featuresRef, { once: true, amount: 0.2 })
+  const isShowcaseInView = useInView(showcaseRef, { once: true, amount: 0.2 })
+  const isDemoInView = useInView(demoRef, { once: true, amount: 0.3 })
+
+  // Parallax transforms for floating cards
+  const card1Y = useTransform(scrollYProgress, [0, 0.3], [0, -100])
+  const card2Y = useTransform(scrollYProgress, [0, 0.3], [0, 50])
+  const card3Y = useTransform(scrollYProgress, [0, 0.3], [0, -50])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!showcaseRef.current || !showcaseScrollRef.current) return
+
+      const showcaseRect = showcaseRef.current.getBoundingClientRect()
+      const isInViewport = showcaseRect.top < window.innerHeight && showcaseRect.bottom > 0
+
+      if (isInViewport) {
+        const scrollProgress = Math.max(
+          0,
+          Math.min(1, (window.innerHeight - showcaseRect.top) / (window.innerHeight + showcaseRect.height)),
+        )
+        const maxScroll = showcaseScrollRef.current.scrollWidth - showcaseScrollRef.current.clientWidth
+        showcaseScrollRef.current.scrollLeft = scrollProgress * maxScroll
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background px-4 md:px-8 lg:px-12">
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <BookOpen className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Derno</span>
+          <div className="flex items-center">
+            <Image
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo%20derno-1sUi8Fj2TJz0cauKBsQ5MEmdBm8vxw.png"
+              alt="Derno"
+              width={140}
+              height={40}
+              className="h-10 w-auto"
+            />
           </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" asChild>
-              <Link href="/auth/login">Log in</Link>
+          <nav className="hidden md:flex items-center gap-4">
+            <Button variant="outline" size="sm" className="border-2 bg-transparent" asChild>
+              <Link href="/auth/login">Sign In</Link>
             </Button>
-            <Button asChild>
-              <Link href="/auth/sign-up">Get Started</Link>
+            <Button size="sm" asChild>
+              <Link href="/auth/sign-up">Start Free</Link>
             </Button>
-          </div>
+          </nav>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="container max-w-6xl mx-auto text-center">
-          <Badge variant="secondary" className="mb-6">
-            New: Advanced Analytics Dashboard ✨
-          </Badge>
+      <section ref={heroRef} className="relative overflow-hidden py-20 md:py-32">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Text Content */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isHeroInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6 }}
+              className="space-y-8 text-center lg:text-left"
+            >
+              <div className="space-y-4">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={isHeroInView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="inline-block"
+                >
+                  <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-sm font-semibold text-primary">
+                    Free Forever • No Credit Card Required
+                  </span>
+                </motion.div>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-balance">
+                  Track sessions. Manage payments. Grow your tutoring.
+                </h1>
+                <p className="text-lg text-muted-foreground text-pretty max-w-2xl mx-auto lg:mx-0">
+                  Streamline your tutoring business with powerful session logging, payment tracking, and analytics.
+                  Focus on teaching while Derno handles the rest.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Button size="lg" className="text-base" asChild>
+                  <Link href="/auth/sign-up">Start Free Trial</Link>
+                </Button>
+                <Button size="lg" variant="outline" className="text-base bg-transparent" asChild>
+                  <Link href="/auth/login">See Demo</Link>
+                </Button>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Join over 1,000+ tutors organizing their business with Derno
+                </p>
+                <p className="text-sm font-medium text-primary">
+                  ✓ Always free • ✓ No credit card • ✓ Setup in 2 minutes
+                </p>
+              </div>
+            </motion.div>
 
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-balance mb-6">
-            Manage your tutoring business with <span className="text-primary">confidence</span>
-          </h1>
+            {/* Right: Floating Cards with Parallax */}
+            <div className="relative h-[500px] lg:h-[600px] hidden lg:block">
+              <motion.div
+                style={{ y: card1Y }}
+                className="absolute top-[10%] left-[10%] w-[280px] rounded-xl bg-card border border-border shadow-2xl p-6 backdrop-blur-sm"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Calendar className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="font-bold text-lg">Upcoming Sessions</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm">Math with Sarah</p>
+                    <p className="text-sm font-medium text-muted-foreground">3:00 PM</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm">History with David</p>
+                    <p className="text-sm font-medium text-muted-foreground">4:30 PM</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm">Physics with Emma</p>
+                    <p className="text-sm font-medium text-muted-foreground">6:00 PM</p>
+                  </div>
+                </div>
+              </motion.div>
 
-          <p className="text-xl text-muted-foreground text-balance mb-8 max-w-3xl mx-auto">
-            Derno is the complete platform for tutors to schedule sessions, track student progress, manage payments, and grow
-            their business. Everything you need in one place.
-          </p>
+              <motion.div
+                style={{ y: card2Y }}
+                className="absolute top-[35%] right-[5%] w-[280px] rounded-xl bg-card border border-border shadow-2xl p-6 backdrop-blur-sm"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                    <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <h3 className="font-bold text-lg">Recent Payments</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm">Jane D.</p>
+                    <p className="text-sm font-bold text-green-600 dark:text-green-400">$50.00</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm">Michael B.</p>
+                    <p className="text-sm font-bold text-green-600 dark:text-green-400">$75.00</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm">Lisa K.</p>
+                    <p className="text-sm font-bold text-green-600 dark:text-green-400">$60.00</p>
+                  </div>
+                </div>
+              </motion.div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" asChild className="text-lg px-8">
-              <Link href="/auth/sign-up">
-                Start Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild className="text-lg px-8 bg-transparent">
-              <Link href="/auth/login">View Demo</Link>
-            </Button>
+              <motion.div
+                style={{ y: card3Y }}
+                className="absolute bottom-[10%] left-[15%] w-[280px] rounded-xl bg-card border border-border shadow-2xl p-6 backdrop-blur-sm"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                    <TrendingUp className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h3 className="font-bold text-lg">This Month</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">Total Sessions</p>
+                    <p className="text-2xl font-bold">42</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">Revenue</p>
+                    <p className="text-2xl font-bold">$2,450</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
+        </div>
+      </section>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">500+</div>
-              <div className="text-sm text-muted-foreground">Active Tutors</div>
+      <section ref={showcaseRef} className="py-20 md:py-32 overflow-hidden min-h-screen flex items-center">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isShowcaseInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16 space-y-4"
+          >
+            <span className="text-sm font-bold text-primary tracking-widest uppercase">See It In Action</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
+              A beautiful interface designed for tutors
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
+              Intuitive dashboards and powerful features that make managing your tutoring business effortless
+            </p>
+          </motion.div>
+
+          {/* Horizontal scrolling showcase */}
+          <div className="relative">
+            <div
+              ref={showcaseScrollRef}
+              className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide scroll-smooth"
+            >
+              {/* Dashboard Preview */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={isShowcaseInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="flex-shrink-0 w-[90%] md:w-[600px] snap-center"
+              >
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+                  <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium ml-4">Dashboard</span>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-bold">Welcome back, Alex!</h3>
+                      <Button size="sm">New Session</Button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="rounded-lg bg-primary/10 p-4">
+                        <p className="text-sm text-muted-foreground mb-1">Today</p>
+                        <p className="text-3xl font-bold">5</p>
+                        <p className="text-xs text-muted-foreground">sessions</p>
+                      </div>
+                      <div className="rounded-lg bg-green-500/10 p-4">
+                        <p className="text-sm text-muted-foreground mb-1">This Week</p>
+                        <p className="text-3xl font-bold">$850</p>
+                        <p className="text-xs text-muted-foreground">earned</p>
+                      </div>
+                      <div className="rounded-lg bg-amber-500/10 p-4">
+                        <p className="text-sm text-muted-foreground mb-1">Active</p>
+                        <p className="text-3xl font-bold">12</p>
+                        <p className="text-xs text-muted-foreground">students</p>
+                      </div>
+                    </div>
+                    <div className="h-32 rounded-lg bg-muted/50 flex items-center justify-center">
+                      <BarChart3 className="h-12 w-12 text-muted-foreground/30" />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Sessions View */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={isShowcaseInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex-shrink-0 w-[90%] md:w-[600px] snap-center"
+              >
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+                  <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium ml-4">Sessions</span>
+                  </div>
+                  <div className="p-8 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-bold">Recent Sessions</h3>
+                      <Button size="sm" variant="outline">
+                        Filter
+                      </Button>
+                    </div>
+                    {[
+                      {
+                        student: "Sarah Johnson",
+                        subject: "Mathematics",
+                        time: "2:00 PM - 3:00 PM",
+                        status: "Completed",
+                        amount: "$50",
+                      },
+                      {
+                        student: "David Chen",
+                        subject: "Physics",
+                        time: "3:30 PM - 4:30 PM",
+                        status: "Completed",
+                        amount: "$60",
+                      },
+                      {
+                        student: "Emma Wilson",
+                        subject: "Chemistry",
+                        time: "5:00 PM - 6:00 PM",
+                        status: "Upcoming",
+                        amount: "$55",
+                      },
+                    ].map((session, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Calendar className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-semibold">{session.student}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {session.subject} • {session.time}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">{session.amount}</p>
+                          <p className="text-xs text-muted-foreground">{session.status}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Payments View */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={isShowcaseInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex-shrink-0 w-[90%] md:w-[600px] snap-center"
+              >
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+                  <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium ml-4">Payments</span>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-bold">Payment Tracking</h3>
+                      <Button size="sm">Export</Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="rounded-lg bg-green-500/10 p-4 border border-green-500/20">
+                        <p className="text-sm text-muted-foreground mb-1">Total Received</p>
+                        <p className="text-3xl font-bold text-green-600 dark:text-green-400">$3,240</p>
+                        <p className="text-xs text-muted-foreground mt-1">This month</p>
+                      </div>
+                      <div className="rounded-lg bg-amber-500/10 p-4 border border-amber-500/20">
+                        <p className="text-sm text-muted-foreground mb-1">Outstanding</p>
+                        <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">$420</p>
+                        <p className="text-xs text-muted-foreground mt-1">3 pending</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      {[
+                        { name: "Michael Brown", amount: "$75", status: "Paid", date: "Jan 15" },
+                        { name: "Lisa Anderson", amount: "$60", status: "Paid", date: "Jan 14" },
+                        { name: "James Taylor", amount: "$50", status: "Pending", date: "Jan 13" },
+                      ].map((payment, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                          <div className="flex items-center gap-3">
+                            <DollarSign className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                              <p className="font-medium">{payment.name}</p>
+                              <p className="text-xs text-muted-foreground">{payment.date}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold">{payment.amount}</p>
+                            <p
+                              className={`text-xs ${payment.status === "Paid" ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}
+                            >
+                              {payment.status}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Analytics View */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={isShowcaseInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="flex-shrink-0 w-[90%] md:w-[600px] snap-center"
+              >
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+                  <div className="bg-muted/50 p-4 border-b border-border flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium ml-4">Analytics</span>
+                  </div>
+                  <div className="p-8 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-2xl font-bold">Growth Insights</h3>
+                      <Button size="sm" variant="outline">
+                        This Month
+                      </Button>
+                    </div>
+                    <div className="h-48 rounded-lg bg-muted/50 flex items-center justify-center relative overflow-hidden">
+                      <TrendingUp className="h-16 w-16 text-muted-foreground/20" />
+                      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-primary/20 to-transparent" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Total Hours</p>
+                        <p className="text-2xl font-bold">124.5</p>
+                        <p className="text-xs text-green-600 dark:text-green-400">↑ 12% from last month</p>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Avg. Rate</p>
+                        <p className="text-2xl font-bold">$52/hr</p>
+                        <p className="text-xs text-green-600 dark:text-green-400">↑ 8% from last month</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">10k+</div>
-              <div className="text-sm text-muted-foreground">Sessions Managed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">98%</div>
-              <div className="text-sm text-muted-foreground">Satisfaction Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">24/7</div>
-              <div className="text-sm text-muted-foreground">Support</div>
+
+            {/* Scroll indicator */}
+            <div className="flex justify-center gap-2 mt-8">
+              <div className="h-2 w-2 rounded-full bg-primary" />
+              <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
+              <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
+              <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Demo User Section */}
+      <section ref={demoRef} className="py-20 md:py-32 bg-muted/30">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isDemoInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/90 to-primary p-12 md:p-16 text-center shadow-2xl">
+              <div className="relative z-10 space-y-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 backdrop-blur-sm mb-4">
+                  <Play className="h-8 w-8 text-primary-foreground" />
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground text-balance">
+                  Try it yourself with our demo account
+                </h2>
+                <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto text-pretty">
+                  Explore all features with pre-loaded data. No sign-up required—jump right in and see how Derno can
+                  transform your tutoring business.
+                </p>
+                <div className="pt-4">
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="text-base font-semibold shadow-lg hover:shadow-xl transition-shadow"
+                    asChild
+                  >
+                    <Link href="/auth/login">Launch Demo Account</Link>
+                  </Button>
+                </div>
+                <p className="text-sm text-primary-foreground/80">Full access • No registration • Explore freely</p>
+              </div>
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-muted/30">
-        <div className="container max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need to run your tutoring business</h2>
-            <p className="text-xl text-muted-foreground text-balance max-w-2xl mx-auto">
-              From scheduling to payments, we've got you covered with powerful tools designed specifically for tutors.
+      <section ref={featuresRef} id="features" className="py-20 md:py-32 bg-muted/30">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16 space-y-4"
+          >
+            <span className="text-sm font-bold text-primary tracking-widest uppercase">Everything You Need</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
+              Built for tutors who want to focus on teaching
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
+              All the tools you need to run a successful tutoring business, in one simple platform
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <Calendar className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Smart Scheduling</CardTitle>
-                <CardDescription>
-                  Manage your weekly schedule with recurring classes and automatic conflict detection.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <Users className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Student Management</CardTitle>
-                <CardDescription>
-                  Keep detailed records of all your students, their progress, and contact information.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <DollarSign className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Payment Tracking</CardTitle>
-                <CardDescription>
-                  Track earnings, manage invoices, and monitor payment status for all sessions.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <BarChart3 className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Analytics Dashboard</CardTitle>
-                <CardDescription>
-                  Get insights into your business with detailed analytics and performance metrics.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <Clock className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Session Tracking</CardTitle>
-                <CardDescription>
-                  Log tutoring sessions with notes, duration, and automatic payment calculations.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <Target className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>Goal Setting</CardTitle>
-                <CardDescription>
-                  Set and track goals for your students and monitor their progress over time.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Section */}
-      <section className="py-20 px-4">
-        <div className="container max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Focus on teaching, not administration</h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Spend less time on paperwork and more time helping your students succeed. Our platform automates the
-                boring stuff so you can focus on what you do best.
-              </p>
-
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="h-6 w-6 text-primary mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold">Save 5+ hours per week</h3>
-                    <p className="text-muted-foreground">Automate scheduling, invoicing, and progress tracking</p>
-                  </div>
+            {[
+              {
+                icon: Calendar,
+                title: "Session Logging",
+                description: "Quickly log every tutoring session with student details, duration, and notes.",
+                delay: 0.1,
+              },
+              {
+                icon: DollarSign,
+                title: "Payment Tracking",
+                description: "Track payments, outstanding balances, and generate invoices automatically.",
+                delay: 0.2,
+              },
+              {
+                icon: Clock,
+                title: "Time Analytics",
+                description: "See how much time you spend with each student and optimize your schedule.",
+                delay: 0.3,
+              },
+              {
+                icon: Users,
+                title: "Student Management",
+                description: "Keep all student information, progress notes, and history in one place.",
+                delay: 0.4,
+              },
+              {
+                icon: BarChart3,
+                title: "Revenue Reports",
+                description: "Visualize your earnings over time with beautiful charts and insights.",
+                delay: 0.5,
+              },
+              {
+                icon: TrendingUp,
+                title: "Growth Insights",
+                description: "Understand your business trends and make data-driven decisions.",
+                delay: 0.6,
+              },
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: feature.delay }}
+                className="group relative rounded-xl border border-border bg-card p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <feature.icon className="h-6 w-6" />
                 </div>
-
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="h-6 w-6 text-primary mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold">Increase your earnings</h3>
-                    <p className="text-muted-foreground">Better organization leads to more students and higher rates</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="h-6 w-6 text-primary mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold">Improve student outcomes</h3>
-                    <p className="text-muted-foreground">Track progress and identify areas where students need help</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative">
-              <Card className="p-6 shadow-lg">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">Today's Schedule</h3>
-                    <Badge variant="secondary">5 sessions</Badge>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                      <div className="w-2 h-2 bg-primary rounded-full"></div>
-                      <div className="flex-1">
-                        <div className="font-medium">Math - Sarah Johnson</div>
-                        <div className="text-sm text-muted-foreground">2:00 PM - 3:00 PM</div>
-                      </div>
-                      <TrendingUp className="h-4 w-4 text-green-500" />
-                    </div>
-
-                    <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                      <div className="w-2 h-2 bg-primary rounded-full"></div>
-                      <div className="flex-1">
-                        <div className="font-medium">Physics - Mike Chen</div>
-                        <div className="text-sm text-muted-foreground">4:00 PM - 5:30 PM</div>
-                      </div>
-                      <Star className="h-4 w-4 text-yellow-500" />
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Today's Earnings</span>
-                      <span className="font-semibold text-primary">$240</span>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
+                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+                <p className="text-muted-foreground text-pretty">{feature.description}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-primary text-primary-foreground">
-        <div className="container max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to transform your tutoring business?</h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join hundreds of tutors who have already streamlined their business with Derno. Start your free trial
-            today - no credit card required.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" asChild className="text-lg px-8">
-              <Link href="/auth/sign-up">
-                Start Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              asChild
-              className="text-lg px-8 bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              <Link href="/auth/login">Sign In</Link>
-            </Button>
-          </div>
-
-          <p className="text-sm mt-6 opacity-75">Free 14-day trial • No setup fees • Cancel anytime</p>
+      <section className="py-20 md:py-32">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-2xl bg-primary p-12 md:p-16 text-center"
+          >
+            <div className="relative z-10 space-y-6">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground text-balance">
+                Ready to organize your tutoring business?
+              </h2>
+              <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto text-pretty">
+                Join thousands of tutors who trust Derno to manage their sessions and payments
+              </p>
+              <p className="text-xl font-semibold text-primary-foreground/95">
+                100% Free Forever • No Credit Card Required
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <Button size="lg" variant="secondary" className="text-base" asChild>
+                  <Link href="/auth/sign-up">Start Free Trial</Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-base bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10"
+                  asChild
+                >
+                  <Link href="/auth/login">Launch Demo Account</Link>
+                </Button>
+              </div>
+            </div>
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
+          </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 border-t bg-muted/30">
-        <div className="container max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <BookOpen className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">Derno</span>
+      <footer className="border-t border-border py-12">
+        <div className="container">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center">
+              <Image
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo%20derno-1sUi8Fj2TJz0cauKBsQ5MEmdBm8vxw.png"
+                alt="Derno"
+                width={120}
+                height={32}
+                className="h-8 w-auto"
+              />
             </div>
-
-            <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-              <Link href="#" className="hover:text-foreground transition-colors">
-                Privacy
-              </Link>
-              <Link href="#" className="hover:text-foreground transition-colors">
-                Terms
-              </Link>
-              <Link href="#" className="hover:text-foreground transition-colors">
-                Support
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-            © 2025 Derno. All rights reserved.
+            <p className="text-sm text-muted-foreground">© 2025 Derno. All rights reserved.</p>
           </div>
         </div>
       </footer>
