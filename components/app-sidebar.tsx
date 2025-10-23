@@ -96,6 +96,20 @@ export function AppSidebar() {
     return email.split("@")[0].slice(0, 2).toUpperCase()
   }
 
+  const getProfileImage = () => {
+    const metadata = user?.user_metadata ?? {}
+
+    const imageFromMetadata = ["avatar_url", "picture"].reduce<string | null>((current, key) => {
+      if (current) {
+        return current
+      }
+      const value = metadata[key as keyof typeof metadata]
+      return typeof value === "string" && value.trim().length > 0 ? value : null
+    }, null)
+
+    return imageFromMetadata ?? "/placeholder-user.jpg"
+  }
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border">
@@ -136,6 +150,10 @@ export function AppSidebar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="w-full justify-start gap-2 px-4 py-2 h-auto">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={getProfileImage()} alt={user.user_metadata?.full_name ?? user.email ?? "User"} />
+                  {user.email ? <AvatarFallback>{getUserInitials(user.email)}</AvatarFallback> : null}
+                </Avatar>
                 <div className="flex flex-col items-start text-left">
                   <span className="text-sm font-medium truncate max-w-[160px]">
                     {user.user_metadata?.full_name?.trim() || user.email?.split("@")[0]}
