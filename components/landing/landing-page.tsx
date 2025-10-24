@@ -718,42 +718,66 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Demo User Section */}
+      {/* Interactive Demo Section */}
       <section ref={demoRef} className="py-20 md:py-32 bg-muted/30">
         <div className="container max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isDemoInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto"
+            className="space-y-8"
           >
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/90 to-primary p-12 md:p-16 text-center shadow-2xl">
-              <div className="relative z-10 space-y-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-foreground/20 backdrop-blur-sm mb-4">
-                  <Play className="h-8 w-8 text-primary-foreground" />
-                </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground text-balance">
-                  Try it yourself with our demo account
-                </h2>
-                <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto text-pretty">
-                  Explore all features with pre-loaded data. No sign-up required—jump right in and see how Derno can
-                  transform your tutoring business.
-                </p>
-                <div className="pt-4">
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    className="text-base font-semibold shadow-lg hover:shadow-xl transition-shadow"
-                    asChild
-                  >
-                    <Link href="/auth/login">Launch Demo Account</Link>
-                  </Button>
-                </div>
-                <p className="text-sm text-primary-foreground/80">Full access • No registration • Explore freely</p>
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Play className="h-8 w-8 text-primary" />
               </div>
-              {/* Decorative elements */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
+                Try Derno Right Now
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
+                Explore the full application with live demo data. Add students, log sessions, and see how Derno
+                simplifies your tutoring business—no sign-up required.
+              </p>
+              <p className="text-sm text-primary font-semibold">
+                ✓ Fully interactive • ✓ All features unlocked • ✓ Changes don't persist
+              </p>
+            </div>
+
+            {/* Embedded Demo iframe */}
+            <div className="relative w-full rounded-2xl overflow-hidden border-4 border-primary/20 shadow-2xl bg-card">
+              <div className="absolute top-0 left-0 right-0 h-12 bg-muted/50 border-b border-border flex items-center px-4 gap-2 z-10">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                </div>
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="bg-background/80 px-4 py-1 rounded-md text-sm font-medium flex items-center gap-2">
+                    <Play className="h-3 w-3 text-primary" />
+                    <span>Live Demo</span>
+                  </div>
+                </div>
+              </div>
+              <iframe
+                src="/demo"
+                className="w-full h-[600px] md:h-[700px] lg:h-[800px] mt-12"
+                title="Derno Demo Application"
+                style={{ border: 'none' }}
+              />
+            </div>
+
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-4">
+                Like what you see? Create your own account to save your data and get started for real.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" asChild>
+                  <Link href="/auth/sign-up">Create Free Account</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/auth/login">Sign In</Link>
+                </Button>
+              </div>
             </div>
           </motion.div>
         </div>
