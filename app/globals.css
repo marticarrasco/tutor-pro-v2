@@ -120,8 +120,34 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
+  html {
+    @apply bg-background;
+    /* Prevent blue background on iOS Safari */
+    -webkit-tap-highlight-color: transparent;
+    min-height: 100%;
+    /* Improve text rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+    /* Prevent pull-to-refresh on mobile */
+    overscroll-behavior-y: contain;
+  }
+  
+  /* Ensure touch targets are at least 44x44px on mobile (iOS/Android guidelines) */
+  @media (max-width: 640px) {
+    button, 
+    a, 
+    [role="button"],
+    input[type="button"],
+    input[type="submit"] {
+      min-height: 44px;
+    }
   }
 }
 

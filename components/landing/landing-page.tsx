@@ -1,13 +1,14 @@
 "use client"
 
-import React, { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useState } from "react"
 import { motion, useScroll, useTransform, useInView } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Calendar, DollarSign, TrendingUp, Clock, Users, BarChart3, Play } from "lucide-react"
+import { Calendar, DollarSign, TrendingUp, Clock, Users, BarChart3, Play, Menu, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
 export function LandingPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   const heroRef = useRef(null)
   const featuresRef = useRef(null)
@@ -126,9 +127,11 @@ export function LandingPage() {
               alt="Derno"
               width={140}
               height={40}
-              className="h-10 w-auto"
+              className="h-8 md:h-10 w-auto"
             />
           </div>
+          
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4">
             <Button variant="outline" size="sm" className="border-2 bg-transparent" asChild>
               <Link href="/auth/login">Sign In</Link>
@@ -137,19 +140,51 @@ export function LandingPage() {
               <Link href="/auth/sign-up">Start Free</Link>
             </Button>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-foreground"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden border-t border-gray-200 bg-white"
+          >
+            <div className="container max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3">
+              <Button variant="outline" className="w-full border-2" asChild>
+                <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+                  Sign In
+                </Link>
+              </Button>
+              <Button className="w-full" asChild>
+                <Link href="/auth/sign-up" onClick={() => setMobileMenuOpen(false)}>
+                  Start Free
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
+        )}
       </header>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative overflow-hidden py-20 md:py-32">
+      <section ref={heroRef} className="relative overflow-hidden py-12 sm:py-16 md:py-24 lg:py-32">
         <div className="container max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Left: Text Content */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isHeroInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="space-y-8 text-center lg:text-left"
+              className="space-y-6 md:space-y-8 text-center lg:text-left"
             >
               <div className="space-y-4">
                 <motion.div
@@ -158,31 +193,31 @@ export function LandingPage() {
                   transition={{ duration: 0.5, delay: 0.1 }}
                   className="inline-block"
                 >
-                  <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-sm font-semibold text-primary">
+                  <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/20 px-3 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm font-semibold text-primary">
                     Free Forever • No Credit Card Required
                   </span>
                 </motion.div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-balance">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-balance">
                   Track sessions. Manage payments. Grow your tutoring.
           </h1>
-                <p className="text-lg text-muted-foreground text-pretty max-w-2xl mx-auto lg:mx-0">
+                <p className="text-base sm:text-lg text-muted-foreground text-pretty max-w-2xl mx-auto lg:mx-0">
                   Streamline your tutoring business with powerful session logging, payment tracking, and analytics.
                   Focus on teaching while Derno handles the rest.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button size="lg" className="text-base" asChild>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+                <Button size="lg" className="text-base w-full sm:w-auto" asChild>
                   <Link href="/auth/sign-up">Start for Free</Link>
             </Button>
-                <Button size="lg" variant="outline" className="text-base bg-transparent" asChild>
+                <Button size="lg" variant="outline" className="text-base bg-transparent w-full sm:w-auto" asChild>
                   <Link href="/auth/login">See Demo</Link>
             </Button>
           </div>
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Join over 1,000+ tutors organizing their business with Derno
                 </p>
-                <p className="text-sm font-medium text-primary">
+                <p className="text-xs sm:text-sm font-medium text-primary">
                   ✓ Always free • ✓ No credit card • ✓ Setup in 2 minutes
                 </p>
               </div>
@@ -268,19 +303,19 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section ref={showcaseRef} className="py-20 md:py-32 overflow-hidden min-h-screen flex items-center">
+      <section ref={showcaseRef} className="py-12 sm:py-16 md:py-24 lg:py-32 overflow-hidden min-h-[80vh] sm:min-h-screen flex items-center">
         <div className="w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isShowcaseInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16 space-y-4 px-4 md:px-6"
+            className="text-center mb-12 sm:mb-16 space-y-3 sm:space-y-4 px-4 md:px-6"
           >
-            <span className="text-sm font-bold text-primary tracking-widest uppercase">See It In Action</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
+            <span className="text-xs sm:text-sm font-bold text-primary tracking-widest uppercase">See It In Action</span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance px-4">
               A beautiful interface designed for tutors
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto text-pretty px-4">
               Intuitive dashboards and powerful features that make managing your tutoring business effortless
             </p>
           </motion.div>
@@ -719,62 +754,63 @@ export function LandingPage() {
       </section>
 
       {/* Interactive Demo Section */}
-      <section ref={demoRef} className="py-20 md:py-32 bg-muted/30">
+      <section ref={demoRef} className="py-12 sm:py-16 md:py-24 lg:py-32 bg-muted/30">
         <div className="container max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isDemoInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="space-y-8"
+            className="space-y-6 sm:space-y-8"
           >
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                <Play className="h-8 w-8 text-primary" />
+            <div className="text-center space-y-3 sm:space-y-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 mb-2 sm:mb-4">
+                <Play className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               </div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance px-4">
                 Try Derno Right Now
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
+              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto text-pretty px-4">
                 Explore the full application with live demo data. Add students, log sessions, and see how Derno
                 simplifies your tutoring business—no sign-up required.
               </p>
-              <p className="text-sm text-primary font-semibold">
+              <p className="text-xs sm:text-sm text-primary font-semibold px-4">
                 ✓ Fully interactive • ✓ All features unlocked • ✓ Changes don't persist
               </p>
             </div>
 
             {/* Embedded Demo iframe */}
-            <div className="relative w-full rounded-2xl overflow-hidden border-4 border-primary/20 shadow-2xl bg-card">
-              <div className="absolute top-0 left-0 right-0 h-12 bg-muted/50 border-b border-border flex items-center px-4 gap-2 z-10">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
+            <div className="relative w-full rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-4 border-primary/20 shadow-2xl bg-card">
+              <div className="absolute top-0 left-0 right-0 h-10 sm:h-12 bg-muted/50 border-b border-border flex items-center px-3 sm:px-4 gap-2 z-10">
+                <div className="flex gap-1 sm:gap-1.5">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500" />
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500" />
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500" />
                 </div>
                 <div className="flex-1 flex items-center justify-center">
-                  <div className="bg-background/80 px-4 py-1 rounded-md text-sm font-medium flex items-center gap-2">
-                    <Play className="h-3 w-3 text-primary" />
-                    <span>Live Demo</span>
+                  <div className="bg-background/80 px-2 sm:px-4 py-0.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
+                    <Play className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary" />
+                    <span className="hidden xs:inline">Live Demo</span>
+                    <span className="xs:hidden">Demo</span>
                   </div>
                 </div>
               </div>
               <iframe
                 src="/demo"
-                className="w-full h-[600px] md:h-[700px] lg:h-[800px] mt-12"
+                className="w-full h-[500px] sm:h-[600px] md:h-[700px] lg:h-[800px] mt-10 sm:mt-12"
                 title="Derno Demo Application"
                 style={{ border: 'none' }}
               />
             </div>
 
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-4">
+            <div className="text-center px-4">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
                 Like what you see? Create your own account to save your data and get started for real.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" asChild>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <Button size="lg" className="w-full sm:w-auto" asChild>
                   <Link href="/auth/sign-up">Create Free Account</Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
                   <Link href="/auth/login">Sign In</Link>
                 </Button>
               </div>
@@ -784,24 +820,24 @@ export function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section ref={featuresRef} id="features" className="py-20 md:py-32 bg-muted/30">
+      <section ref={featuresRef} id="features" className="py-12 sm:py-16 md:py-24 lg:py-32 bg-muted/30">
         <div className="container max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16 space-y-4"
+            className="text-center mb-12 sm:mb-16 space-y-3 sm:space-y-4"
           >
-            <span className="text-sm font-bold text-primary tracking-widest uppercase">Everything You Need</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
+            <span className="text-xs sm:text-sm font-bold text-primary tracking-widest uppercase">Everything You Need</span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance px-4">
               Built for tutors who want to focus on teaching
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto text-pretty px-4">
               All the tools you need to run a successful tutoring business, in one simple platform
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
                 icon: Calendar,
@@ -859,33 +895,33 @@ export function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 md:py-32">
+      <section className="py-12 sm:py-16 md:py-24 lg:py-32">
         <div className="container max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-2xl bg-primary p-12 md:p-16 text-center"
+            className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-primary p-8 sm:p-12 md:p-16 text-center"
           >
-            <div className="relative z-10 space-y-6">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground text-balance">
+            <div className="relative z-10 space-y-4 sm:space-y-6">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground text-balance px-4">
                 Ready to organize your tutoring business?
               </h2>
-              <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto text-pretty">
+              <p className="text-base sm:text-lg text-primary-foreground/90 max-w-2xl mx-auto text-pretty px-4">
                 Join thousands of tutors who trust Derno to manage their sessions and payments
               </p>
-              <p className="text-xl font-semibold text-primary-foreground/95">
+              <p className="text-base sm:text-xl font-semibold text-primary-foreground/95 px-4">
                 100% Free Forever • No Credit Card Required
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                <Button size="lg" variant="secondary" className="text-base" asChild>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2 sm:pt-4">
+                <Button size="lg" variant="secondary" className="text-base w-full sm:w-auto" asChild>
                   <Link href="/auth/sign-up">Start for Free</Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-                  className="text-base bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10"
+                  className="text-base bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10 w-full sm:w-auto"
               asChild
             >
                   <Link href="/auth/login">Launch Demo Account</Link>
@@ -893,26 +929,26 @@ export function LandingPage() {
           </div>
             </div>
             {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
+            <div className="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 sm:w-64 sm:h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-12">
+      <footer className="border-t border-border py-8 sm:py-12">
         <div className="container max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4">
             <div className="flex items-center">
               <Image
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo%20derno-1sUi8Fj2TJz0cauKBsQ5MEmdBm8vxw.png"
                 alt="Derno"
                 width={120}
                 height={32}
-                className="h-8 w-auto"
+                className="h-6 sm:h-8 w-auto"
               />
             </div>
-            <p className="text-sm text-muted-foreground">© 2025 Derno. All rights reserved.</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">© 2025 Derno. All rights reserved.</p>
           </div>
         </div>
       </footer>

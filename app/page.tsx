@@ -637,14 +637,14 @@ export default function HomePage() {
             {/* Log a Session Card */}
             <Card>
               <CardHeader>
-                <CardTitle>Log a Session</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">Log a Session</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex flex-wrap gap-4 items-end mb-2">
-                  <div className="flex flex-col flex-1 min-w-[200px]">
-                    <Label htmlFor="student" className="mb-1">Student</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col">
+                    <Label htmlFor="student" className="mb-2 text-sm">Student</Label>
                     <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
-                      <SelectTrigger id="student" className="w-full" >
+                      <SelectTrigger id="student" className="w-full">
                         <SelectValue placeholder="Select a student" />
                       </SelectTrigger>
                       <SelectContent>
@@ -656,8 +656,8 @@ export default function HomePage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex flex-col min-w-[180px]">
-                    <Label className="mb-1">Date</Label>
+                  <div className="flex flex-col">
+                    <Label className="mb-2 text-sm">Date</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -668,8 +668,8 @@ export default function HomePage() {
                             !selectedDate && "text-muted-foreground"
                           )}
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                          <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                          <span className="truncate">{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</span>
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -686,7 +686,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="hours">Hours</Label>
+                  <Label htmlFor="hours" className="text-sm">Hours</Label>
                   <Input
                     id="hours"
                     type="number"
@@ -695,13 +695,14 @@ export default function HomePage() {
                     value={hours}
                     onChange={(e) => setHours(e.target.value)}
                     placeholder="1.0"
+                    className="w-full"
                   />
                 </div>
 
                 <Button
                   onClick={handleLogSession}
                   disabled={isSubmitting}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white disabled:bg-green-600/50 relative"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white disabled:bg-green-600/50 relative text-sm sm:text-base"
                 >
                   {isSubmitting ? (
                     <>

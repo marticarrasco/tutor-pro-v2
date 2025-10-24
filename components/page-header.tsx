@@ -40,9 +40,9 @@ export function PageHeader({
                 {eyebrow}
               </span>
             ) : null}
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">{title}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{title}</h1>
             {description ? (
-              <p className="max-w-2xl text-muted-foreground">{description}</p>
+              <p className="max-w-2xl text-sm sm:text-base text-muted-foreground">{description}</p>
             ) : null}
           </div>
         </div>
