@@ -31,6 +31,7 @@ import { useEffect, useState } from "react"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useTheme } from "next-themes"
+import { MobileNav } from "@/components/mobile-nav"
 
 const items = [
   {
@@ -111,81 +112,84 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center px-4 py-3">
-          <Image
-            src={theme === "dark" ? "/logo derno_dark.png" : "/logo derno.png"}
-            alt="Derno Logo"
-            width={100}
-            height={80}
-            className="object-contain"
-          />
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border space-y-2">
-        <div className="px-4 pt-3">
-          <ThemeToggle />
-        </div>
-        {user ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start gap-2 px-4 py-2 h-auto">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={getProfileImage()} alt={user.user_metadata?.full_name ?? user.email ?? "User"} />
-                  {user.email ? <AvatarFallback>{getUserInitials(user.email)}</AvatarFallback> : null}
-                </Avatar>
-                <div className="flex flex-col items-start text-left">
-                  <span className="text-sm font-medium truncate max-w-[160px]">
-                    {user.user_metadata?.full_name?.trim() || user.email?.split("@")[0]}
-                  </span>
-                  <span className="text-xs text-muted-foreground truncate max-w-[160px]">{user.email}</span>
-                </div>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/settings" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  Profile Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-red-600">
-                <LogOut className="h-4 w-4" />
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <div className="px-4 py-2">
-            <Button asChild className="w-full">
-              <Link href="/auth/login">Log in</Link>
-            </Button>
+    <>
+      <Sidebar>
+        <SidebarHeader className="border-b border-sidebar-border">
+          <div className="flex items-center px-4 py-3">
+            <Image
+              src={theme === "dark" ? "/logo derno_dark.png" : "/logo derno.png"}
+              alt="Derno Logo"
+              width={100}
+              height={80}
+              className="object-contain"
+            />
           </div>
-        )}
-      </SidebarFooter>
-    </Sidebar>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter className="border-t border-sidebar-border space-y-2">
+          <div className="px-4 pt-3">
+            <ThemeToggle />
+          </div>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="w-full justify-start gap-2 px-4 py-2 h-auto">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={getProfileImage()} alt={user.user_metadata?.full_name ?? user.email ?? "User"} />
+                    {user.email ? <AvatarFallback>{getUserInitials(user.email)}</AvatarFallback> : null}
+                  </Avatar>
+                  <div className="flex flex-col items-start text-left">
+                    <span className="text-sm font-medium truncate max-w-[160px]">
+                      {user.user_metadata?.full_name?.trim() || user.email?.split("@")[0]}
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate max-w-[160px]">{user.email}</span>
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/settings" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Profile Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-red-600">
+                  <LogOut className="h-4 w-4" />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="px-4 py-2">
+              <Button asChild className="w-full">
+                <Link href="/auth/login">Log in</Link>
+              </Button>
+            </div>
+          )}
+        </SidebarFooter>
+      </Sidebar>
+      <MobileNav />
+    </>
   )
 }
