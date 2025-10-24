@@ -856,7 +856,7 @@ export function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                 <Button size="lg" variant="secondary" className="text-base" asChild>
-                  <Link href="/auth/sign-up">Start Free Trial</Link>
+                  <Link href="/auth/sign-up">Start for Free</Link>
             </Button>
             <Button
               size="lg"

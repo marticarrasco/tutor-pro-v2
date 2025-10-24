@@ -24,9 +24,5 @@ Switch sessions between paid/unpaid, download polished CSV reports, or print bra
 ### Built-in trust & security
 Powered by Supabase, every record is securely scoped to your account with enterprise-grade row level security. Automatic audit timestamps, cancellation attribution, and calculated totals keep your books precise without spreadsheets.【F:scripts/001_create_tables.sql†L1-L74】【F:components/sessions/session-form.tsx†L1-L228】
 
-## Smooth onboarding
-- Launch from a polished landing page, sign up in moments, and verify through email with guided confirmation messaging.【F:components/landing/landing-page.tsx†L1-L150】【F:app/auth/sign-up/page.tsx†L1-L101】【F:app/auth/sign-up-success/page.tsx†L1-L33】
-- Sample data scripts can pre-fill your workspace so you can explore Derno's power immediately in demos or trials.【F:scripts/002_seed_sample_data.sql†L1-L74】
-
 ## Ready to grow?
 Derno replaces scattered calendars, spreadsheets, and manual invoices with a single command center. Log in, light up your dashboard, and give every student the organized, professional experience they deserve.

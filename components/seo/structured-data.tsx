@@ -49,7 +49,7 @@ export function SoftwareApplicationSchema({ url = "https://derno.app" }: Softwar
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "USD",
-      "description": "Free 14-day trial, then subscription based pricing"
+      "description": "100% Free Forever • No Credit Card Required"
     },
     "aggregateRating": {
       "@type": "AggregateRating",
