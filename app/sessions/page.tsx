@@ -117,6 +117,29 @@ export default function SessionsPage() {
     setEditingSession(undefined)
   }
 
+  const sortSessionsByDate = (sessionList: Session[]) =>
+    [...sessionList].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+  const handleSessionSaved = (session: Session, mode: "create" | "update") => {
+    setSessions((prev) => {
+      const updated =
+        mode === "create"
+          ? [...prev, session]
+          : prev.map((existing) => (existing.id === session.id ? { ...existing, ...session } : existing))
+      return sortSessionsByDate(updated)
+    })
+  }
+
+  const handleSessionDeleted = (sessionId: string) => {
+    setSessions((prev) => prev.filter((session) => session.id !== sessionId))
+  }
+
+  const handlePaymentStatusChange = (sessionId: string, isPaid: boolean) => {
+    setSessions((prev) =>
+      prev.map((session) => (session.id === sessionId ? { ...session, is_paid: isPaid } : session)),
+    )
+  }
+
   // Calculate statistics
   const cancelledSessions = sessions.filter((s) => s.is_cancelled)
   const activeSessions = sessions.filter((s) => !s.is_cancelled)
@@ -232,7 +255,12 @@ export default function SessionsPage() {
               {isLoading ? (
                 <div className="text-center py-8 text-muted-foreground">Loading sessions...</div>
               ) : (
-                <SessionsTable sessions={filteredSessions} onEdit={handleEdit} onRefresh={fetchSessions} />
+                <SessionsTable
+                  sessions={filteredSessions}
+                  onEdit={handleEdit}
+                  onDelete={handleSessionDeleted}
+                  onPaymentStatusChange={handlePaymentStatusChange}
+                />
               )}
             </CardContent>
           </Card>
@@ -242,7 +270,7 @@ export default function SessionsPage() {
           session={editingSession}
           open={showForm}
           onOpenChange={handleFormClose}
-          onSuccess={fetchSessions}
+          onSuccess={handleSessionSaved}
         />
       </SidebarInset>
     </SidebarProvider>

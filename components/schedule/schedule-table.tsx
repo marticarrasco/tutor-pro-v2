@@ -35,12 +35,13 @@ interface ScheduledClass {
 interface ScheduleTableProps {
   scheduledClasses: ScheduledClass[]
   onEdit: (scheduledClass: ScheduledClass) => void
-  onRefresh: () => void | Promise<void>
+  onDelete: (scheduledClassId: string) => void
+  onStatusChange: (scheduledClassId: string, isActive: boolean) => void
 }
 
 const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
-export function ScheduleTable({ scheduledClasses, onEdit, onRefresh }: ScheduleTableProps) {
+export function ScheduleTable({ scheduledClasses, onEdit, onDelete, onStatusChange }: ScheduleTableProps) {
   const [deleteClass, setDeleteClass] = useState<ScheduledClass | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -60,7 +61,7 @@ export function ScheduleTable({ scheduledClasses, onEdit, onRefresh }: ScheduleT
       if (error) throw error
 
       toast({ title: "Scheduled class deleted successfully" })
-      await onRefresh()
+      onDelete(deleteClass.id)
       setDeleteClass(null)
     } catch (error) {
       console.error("Error deleting scheduled class:", error)
@@ -90,7 +91,7 @@ export function ScheduleTable({ scheduledClasses, onEdit, onRefresh }: ScheduleT
         title: scheduledClass.is_active ? "Class deactivated" : "Class activated",
         description: `${scheduledClass.student_name}'s class updated.`,
       })
-      await onRefresh()
+      onStatusChange(scheduledClass.id, !scheduledClass.is_active)
     } catch (error) {
       console.error("Error updating class status:", error)
       toast({

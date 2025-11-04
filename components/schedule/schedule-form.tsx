@@ -32,13 +32,18 @@ interface ScheduledClass {
   duration_minutes: number
   is_active: boolean
   user_id?: string
+  student_name?: string
+  created_at?: string
+  updated_at?: string
 }
+
+type ScheduleFormMode = "create" | "update"
 
 interface ScheduleFormProps {
   scheduledClass?: ScheduledClass & { student_name?: string }
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  onSuccess: (scheduledClass: ScheduledClass, mode: ScheduleFormMode) => void
 }
 
 const DAYS_OF_WEEK = [
@@ -112,9 +117,11 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
       const supabase = createClient()
       const user = await requireAuthUser(supabase)
 
+      let savedClass: any | null = null
+
       if (scheduledClass?.id) {
         // Update existing scheduled class
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("scheduled_classes")
           .update({
             student_id: formData.student_id,
@@ -126,23 +133,48 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
           })
           .eq("id", scheduledClass.id)
           .eq("user_id", user.id)
+          .select(
+            `
+            *,
+            students!scheduled_classes_student_fk(name)
+          `,
+          )
+          .single()
 
         if (error) throw error
+        savedClass = data ?? null
         toast({ title: "Scheduled class updated successfully" })
       } else {
         // Create new scheduled class
-        const { error } = await supabase.from("scheduled_classes").insert([
-          {
-            ...formData,
-            user_id: user.id,
-          },
-        ])
+        const { data, error } = await supabase
+          .from("scheduled_classes")
+          .insert([
+            {
+              ...formData,
+              user_id: user.id,
+            },
+          ])
+          .select(
+            `
+            *,
+            students!scheduled_classes_student_fk(name)
+          `,
+          )
+          .single()
 
         if (error) throw error
+        savedClass = data ?? null
         toast({ title: "Scheduled class created successfully" })
       }
 
-      onSuccess()
+      if (savedClass) {
+        const { students: studentRecord, ...classRecord } = savedClass
+        const formattedClass: ScheduledClass = {
+          ...classRecord,
+          student_name: studentRecord?.name ?? scheduledClass?.student_name ?? "",
+        }
+        onSuccess(formattedClass, scheduledClass?.id ? "update" : "create")
+      }
       onOpenChange(false)
 
       // Reset form if creating new scheduled class

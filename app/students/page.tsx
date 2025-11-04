@@ -90,6 +90,23 @@ export default function StudentsPage() {
     setEditingStudent(undefined)
   }
 
+  const sortStudentsByName = (studentList: Student[]) =>
+    [...studentList].sort((a, b) => a.name.localeCompare(b.name))
+
+  const handleStudentSaved = (student: Student, mode: "create" | "update") => {
+    setStudents((prev) => {
+      const updated =
+        mode === "create"
+          ? [...prev, student]
+          : prev.map((existing) => (existing.id === student.id ? { ...existing, ...student } : existing))
+      return sortStudentsByName(updated)
+    })
+  }
+
+  const handleStudentDeleted = (studentId: string) => {
+    setStudents((prev) => prev.filter((student) => student.id !== studentId))
+  }
+
   const activeStudents = students.filter((s) => s.is_active).length
   const totalStudents = students.length
 
@@ -186,7 +203,11 @@ export default function StudentsPage() {
                   ))}
                 </div>
               ) : (
-                <StudentsTable students={filteredStudents} onEdit={handleEdit} onRefresh={fetchStudents} />
+                <StudentsTable
+                  students={filteredStudents}
+                  onEdit={handleEdit}
+                  onDelete={handleStudentDeleted}
+                />
               )}
             </CardContent>
           </Card>
@@ -196,7 +217,7 @@ export default function StudentsPage() {
           student={editingStudent}
           open={showForm}
           onOpenChange={handleFormClose}
-          onSuccess={fetchStudents}
+          onSuccess={handleStudentSaved}
         />
       </SidebarInset>
     </SidebarProvider>
