@@ -103,6 +103,32 @@ export default function SchedulePage() {
     setEditingClass(undefined)
   }
 
+  const sortClasses = (classList: ScheduledClass[]) =>
+    [...classList].sort((a, b) => {
+      if (a.day_of_week !== b.day_of_week) return a.day_of_week - b.day_of_week
+      return a.start_time.localeCompare(b.start_time)
+    })
+
+  const handleClassSaved = (scheduledClass: ScheduledClass, mode: "create" | "update") => {
+    setScheduledClasses((prev) => {
+      const updated =
+        mode === "create"
+          ? [...prev, scheduledClass]
+          : prev.map((existing) => (existing.id === scheduledClass.id ? { ...existing, ...scheduledClass } : existing))
+      return sortClasses(updated)
+    })
+  }
+
+  const handleClassDeleted = (scheduledClassId: string) => {
+    setScheduledClasses((prev) => prev.filter((cls) => cls.id !== scheduledClassId))
+  }
+
+  const handleClassStatusChange = (scheduledClassId: string, isActive: boolean) => {
+    setScheduledClasses((prev) =>
+      prev.map((cls) => (cls.id === scheduledClassId ? { ...cls, is_active: isActive } : cls)),
+    )
+  }
+
   const handleConfirmDelete = async () => {
     if (!classToDelete) return
     setIsDeleting(true)
@@ -118,7 +144,7 @@ export default function SchedulePage() {
       if (error) throw error
 
       toast({ title: "Scheduled class deleted successfully" })
-      await fetchScheduledClasses()
+      handleClassDeleted(classToDelete.id)
       setClassToDelete(null)
     } catch (error) {
       console.error("Error deleting scheduled class:", error)
@@ -233,7 +259,8 @@ export default function SchedulePage() {
                     <ScheduleTable
                       scheduledClasses={scheduledClasses}
                       onEdit={handleEdit}
-                      onRefresh={fetchScheduledClasses}
+                      onDelete={handleClassDeleted}
+                      onStatusChange={handleClassStatusChange}
                     />
                   )}
                 </CardContent>
@@ -246,7 +273,7 @@ export default function SchedulePage() {
           scheduledClass={editingClass}
           open={showForm}
           onOpenChange={handleFormClose}
-          onSuccess={fetchScheduledClasses}
+          onSuccess={handleClassSaved}
         />
 
         <AlertDialog open={!!classToDelete} onOpenChange={() => setClassToDelete(null)}>

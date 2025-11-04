@@ -39,10 +39,11 @@ interface Session {
 interface SessionsTableProps {
   sessions: Session[]
   onEdit: (session: Session) => void
-  onRefresh: () => void
+  onDelete: (sessionId: string) => void
+  onPaymentStatusChange: (sessionId: string, isPaid: boolean) => void
 }
 
-export function SessionsTable({ sessions, onEdit, onRefresh }: SessionsTableProps) {
+export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChange }: SessionsTableProps) {
   const [deleteSession, setDeleteSession] = useState<Session | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -62,7 +63,7 @@ export function SessionsTable({ sessions, onEdit, onRefresh }: SessionsTableProp
       if (error) throw error
 
       toast({ title: "Session deleted successfully" })
-      onRefresh()
+      onDelete(deleteSession.id)
       setDeleteSession(null)
     } catch (error) {
       console.error("Error deleting session:", error)
@@ -99,7 +100,7 @@ export function SessionsTable({ sessions, onEdit, onRefresh }: SessionsTableProp
         title: session.is_paid ? "Marked as unpaid" : "Marked as paid",
         description: `Session with ${session.student_name} updated.`,
       })
-      onRefresh()
+      onPaymentStatusChange(session.id, !session.is_paid)
     } catch (error) {
       console.error("Error updating payment status:", error)
       toast({

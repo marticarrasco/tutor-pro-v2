@@ -40,13 +40,19 @@ interface Session {
   is_paid: boolean
   notes: string
   user_id?: string
+  total_amount?: number
+  is_cancelled?: boolean
+  cancelled_by?: "teacher" | "student" | null
+  student_name?: string
 }
+
+type SessionFormMode = "create" | "update"
 
 interface SessionFormProps {
   session?: Session & { student_name?: string }
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  onSuccess: (session: Session, mode: SessionFormMode) => void
   prefilledStudentId?: string
   prefilledHourlyRate?: number
   prefilledDuration?: number
@@ -139,9 +145,11 @@ export function SessionForm({
       const supabase = createClient()
       const user = await requireAuthUser(supabase)
 
+      let savedSession: any | null = null
+
       if (session?.id) {
         // Update existing session
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("tutoring_sessions")
           .update({
             student_id: formData.student_id,
@@ -154,12 +162,20 @@ export function SessionForm({
           })
           .eq("id", session.id)
           .eq("user_id", user.id)
+          .select(
+            `
+            *,
+            students!tutoring_sessions_student_fk(name)
+          `,
+          )
+          .single()
 
         if (error) throw error
+        savedSession = data ?? null
         toast({ title: "Session updated successfully" })
       } else {
         // Create new session
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("tutoring_sessions")
           .insert([
             {
@@ -167,12 +183,27 @@ export function SessionForm({
               user_id: user.id,
             },
           ])
+          .select(
+            `
+            *,
+            students!tutoring_sessions_student_fk(name)
+          `,
+          )
+          .single()
 
         if (error) throw error
+        savedSession = data ?? null
         toast({ title: "Session created successfully" })
       }
 
-      onSuccess()
+      if (savedSession) {
+        const { students: studentRecord, ...sessionRecord } = savedSession
+        const formattedSession: Session = {
+          ...sessionRecord,
+          student_name: studentRecord?.name ?? session?.student_name ?? "",
+        }
+        onSuccess(formattedSession, session?.id ? "update" : "create")
+      }
       onOpenChange(false)
 
       // Reset form if creating new session
