@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -30,6 +31,7 @@ interface StudentsTableProps {
 }
 
 export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps) {
+  const t = useTranslations('HomePage.StudentsTable')
   const [deleteStudent, setDeleteStudent] = useState<Student | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const { formatCurrency } = useCurrency()
@@ -49,14 +51,13 @@ export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps
 
       if (error) throw error
 
-      toast({ title: "Student deleted successfully" })
+      toast({ title: t('deleteSuccess') })
       onDelete(deleteStudent.id)
       setDeleteStudent(null)
     } catch (error) {
       console.error("Error deleting student:", error)
       toast({
-        title: "Error",
-        description: "Failed to delete student. Please try again.",
+        title: t('deleteError'),
         variant: "destructive",
       })
     } finally {
@@ -70,11 +71,11 @@ export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps
         <Table>
           <TableHeader>
             <TableRow className="border-border">
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Rate</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t('name')}</TableHead>
+              <TableHead>{t('email')}</TableHead>
+              <TableHead>{t('phone')}</TableHead>
+              <TableHead>{t('hourlyRate')}</TableHead>
+              <TableHead>{t('status')}</TableHead>
               <TableHead className="w-[70px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -82,7 +83,7 @@ export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps
             {students.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                  No students found. Add your first student to get started.
+                  {t('noStudents')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -94,7 +95,7 @@ export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps
                   <TableCell className="font-mono">{formatCurrency(student.hourly_rate)}/hr</TableCell>
                   <TableCell>
                     <Badge variant={student.is_active ? "default" : "secondary"}>
-                      {student.is_active ? "Active" : "Inactive"}
+                      {student.is_active ? t('active') : t('inactive')}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -108,11 +109,11 @@ export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => onEdit(student)}>
                           <Edit className="mr-2 h-4 w-4" />
-                          Edit
+                          {t('edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setDeleteStudent(student)} className="text-destructive">
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
+                          {t('delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -127,20 +128,19 @@ export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps
       <AlertDialog open={!!deleteStudent} onOpenChange={() => setDeleteStudent(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteConfirm')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete {deleteStudent?.name} and all associated sessions and scheduled classes. This
-              action cannot be undone.
+              {t('deleteDescription', { studentName: deleteStudent?.name || '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t('deleting') : t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

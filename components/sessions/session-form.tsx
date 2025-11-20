@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -68,6 +69,7 @@ export function SessionForm({
   prefilledHourlyRate,
   prefilledDuration,
 }: SessionFormProps) {
+  const t = useTranslations('HomePage.SessionForm')
   const [students, setStudents] = useState<Student[]>([])
   const [formData, setFormData] = useState<Session>({
     student_id: session?.student_id || prefilledStudentId || "",
@@ -101,8 +103,8 @@ export function SessionForm({
       } catch (error) {
         console.error("Error fetching students for session form:", error)
         toast({
-          title: "Error",
-          description: "Failed to load students. Please try again.",
+          title: t('error'),
+          description: t('errorLoadingStudents'),
           variant: "destructive",
         })
       }
@@ -111,7 +113,7 @@ export function SessionForm({
     if (open) {
       fetchStudents()
     }
-  }, [open])
+  }, [open, t])
 
   useEffect(() => {
     if (open) {
@@ -174,7 +176,7 @@ export function SessionForm({
 
         if (error) throw error
         savedSession = data ?? null
-        toast({ title: "Session updated successfully" })
+        toast({ title: t('sessionUpdated') })
       } else {
         // Create new session
         const { data, error } = await supabase
@@ -195,7 +197,7 @@ export function SessionForm({
 
         if (error) throw error
         savedSession = data ?? null
-        toast({ title: "Session created successfully" })
+        toast({ title: t('sessionCreated') })
       }
 
       if (savedSession) {
@@ -226,14 +228,14 @@ export function SessionForm({
       // Handle unique constraint violation (one session per student per day)
       if (error.code === "23505") {
         toast({
-          title: "Session already exists",
-          description: "A session for this student on this date already exists.",
+          title: t('sessionExists'),
+          description: t('sessionExistsDescription'),
           variant: "destructive",
         })
       } else {
         toast({
-          title: "Error",
-          description: "Failed to save session. Please try again.",
+          title: t('error'),
+          description: t('errorSaving'),
           variant: "destructive",
         })
       }
@@ -256,22 +258,22 @@ export function SessionForm({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{session?.id ? "Edit Session" : "Log New Session"}</DialogTitle>
+          <DialogTitle>{session?.id ? t('editTitle') : t('createTitle')}</DialogTitle>
           <DialogDescription>
-            {session?.id ? "Update the session details below." : "Record a completed tutoring session."}
+            {session?.id ? t('editDescription') : t('createDescription')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="student_id">Student</Label>
+              <Label htmlFor="student_id">{t('student')}</Label>
               <Select
                 value={formData.student_id}
                 onValueChange={(value) => setFormData({ ...formData, student_id: value })}
                 required
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a student" />
+                  <SelectValue placeholder={t('selectStudent')} />
                 </SelectTrigger>
                 <SelectContent>
                   {students.map((student) => (
@@ -284,7 +286,7 @@ export function SessionForm({
             </div>
 
             <div className="grid gap-2">
-              <Label>Date</Label>
+              <Label>{t('date')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -295,7 +297,7 @@ export function SessionForm({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {calendarDate ? format(calendarDate, "PPP") : <span>Pick a date</span>}
+                    {calendarDate ? format(calendarDate, "PPP") : <span>{t('pickDate')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -311,7 +313,7 @@ export function SessionForm({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="duration_hours">Duration (hours)</Label>
+              <Label htmlFor="duration_hours">{t('durationHours')}</Label>
               <Input
                 id="duration_hours"
                 type="number"
@@ -322,14 +324,14 @@ export function SessionForm({
                   const hours = Number.parseFloat(e.target.value) || 0
                   setFormData({ ...formData, duration_minutes: Math.round(hours * 60) })
                 }}
-                placeholder="1.0"
+                placeholder={t('durationPlaceholder')}
                 required
               />
-              <div className="text-xs text-muted-foreground">{formData.duration_minutes} minutes</div>
+              <div className="text-xs text-muted-foreground">{formData.duration_minutes} {t('minutes')}</div>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="hourly_rate">Hourly Rate ({currency === "USD" ? "$" : "€"})</Label>
+              <Label htmlFor="hourly_rate">{t('hourlyRate')} ({currency === "USD" ? "$" : "€"})</Label>
               <Input
                 id="hourly_rate"
                 type="number"
@@ -337,23 +339,23 @@ export function SessionForm({
                 min="0"
                 value={formData.hourly_rate}
                 onChange={(e) => setFormData({ ...formData, hourly_rate: Number.parseFloat(e.target.value) || 0 })}
-                placeholder="45.00"
+                placeholder={t('hourlyRatePlaceholder')}
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label className="text-sm font-medium">Total Amount</Label>
+              <Label className="text-sm font-medium">{t('totalAmount')}</Label>
               <div className="text-2xl font-bold text-primary">{formatCurrency(Number(totalAmount))}</div>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="notes">Notes</Label>
+              <Label htmlFor="notes">{t('notes')}</Label>
               <Textarea
                 id="notes"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Session notes, topics covered, homework assigned..."
+                placeholder={t('notesPlaceholder')}
                 rows={3}
               />
             </div>
@@ -364,21 +366,21 @@ export function SessionForm({
                 checked={formData.is_paid}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_paid: checked })}
               />
-              <Label htmlFor="is_paid">Payment Received</Label>
+              <Label htmlFor="is_paid">{t('paymentReceived')}</Label>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button type="submit" disabled={isLoading} className="relative">
               {isLoading ? (
                 <>
                   <div className="mr-2 h-4 w-4 rounded-full border-2 border-primary-foreground/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
-                  Saving...
+                  {t('saving')}
                 </>
               ) : (
-                session?.id ? "Update Session" : "Log Session"
+                session?.id ? t('updateButton') : t('createButton')
               )}
             </Button>
           </DialogFooter>
