@@ -19,13 +19,29 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
+<<<<<<< HEAD
 import { Student } from "@/types/data"
+=======
+interface Student {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  hourly_rate: number
+  is_active: boolean
+  user_id?: string
+  created_at?: string
+  updated_at?: string
+}
+>>>>>>> 21b6a61f49907f780de2f9aa423f7e28858c10b8
+
+type StudentFormMode = "create" | "update"
 
 interface StudentFormProps {
   student?: Student
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  onSuccess: (student: Student, mode: StudentFormMode) => void
 }
 
 export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentFormProps) {
@@ -59,9 +75,11 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
 
       const user = await requireAuthUser(supabase)
 
+      let savedStudent: Student | null = null
+
       if (student?.id) {
         // Update existing student
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("students")
           .update({
             name: formData.name,
@@ -73,23 +91,33 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
           })
           .eq("id", student.id)
           .eq("user_id", user.id)
+          .select("*")
+          .single()
 
         if (error) throw error
+        savedStudent = data ?? null
         toast({ title: "Student updated successfully" })
       } else {
         // Create new student
-        const { error } = await supabase.from("students").insert([
-          {
-            ...formData,
-            user_id: user.id,
-          },
-        ])
+        const { data, error } = await supabase
+          .from("students")
+          .insert([
+            {
+              ...formData,
+              user_id: user.id,
+            },
+          ])
+          .select("*")
+          .single()
 
         if (error) throw error
+        savedStudent = data ?? null
         toast({ title: "Student created successfully" })
       }
 
-      onSuccess()
+      if (savedStudent) {
+        onSuccess(savedStudent, student?.id ? "update" : "create")
+      }
       onOpenChange(false)
 
       // Reset form if creating new student

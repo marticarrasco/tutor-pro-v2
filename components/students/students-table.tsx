@@ -25,10 +25,10 @@ import { Student } from "@/types/data"
 interface StudentsTableProps {
   students: Student[]
   onEdit: (student: Student) => void
-  onRefresh: () => void
+  onDelete: (id: string) => void
 }
 
-export function StudentsTable({ students, onEdit, onRefresh }: StudentsTableProps) {
+export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps) {
   const [deleteStudent, setDeleteStudent] = useState<Student | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -48,7 +48,7 @@ export function StudentsTable({ students, onEdit, onRefresh }: StudentsTableProp
       if (error) throw error
 
       toast({ title: "Student deleted successfully" })
-      onRefresh()
+      onDelete(deleteStudent.id)
       setDeleteStudent(null)
     } catch (error) {
       console.error("Error deleting student:", error)
