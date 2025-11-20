@@ -9,7 +9,11 @@ import { Toaster } from "@/components/ui/toaster"
 import LoadingPage from "@/components/loading/loading-page"
 import { OrganizationSchema, SoftwareApplicationSchema } from "@/components/seo/structured-data"
 import { CurrencyProvider } from "@/components/currency-provider"
-import "./globals.css"
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { notFound } from 'next/navigation';
+import { routing } from '@/i18n/routing';
+import "../globals.css"
 
 export const metadata: Metadata = {
   title: {
@@ -70,13 +74,24 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params: { locale }
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
+  params: { locale: string };
 }>) {
+  // Ensure that the incoming `locale` is valid
+  if (!routing.locales.includes(locale as any)) {
+    notFound();
+  }
+
+  // Providing all messages to the client
+  // side is the easiest way to get started
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning className="bg-background">
+    <html lang={locale} suppressHydrationWarning className="bg-background">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <meta name="theme-color" content="#F9FAFB" media="(prefers-color-scheme: light)" />
@@ -87,23 +102,25 @@ export default function RootLayout({
         <SoftwareApplicationSchema />
       </head>
       <body className={`font-sans bg-background ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} themes={["dark", "light"]}>
-          <CurrencyProvider>
-            <Suspense
-              fallback={
-                <LoadingPage
-                  title="Launching Derno"
-                  description="Polishing the dashboard experience and loading your personalized workspace."
-                  tip="Stay tuned—the tools you need to run your tutoring business are seconds away."
-                />
-              }
-            >
-              {children}
-            </Suspense>
-            <Toaster />
-            <Analytics />
-          </CurrencyProvider>
-        </ThemeProvider>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} themes={["dark", "light"]}>
+            <CurrencyProvider>
+              <Suspense
+                fallback={
+                  <LoadingPage
+                    title="Launching Derno"
+                    description="Polishing the dashboard experience and loading your personalized workspace."
+                    tip="Stay tuned—the tools you need to run your tutoring business are seconds away."
+                  />
+                }
+              >
+                {children}
+              </Suspense>
+              <Toaster />
+              <Analytics />
+            </CurrencyProvider>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

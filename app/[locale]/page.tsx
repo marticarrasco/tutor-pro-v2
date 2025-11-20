@@ -24,6 +24,8 @@ import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import type { User } from "@supabase/supabase-js"
 import { PageHeader } from "@/components/page-header"
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from '@/components/language-switcher';
 
 interface TodayClass {
   id: string
@@ -74,9 +76,10 @@ interface RecentSession {
 }
 
 export default function HomePage() {
-  useDocumentTitle("Dashboard")
+  const t = useTranslations('HomePage');
+  useDocumentTitle(t('title'))
   useDocumentMeta("Your Derno dashboard - Review today's schedule, log new sessions, and monitor outstanding payments at a glance.")
-  
+
   const [mounted, setMounted] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
@@ -623,14 +626,15 @@ export default function HomePage() {
       <AppSidebar />
       <SidebarInset>
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-          <PageHeader
-            icon={headerIcon}
-            eyebrow="Dashboard"
-            title={`Good ${timeOfDay}${firstName ? `, ${firstName}` : ""}!`}
-            description="Review today's schedule, log new sessions, and monitor outstanding payments at a glance."
-          />
-
-
+          <div className="flex items-center justify-between">
+            <PageHeader
+              icon={headerIcon}
+              eyebrow={t('title')}
+              title={`Good ${timeOfDay}${firstName ? `, ${firstName}` : ""}!`}
+              description="Review today's schedule, log new sessions, and monitor outstanding payments at a glance."
+            />
+            <LanguageSwitcher />
+          </div>
 
           {/* Top Section - Log a Session and Today's Classes */}
           <div className="grid gap-6 md:grid-cols-2">

@@ -1,0 +1,14 @@
+{
+    "HomePage": {
+        "title": "¡Hola mundo!",
+        "about": "Ir a la página de acerca de"
+    },
+    "Navigation": {
+        "home": "Inicio",
+        "about": "Acerca de"
+    },
+    "LocaleSwitcher": {
+        "label": "Cambiar idioma",
+        "locale": "{locale, select, en {Inglés} es {Español} other {Desconocido}}"
+    }
+}
