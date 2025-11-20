@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { MoreHorizontal, Edit, Trash2, DollarSign } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -31,6 +32,7 @@ interface SessionsTableProps {
 }
 
 export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChange }: SessionsTableProps) {
+  const t = useTranslations('HomePage.SessionsTable')
   const [deleteSession, setDeleteSession] = useState<Session | null>(null)
 
   const [isDeleting, setIsDeleting] = useState(false)
@@ -51,14 +53,13 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
 
       if (error) throw error
 
-      toast({ title: "Session deleted successfully" })
+      toast({ title: t('deleteSuccess') })
       onDelete(deleteSession.id)
       setDeleteSession(null)
     } catch (error) {
       console.error("Error deleting session:", error)
       toast({
-        title: "Error",
-        description: "Failed to delete session. Please try again.",
+        title: t('deleteError'),
         variant: "destructive",
       })
     } finally {
@@ -69,8 +70,8 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
   const togglePayment = async (session: Session) => {
     if (session.is_cancelled) {
       toast({
-        title: "Cancelled session",
-        description: "Cancelled sessions cannot be marked as paid.",
+        title: t('cancelledSession'),
+        description: t('cancelledSessionDescription'),
       })
       return
     }
@@ -86,15 +87,14 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
       if (error) throw error
 
       toast({
-        title: session.is_paid ? "Marked as unpaid" : "Marked as paid",
-        description: `Session with ${session.student_name} updated.`,
+        title: session.is_paid ? t('markedUnpaid') : t('markedPaid'),
+        description: t('paymentUpdateSuccess', { studentName: session.student_name }),
       })
       onPaymentStatusChange(session.id, !session.is_paid)
     } catch (error) {
       console.error("Error updating payment status:", error)
       toast({
-        title: "Error",
-        description: "Failed to update payment status. Please try again.",
+        title: t('paymentUpdateError'),
         variant: "destructive",
       })
     }
@@ -121,13 +121,13 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
         <Table>
           <TableHeader>
             <TableRow className="border-border">
-              <TableHead>Student</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Duration</TableHead>
-              <TableHead>Rate</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Payment</TableHead>
-              <TableHead>Notes</TableHead>
+              <TableHead>{t('student')}</TableHead>
+              <TableHead>{t('date')}</TableHead>
+              <TableHead>{t('duration')}</TableHead>
+              <TableHead>{t('rate')}</TableHead>
+              <TableHead>{t('total')}</TableHead>
+              <TableHead>{t('payment')}</TableHead>
+              <TableHead>{t('notes')}</TableHead>
               <TableHead className="w-[70px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -135,7 +135,7 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
             {sessions.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                  No sessions found. Log your first session to get started.
+                  {t('noSessions')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -149,7 +149,7 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
                   <TableCell>
                     {session.is_cancelled ? (
                       <Badge variant="outline" className="text-amber-600 border-amber-400">
-                        Cancelled
+                        {t('cancelled')}
                       </Badge>
                     ) : (
                       <Badge
@@ -157,7 +157,7 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
                         className="cursor-pointer"
                         onClick={() => togglePayment(session)}
                       >
-                        {session.is_paid ? "Paid" : "Unpaid"}
+                        {session.is_paid ? t('paid') : t('unpaid')}
                       </Badge>
                     )}
                   </TableCell>
@@ -173,15 +173,15 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => togglePayment(session)} disabled={session.is_cancelled}>
                           <DollarSign className="mr-2 h-4 w-4" />
-                          {session.is_paid ? "Mark Unpaid" : "Mark Paid"}
+                          {session.is_paid ? t('markUnpaid') : t('markPaid')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onEdit(session)} disabled={session.is_cancelled}>
                           <Edit className="mr-2 h-4 w-4" />
-                          Edit
+                          {t('edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setDeleteSession(session)} className="text-destructive">
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
+                          {t('delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -196,20 +196,22 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
       <AlertDialog open={!!deleteSession} onOpenChange={() => setDeleteSession(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteConfirm')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the session with {deleteSession?.student_name} on{" "}
-              {deleteSession && formatDate(deleteSession.date)}. This action cannot be undone.
+              {t('deleteDescription', {
+                studentName: deleteSession?.student_name || '',
+                date: deleteSession ? formatDate(deleteSession.date) : ''
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t('deleting') : t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
