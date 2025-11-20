@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "@/hooks/use-toast"
 import { useDemoData, DemoStudent } from "@/lib/demo-context"
+import { useCurrency } from "@/components/currency-provider"
 
 interface DemoStudentsTableProps {
     students: DemoStudent[]
@@ -28,6 +29,7 @@ export function DemoStudentsTable({ students, onEdit }: DemoStudentsTableProps) 
     const { deleteStudent } = useDemoData()
     const [studentToDelete, setStudentToDelete] = useState<DemoStudent | null>(null)
     const [isDeleting, setIsDeleting] = useState(false)
+    const { formatCurrency } = useCurrency()
 
     const handleDelete = async () => {
         if (!studentToDelete) return
@@ -79,7 +81,7 @@ export function DemoStudentsTable({ students, onEdit }: DemoStudentsTableProps) 
                                     <TableCell className="font-medium">{student.name}</TableCell>
                                     <TableCell className="text-muted-foreground">{student.email || "—"}</TableCell>
                                     <TableCell className="text-muted-foreground">{student.phone || "—"}</TableCell>
-                                    <TableCell className="font-mono">${student.hourly_rate.toFixed(2)}/hr</TableCell>
+                                    <TableCell className="font-mono">{formatCurrency(student.hourly_rate)}/hr</TableCell>
                                     <TableCell>
                                         <Badge variant={student.is_active ? "default" : "secondary"}>
                                             {student.is_active ? "Active" : "Inactive"}

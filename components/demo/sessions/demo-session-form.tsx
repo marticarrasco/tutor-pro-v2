@@ -24,6 +24,7 @@ import { format, parse } from "date-fns"
 import { cn } from "@/lib/utils"
 import { useDemoData, DemoSession } from "@/lib/demo-context"
 import { useDemoSignUp } from "@/lib/demo-signup-context"
+import { useCurrency } from "@/components/currency-provider"
 
 interface DemoSessionFormProps {
     session?: DemoSession
@@ -44,6 +45,7 @@ export function DemoSessionForm({
 }: DemoSessionFormProps) {
     const { students, addSession, updateSession } = useDemoData()
     const { showSignUpDialog } = useDemoSignUp()
+    const { currency, formatCurrency } = useCurrency()
 
     const [formData, setFormData] = useState({
         student_id: session?.student_id || prefilledStudentId || "",
@@ -230,7 +232,7 @@ export function DemoSessionForm({
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="hourly_rate">Hourly Rate ($)</Label>
+                            <Label htmlFor="hourly_rate">Hourly Rate ({currency === "USD" ? "$" : "€"})</Label>
                             <Input
                                 id="hourly_rate"
                                 type="number"
@@ -245,7 +247,7 @@ export function DemoSessionForm({
 
                         <div className="grid gap-2">
                             <Label className="text-sm font-medium">Total Amount</Label>
-                            <div className="text-2xl font-bold text-primary">${totalAmount}</div>
+                            <div className="text-2xl font-bold text-primary">{formatCurrency(Number(totalAmount))}</div>
                         </div>
 
                         <div className="grid gap-2">

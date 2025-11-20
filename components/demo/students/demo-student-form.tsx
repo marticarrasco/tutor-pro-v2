@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "@/hooks/use-toast"
 import { useDemoData, DemoStudent } from "@/lib/demo-context"
+import { useCurrency } from "@/components/currency-provider"
 
 interface DemoStudentFormProps {
     student?: DemoStudent
@@ -25,6 +26,7 @@ interface DemoStudentFormProps {
 
 export function DemoStudentForm({ student, open, onOpenChange }: DemoStudentFormProps) {
     const { addStudent, updateStudent } = useDemoData()
+    const { currency } = useCurrency()
 
     const [formData, setFormData] = useState({
         name: student?.name || "",
@@ -157,7 +159,7 @@ export function DemoStudentForm({ student, open, onOpenChange }: DemoStudentForm
                             </div>
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="hourly_rate">Hourly Rate ($)</Label>
+                            <Label htmlFor="hourly_rate">Hourly Rate ({currency === "USD" ? "$" : "€"})</Label>
                             <Input
                                 id="hourly_rate"
                                 type="number"

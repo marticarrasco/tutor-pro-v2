@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { format } from "date-fns"
+import { useCurrency } from "@/components/currency-provider"
 
 interface SessionDetail {
   id: string
@@ -35,6 +36,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
   const [sessionDetails, setSessionDetails] = useState<SessionDetail[]>([])
   const [isLoadingDetails, setIsLoadingDetails] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { formatCurrency } = useCurrency()
 
   const fetchSessionDetails = async (studentId: string, studentName: string) => {
     setIsLoadingDetails(true)
@@ -108,11 +110,11 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
     return (
       <Card>
         <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5" />
-              Pending Payments
-              <span className="text-base font-normal text-red-600">( $0.00 )</span>
-            </CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Pending Payments
+            <span className="text-base font-normal text-red-600">( {formatCurrency(0)} )</span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-sm text-muted-foreground text-center py-4">
@@ -130,7 +132,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
           <DollarSign className="h-5 w-5" />
           Pending Payments
           <span className="text-base font-normal text-red-600">
-            ( ${studentsWithPendingPayments.reduce((sum, s) => sum + s.totalUnpaid, 0).toFixed(2)} )
+            ( {formatCurrency(studentsWithPendingPayments.reduce((sum, s) => sum + s.totalUnpaid, 0))} )
           </span>
         </CardTitle>
       </CardHeader>
@@ -150,7 +152,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
               <div className="flex items-center gap-3">
                 <div className="text-right">
                   <div className="font-bold text-lg text-red-600">
-                    ${student.totalUnpaid.toFixed(2)}
+                    {formatCurrency(student.totalUnpaid)}
                   </div>
                 </div>
                 <Button
@@ -215,7 +217,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
                           {(session.duration_minutes / 60).toFixed(2)}h
                         </TableCell>
                         <TableCell className="text-right">
-                          ${session.total_amount.toFixed(2)}
+                          {formatCurrency(session.total_amount)}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -225,7 +227,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
                         {totalHours.toFixed(2)}h
                       </TableCell>
                       <TableCell className="text-right">
-                        ${totalAmount.toFixed(2)}
+                        {formatCurrency(totalAmount)}
                       </TableCell>
                     </TableRow>
                   </TableBody>

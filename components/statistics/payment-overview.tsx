@@ -5,6 +5,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis } from "recharts"
 import { ChartPeriodSelector, ChartPeriod } from "./chart-period-selector"
 import { PaymentOverviewData } from "@/types/statistics"
+import { useCurrency } from "@/components/currency-provider"
 
 interface PaymentOverviewProps {
   paymentData: PaymentOverviewData
@@ -18,6 +19,7 @@ const COLORS = {
 }
 
 export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, period, onPeriodChange }) => {
+  const { formatCurrency } = useCurrency()
   const chartConfig = {
     paid: {
       label: "Paid",
@@ -71,7 +73,7 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
                   </Pie>
                   <ChartTooltip
                     content={<ChartTooltipContent />}
-                    formatter={(value, name) => [`$${Number(value).toFixed(2)}`, name]}
+                    formatter={(value, name) => [formatCurrency(Number(value)), name]}
                   />
                   <Legend />
                 </PieChart>
@@ -80,7 +82,7 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
             <div className="grid grid-cols-2 gap-4">
               {paymentData.overview.map((item) => (
                 <div key={item.name} className="text-center">
-                  <div className="text-2xl font-bold">${item.amount.toFixed(2)}</div>
+                  <div className="text-2xl font-bold">{formatCurrency(item.amount)}</div>
                   <div className="text-sm text-muted-foreground">
                     {item.name} ({item.value} sessions)
                   </div>
@@ -109,12 +111,12 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
                     axisLine={false}
                     tickLine={false}
                     stroke="hsl(var(--muted-foreground))"
-                    tickFormatter={(value) => `$${Number(value).toFixed(0)}`}
+                    tickFormatter={(value) => formatCurrency(Number(value))}
                   />
                   <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} stroke="hsl(var(--muted-foreground))" width={140} />
                   <ChartTooltip
                     content={<ChartTooltipContent />}
-                    formatter={(value) => [`$${Number(value).toFixed(2)}`, "Outstanding"]}
+                    formatter={(value) => [formatCurrency(Number(value)), "Outstanding"]}
                     labelFormatter={(label, payload) => {
                       const unpaidSessions = payload?.[0]?.payload?.unpaidSessions || 0
                       return `${label} • ${unpaidSessions} session${unpaidSessions === 1 ? "" : "s"}`

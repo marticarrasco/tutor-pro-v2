@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
+import { useCurrency } from "@/components/currency-provider"
 
 interface RevenueData {
   month: string
@@ -48,6 +49,7 @@ interface MonthDetail {
 }
 
 export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps) => {
+  const { formatCurrency } = useCurrency()
   const [selectedMonth, setSelectedMonth] = useState<MonthDetail | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -181,15 +183,15 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => formatCurrency(value)}
               />
               <ChartTooltip
                 content={<ChartTooltipContent />}
-                formatter={(value, name) => [`$${Number(value).toFixed(2)}`, "Revenue"]}
+                formatter={(value, name) => [formatCurrency(Number(value)), "Revenue"]}
               />
-              <Bar 
-                dataKey="revenue" 
-                fill={chartConfig.revenue.color} 
+              <Bar
+                dataKey="revenue"
+                fill={chartConfig.revenue.color}
                 radius={[4, 4, 0, 0]}
                 onClick={handleBarClick}
                 cursor="pointer"
@@ -222,7 +224,7 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
               <div className="grid grid-cols-2 gap-4">
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="text-2xl font-bold">${selectedMonth.totalRevenue.toFixed(2)}</div>
+                    <div className="text-2xl font-bold">{formatCurrency(selectedMonth.totalRevenue)}</div>
                     <div className="text-sm text-muted-foreground">Total Revenue</div>
                   </CardContent>
                 </Card>
@@ -246,7 +248,7 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
                           {student.sessions} session{student.sessions !== 1 ? "s" : ""}
                         </div>
                       </div>
-                      <div className="text-lg font-semibold">${student.revenue.toFixed(2)}</div>
+                      <div className="text-lg font-semibold">{formatCurrency(student.revenue)}</div>
                     </div>
                   ))}
                 </div>
@@ -258,11 +260,11 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
                 <ChartContainer config={chartConfig}>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={selectedMonth.weekBreakdown}>
-                      <XAxis 
-                        dataKey="week" 
-                        stroke="hsl(var(--muted-foreground))" 
-                        fontSize={11} 
-                        tickLine={false} 
+                      <XAxis
+                        dataKey="week"
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={11}
+                        tickLine={false}
                         axisLine={false}
                         angle={-20}
                         textAnchor="end"
@@ -273,11 +275,11 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
                         fontSize={11}
                         tickLine={false}
                         axisLine={false}
-                        tickFormatter={(value) => `$${value}`}
+                        tickFormatter={(value) => formatCurrency(value)}
                       />
                       <ChartTooltip
                         content={<ChartTooltipContent />}
-                        formatter={(value, name) => [`$${Number(value).toFixed(2)}`, "Revenue"]}
+                        formatter={(value, name) => [formatCurrency(Number(value)), "Revenue"]}
                       />
                       <Bar dataKey="revenue" fill={chartConfig.revenue.color} radius={[4, 4, 0, 0]} />
                     </BarChart>

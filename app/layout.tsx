@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import LoadingPage from "@/components/loading/loading-page"
 import { OrganizationSchema, SoftwareApplicationSchema } from "@/components/seo/structured-data"
+import { CurrencyProvider } from "@/components/currency-provider"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -87,19 +88,21 @@ export default function RootLayout({
       </head>
       <body className={`font-sans bg-background ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} themes={["dark", "light"]}>
-          <Suspense
-            fallback={
-              <LoadingPage
-                title="Launching Derno"
-                description="Polishing the dashboard experience and loading your personalized workspace."
-                tip="Stay tuned—the tools you need to run your tutoring business are seconds away."
-              />
-            }
-          >
-            {children}
-          </Suspense>
-          <Toaster />
-          <Analytics />
+          <CurrencyProvider>
+            <Suspense
+              fallback={
+                <LoadingPage
+                  title="Launching Derno"
+                  description="Polishing the dashboard experience and loading your personalized workspace."
+                  tip="Stay tuned—the tools you need to run your tutoring business are seconds away."
+                />
+              }
+            >
+              {children}
+            </Suspense>
+            <Toaster />
+            <Analytics />
+          </CurrencyProvider>
         </ThemeProvider>
       </body>
     </html>

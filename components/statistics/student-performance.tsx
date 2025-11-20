@@ -6,6 +6,7 @@ import { ChartPeriodSelector, ChartPeriod } from "./chart-period-selector"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { StudentStat } from "@/types/statistics"
+import { useCurrency } from "@/components/currency-provider"
 
 interface StudentPerformanceProps {
   studentStats: StudentStat[]
@@ -14,6 +15,7 @@ interface StudentPerformanceProps {
 }
 
 export function StudentPerformance({ studentStats, period, onPeriodChange }: StudentPerformanceProps) {
+  const { formatCurrency } = useCurrency()
   const clvData = [...studentStats].sort((a, b) => b.total_revenue - a.total_revenue)
 
   const formatHours = (minutes: number) => {
@@ -57,7 +59,7 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
                       </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      ${student.total_revenue.toFixed(2)} • {student.total_sessions} sessions
+                      {formatCurrency(student.total_revenue)} • {student.total_sessions} sessions
                     </div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -76,11 +78,11 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
                     <div>
                       <div className="text-muted-foreground">Rate</div>
                       <div className="font-medium">
-                        ${
+                        {formatCurrency(
                           student.total_hours > 0
-                            ? (student.total_revenue / (student.total_hours / 60)).toFixed(0)
-                            : "0"
-                        }
+                            ? student.total_revenue / (student.total_hours / 60)
+                            : 0
+                        )}
                         /hr
                       </div>
                     </div>
@@ -102,12 +104,12 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
                       axisLine={false}
                       tickLine={false}
                       stroke="hsl(var(--muted-foreground))"
-                      tickFormatter={(value) => `$${Number(value).toFixed(0)}`}
+                      tickFormatter={(value) => formatCurrency(Number(value))}
                     />
                     <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} stroke="hsl(var(--muted-foreground))" width={140} />
                     <ChartTooltip
                       content={<ChartTooltipContent />}
-                      formatter={(value) => [`$${Number(value).toFixed(2)}`, "CLV"]}
+                      formatter={(value) => [formatCurrency(Number(value)), "CLV"]}
                       labelFormatter={(label) => label}
                     />
                     <Bar dataKey="total_revenue" fill={clvChartConfig.total_revenue.color} radius={[0, 4, 4, 0]} />

@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp } from "lucide-react"
+import { useCurrency } from "@/components/currency-provider"
 
 interface StudentRevenue {
   studentId: string
@@ -17,6 +18,7 @@ interface MonthlyRevenueProps {
 export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
   const totalRevenue = studentRevenues.reduce((sum, s) => sum + s.totalRevenue, 0)
   const totalSessions = studentRevenues.reduce((sum, s) => sum + s.sessionCount, 0)
+  const { formatCurrency } = useCurrency()
 
   if (studentRevenues.length === 0) {
     return (
@@ -25,7 +27,7 @@ export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
             This Month's Revenue
-            <span className="text-base font-normal text-green-600">( $0.00 )</span>
+            <span className="text-base font-normal text-green-600">( {formatCurrency(0)} )</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -44,7 +46,7 @@ export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
           <TrendingUp className="h-5 w-5" />
           This Month's Revenue
           <span className="text-base font-normal text-green-600">
-            ( ${totalRevenue.toFixed(2)} )
+            ( {formatCurrency(totalRevenue)} )
           </span>
         </CardTitle>
       </CardHeader>
@@ -63,12 +65,12 @@ export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
               </div>
               <div className="text-right">
                 <div className="font-bold text-lg text-green-600">
-                  ${student.totalRevenue.toFixed(2)}
+                  {formatCurrency(student.totalRevenue)}
                 </div>
               </div>
             </div>
           ))}
-          
+
           {studentRevenues.length > 1 && (
             <div className="pt-3 mt-3 border-t">
               <div className="flex items-center justify-between p-3 rounded-lg bg-muted">
@@ -79,7 +81,7 @@ export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
                   </span>
                 </div>
                 <div className="font-bold text-xl text-green-600">
-                  ${totalRevenue.toFixed(2)}
+                  {formatCurrency(totalRevenue)}
                 </div>
               </div>
             </div>

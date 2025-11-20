@@ -16,12 +16,15 @@ import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { ExportDialog } from "@/components/export/export-dialog"
 import { PageHeader } from "@/components/page-header"
+import { useCurrency } from "@/components/currency-provider"
 
 import { Session } from "@/types/data"
 
 export default function SessionsPage() {
   useDocumentTitle("Session Management")
   useDocumentMeta("View, edit, and export your tutoring sessions. Track payment status and manage lesson notes for all your sessions.")
+
+  const { formatCurrency } = useCurrency()
 
   const [sessions, setSessions] = useState<Session[]>([])
   const [filteredSessions, setFilteredSessions] = useState<Session[]>([])
@@ -184,7 +187,7 @@ export default function SessionsPage() {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+                <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
               </CardContent>
             </Card>
             <Card>
@@ -193,7 +196,7 @@ export default function SessionsPage() {
                 <DollarSign className="h-4 w-4 text-destructive" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-destructive">${unpaidAmount.toFixed(2)}</div>
+                <div className="text-2xl font-bold text-destructive">{formatCurrency(unpaidAmount)}</div>
               </CardContent>
             </Card>
             <Card>

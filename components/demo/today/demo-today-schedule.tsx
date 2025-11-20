@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { DemoSessionForm } from "@/components/demo/sessions/demo-session-form"
 import { useDemoSignUp } from "@/lib/demo-signup-context"
+import { useCurrency } from "@/components/currency-provider"
 
 interface TodayClass {
     id: string
@@ -31,6 +32,7 @@ export function DemoTodaySchedule({ todayClasses, onRefresh }: DemoTodaySchedule
     const [showSessionForm, setShowSessionForm] = useState(false)
     const [selectedClass, setSelectedClass] = useState<TodayClass | null>(null)
     const { showSignUpDialog } = useDemoSignUp()
+    const { formatCurrency } = useCurrency()
 
     const formatTime = (time: string) => {
         const [hours, minutes] = time.split(":")
@@ -118,7 +120,7 @@ export function DemoTodaySchedule({ todayClasses, onRefresh }: DemoTodaySchedule
 
                                         {todayClass.status === "completed" && todayClass.session_amount !== undefined && (
                                             <div className="text-xs">
-                                                Logged: <span className="font-semibold">${todayClass.session_amount.toFixed(2)}</span>{" "}
+                                                Logged: <span className="font-semibold">{formatCurrency(todayClass.session_amount)}</span>{" "}
 
                                             </div>
                                         )}

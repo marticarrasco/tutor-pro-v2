@@ -24,6 +24,7 @@ import { toast } from "@/hooks/use-toast"
 import { CalendarIcon } from "lucide-react"
 import { format, parse } from "date-fns"
 import { cn } from "@/lib/utils"
+import { useCurrency } from "@/components/currency-provider"
 
 interface Student {
   id: string
@@ -80,6 +81,7 @@ export function SessionForm({
   const [calendarDate, setCalendarDate] = useState<Date | undefined>(
     session?.date ? parse(session.date, "yyyy-MM-dd", new Date()) : new Date(),
   )
+  const { currency, formatCurrency } = useCurrency()
 
   // Fetch students for dropdown
   useEffect(() => {
@@ -297,11 +299,11 @@ export function SessionForm({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar 
-                    mode="single" 
-                    selected={calendarDate} 
-                    onSelect={handleDateSelect} 
-                    initialFocus 
+                  <Calendar
+                    mode="single"
+                    selected={calendarDate}
+                    onSelect={handleDateSelect}
+                    initialFocus
                     weekStartsOn={1}
                   />
                 </PopoverContent>
@@ -327,7 +329,7 @@ export function SessionForm({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="hourly_rate">Hourly Rate ($)</Label>
+              <Label htmlFor="hourly_rate">Hourly Rate ({currency === "USD" ? "$" : "€"})</Label>
               <Input
                 id="hourly_rate"
                 type="number"
@@ -342,7 +344,7 @@ export function SessionForm({
 
             <div className="grid gap-2">
               <Label className="text-sm font-medium">Total Amount</Label>
-              <div className="text-2xl font-bold text-primary">${totalAmount}</div>
+              <div className="text-2xl font-bold text-primary">{formatCurrency(Number(totalAmount))}</div>
             </div>
 
             <div className="grid gap-2">

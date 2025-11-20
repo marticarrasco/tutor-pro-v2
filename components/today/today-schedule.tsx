@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { CancelSessionDialog, type CancelSessionForm } from "@/components/today/cancel-session-dialog"
+import { useCurrency } from "@/components/currency-provider"
 
 interface TodayClass {
   id: string
@@ -38,6 +39,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [classToCancel, setClassToCancel] = useState<TodayClass | null>(null)
   const [isCancelling, setIsCancelling] = useState(false)
+  const { formatCurrency } = useCurrency()
 
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(":")
@@ -195,7 +197,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
             <Clock className="h-5 w-5" />
             Today's Schedule
           </CardTitle>
-         </CardHeader>
+        </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
             <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -215,20 +217,20 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
             <Clock className="h-5 w-5" />
             Today's Schedule
           </CardTitle>
-         </CardHeader>
+        </CardHeader>
         <CardContent className="space-y-2">
           {(todayClasses.slice(0, 3)).map((todayClass) => {
             const containerClasses =
               todayClass.status === "completed"
                 ? "bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800"
                 : todayClass.status === "cancelled"
-                ? "bg-amber-50 border-amber-200 dark:bg-amber-900/30 dark:border-amber-700"
-                : "bg-card border-border"
+                  ? "bg-amber-50 border-amber-200 dark:bg-amber-900/30 dark:border-amber-700"
+                  : "bg-card border-border"
 
             return (
-              <div key={todayClass.id} className={`flex items-center justify-between px-2 py-1 rounded-lg border ${containerClasses} min-h-[40px]`}> 
+              <div key={todayClass.id} className={`flex items-center justify-between px-2 py-1 rounded-lg border ${containerClasses} min-h-[40px]`}>
                 <div className="flex items-center gap-2">
-                   
+
                   <div>
                     <div className="flex items-center gap-1">
                       <User className="h-3 w-3 text-muted-foreground" />
@@ -237,14 +239,14 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
                         {formatTime(todayClass.start_time)} - {getEndTime(todayClass.start_time, todayClass.duration_minutes)}
                       </div>
                     </div>
-                     
-                  {todayClass.status === "completed" && todayClass.session_amount !== undefined && (
-                    <div className="text-xs">
-                      Logged: <span className="font-semibold">${todayClass.session_amount.toFixed(2)}</span>{" "}
-                       
-                    </div>
-                  )}
-                   
+
+                    {todayClass.status === "completed" && todayClass.session_amount !== undefined && (
+                      <div className="text-xs">
+                        Logged: <span className="font-semibold">{formatCurrency(todayClass.session_amount)}</span>{" "}
+
+                      </div>
+                    )}
+
                     {todayClass.status === "cancelled" && (
                       <div className="text-[10px] text-amber-600 dark:text-amber-300">
                         Cancelled by {todayClass.cancelled_by === "teacher" ? "teacher" : "student"}
@@ -260,7 +262,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
                     className={todayClass.status === "completed" ? "bg-green-600 hover:bg-green-700 text-white px-4 py-1 text-xs" : "px-9 py-1 text-xs"}
                     disabled={todayClass.status === "cancelled"}
                   >
-                     {todayClass.status === "completed" ? "Logged" : "Log"}
+                    {todayClass.status === "completed" ? "Logged" : "Log"}
                   </Button>
                   <Button
                     variant="ghost"

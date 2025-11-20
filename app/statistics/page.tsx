@@ -20,6 +20,7 @@ import { ChartPeriod } from "@/components/statistics/chart-period-selector"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { PageHeader } from "@/components/page-header"
+import { useCurrency } from "@/components/currency-provider"
 import {
   CancellationData,
   PaymentOverviewData,
@@ -39,7 +40,9 @@ interface OverallStats {
 export default function StatisticsPage() {
   useDocumentTitle("Statistics & Analytics")
   useDocumentMeta("Monitor revenue trends, student performance, and teaching hours with comprehensive analytics. Understand how your tutoring business is evolving.")
-  
+
+  const { formatCurrency } = useCurrency()
+
   const [overallStats, setOverallStats] = useState<OverallStats>({
     totalRevenue: 0,
     totalSessions: 0,
@@ -63,7 +66,7 @@ export default function StatisticsPage() {
     byStudent: [],
   })
   const [sessionDurationData, setSessionDurationData] = useState<number[]>([])
-  
+
   // Individual period states for each chart
   const [revenuePeriod, setRevenuePeriod] = useState<ChartPeriod>({ type: "3months" })
   const [paymentPeriod, setPaymentPeriod] = useState<ChartPeriod>({ type: "3months" })
@@ -571,7 +574,7 @@ export default function StatisticsPage() {
                       <div
                         key={j}
                         className="w-12 rounded-t bg-muted animate-pulse-gentle"
-                        style={{ 
+                        style={{
                           height: `${height}%`,
                           animationDelay: `${j * 0.1}s`
                         }}
@@ -618,8 +621,8 @@ export default function StatisticsPage() {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${overallStats.totalRevenue.toFixed(2)}</div>
-                <p className="text-xs text-muted-foreground">${overallStats.unpaidAmount.toFixed(2)} unpaid</p>
+                <div className="text-2xl font-bold">{formatCurrency(overallStats.totalRevenue)}</div>
+                <p className="text-xs text-muted-foreground">{formatCurrency(overallStats.unpaidAmount)} unpaid</p>
               </CardContent>
             </Card>
             <Card>
@@ -639,7 +642,7 @@ export default function StatisticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{overallStats.activeStudents}</div>
-                <p className="text-xs text-muted-foreground">${overallStats.avgHourlyRate.toFixed(2)} avg rate</p>
+                <p className="text-xs text-muted-foreground">{formatCurrency(overallStats.avgHourlyRate)} avg rate</p>
               </CardContent>
             </Card>
             <Card>

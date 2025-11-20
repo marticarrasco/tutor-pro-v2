@@ -14,12 +14,15 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { PageHeader } from "@/components/page-header"
+import { useCurrency } from "@/components/currency-provider"
 
 import { Student } from "@/types/data"
 
 export default function StudentsPage() {
   useDocumentTitle("Student Management")
   useDocumentMeta("Manage your students with detailed records, contact information, and hourly rates. Keep track of all your tutoring relationships.")
+
+  const { formatCurrency } = useCurrency()
 
   const [students, setStudents] = useState<Student[]>([])
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([])
@@ -150,12 +153,11 @@ export default function StudentsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  $
-                  {activeStudents > 0
-                    ? (
-                      students.filter((s) => s.is_active).reduce((sum, s) => sum + s.hourly_rate, 0) / activeStudents
-                    ).toFixed(0)
-                    : "0"}
+                  {formatCurrency(
+                    activeStudents > 0
+                      ? students.filter((s) => s.is_active).reduce((sum, s) => sum + s.hourly_rate, 0) / activeStudents
+                      : 0
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -12,16 +12,26 @@ import { User } from "@supabase/supabase-js"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PageHeader } from "@/components/page-header"
 import { Settings as SettingsIcon } from "lucide-react"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Currency } from "@/lib/currency-utils"
 
 export default function SettingsPage() {
   useDocumentTitle("Account Settings")
   useDocumentMeta("Manage your Derno account settings, profile information, and preferences.")
-  
+
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
+  const [currency, setCurrency] = useState<Currency>("USD")
   const { toast } = useToast()
   const supabase = createClient()
 
@@ -33,6 +43,21 @@ export default function SettingsPage() {
       setUser(user)
       setFullName(user?.user_metadata?.full_name || "")
       setEmail(user?.email || "")
+
+      // Fetch profile data to get currency
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("currency")
+        .eq("id", user?.id)
+        .single()
+
+      if (profile?.currency) {
+        setCurrency(profile.currency as Currency)
+      } else {
+        // Fallback to metadata or default
+        setCurrency((user?.user_metadata?.currency as Currency) || "USD")
+      }
+
       setLoading(false)
     }
 
@@ -54,7 +79,7 @@ export default function SettingsPage() {
       }
 
       const { data, error } = await supabase.auth.updateUser({
-        data: { full_name: trimmedName, age: 0, country: "N/A" },
+        data: { full_name: trimmedName, currency: currency },
       })
 
       if (error) throw error
@@ -66,8 +91,7 @@ export default function SettingsPage() {
           id: user.id,
           email: user.email,
           full_name: trimmedName,
-          age: 0,
-          country: "N/A",
+          currency: currency,
           updated_at: new Date().toISOString(),
         },
         { onConflict: "id" }
@@ -94,87 +118,107 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="p-8 space-y-6">
-        <div>
-          <Skeleton className="h-8 w-48 mb-2" />
-          <Skeleton className="h-4 w-96" />
-        </div>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-32 mb-2" />
-            <Skeleton className="h-4 w-64" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-24" />
-          </CardContent>
-        </Card>
-      </div>
+      <SidebarProvider>
+        <SidebarInset>
+          <div className="p-8 space-y-6">
+            <div>
+              <Skeleton className="h-8 w-48 mb-2" />
+              <Skeleton className="h-4 w-96" />
+            </div>
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-32 mb-2" />
+                <Skeleton className="h-4 w-64" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-24" />
+              </CardContent>
+            </Card>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
     )
   }
 
   return (
-    <div className="p-8 space-y-6">
-      <PageHeader
-        className="pt-0"
-        icon={<SettingsIcon className="h-6 w-6" />}
-        eyebrow="Account"
-        title="Settings & Preferences"
-        description="Update your personal information, manage authentication details, and review account history."
-      />
+    <SidebarProvider>
+      <SidebarInset>
+        <div className="p-8 space-y-6">
+          <PageHeader
+            className="pt-0"
+            icon={<SettingsIcon className="h-6 w-6" />}
+            eyebrow="Account"
+            title="Settings & Preferences"
+            description="Update your personal information, manage authentication details, and review account history."
+          />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
-          <CardDescription>Update your personal information</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleUpdateProfile} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="full-name">Full Name</Label>
-              <Input
-                id="full-name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Enter your full name"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" value={email} disabled className="bg-muted" />
-              <p className="text-sm text-muted-foreground">Email cannot be changed</p>
-            </div>
-            <Button type="submit" disabled={updating}>
-              {updating ? "Updating..." : "Update Profile"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Profile Information</CardTitle>
+              <CardDescription>Update your personal information</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleUpdateProfile} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="full-name">Full Name</Label>
+                  <Input
+                    id="full-name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="currency">Currency</Label>
+                  <Select value={currency} onValueChange={(value: Currency) => setCurrency(value)}>
+                    <SelectTrigger id="currency">
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">USD ($)</SelectItem>
+                      <SelectItem value="EUR">EUR (€)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" value={email} disabled className="bg-muted" />
+                  <p className="text-sm text-muted-foreground">Email cannot be changed</p>
+                </div>
+                <Button type="submit" disabled={updating}>
+                  {updating ? "Updating..." : "Update Profile"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-          <CardDescription>Your account details</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex justify-between py-2 border-b">
-            <span className="text-muted-foreground">User ID</span>
-            <span className="font-mono text-sm">{user?.id.slice(0, 8)}...</span>
-          </div>
-          <div className="flex justify-between py-2 border-b">
-            <span className="text-muted-foreground">Account Created</span>
-            <span className="text-sm">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}</span>
-          </div>
-          <div className="flex justify-between py-2">
-            <span className="text-muted-foreground">Last Sign In</span>
-            <span className="text-sm">
-              {user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : "N/A"}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Account Information</CardTitle>
+              <CardDescription>Your account details</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-muted-foreground">User ID</span>
+                <span className="font-mono text-sm">{user?.id.slice(0, 8)}...</span>
+              </div>
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-muted-foreground">Account Created</span>
+                <span className="text-sm">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}</span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="text-muted-foreground">Last Sign In</span>
+                <span className="text-sm">
+                  {user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : "N/A"}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
 

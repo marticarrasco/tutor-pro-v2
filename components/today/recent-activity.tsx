@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useCurrency } from "@/components/currency-provider"
 
 interface RecentSession {
   id: string
@@ -51,6 +52,7 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
 
   const [updatingId, setUpdatingId] = useState<string | null>(null)
   const [sessions, setSessions] = useState(recentSessions)
+  const { formatCurrency } = useCurrency()
 
   // Update local state if prop changes
   useEffect(() => {
@@ -138,7 +140,7 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
                     >
                       {session.is_cancelled ? "Cancelled" : session.is_paid ? "Paid" : "Unpaid"}
                     </Badge>
-                    <span className="font-semibold">${session.total_amount.toFixed(2)}</span>
+                    <span className="font-semibold">{formatCurrency(session.total_amount)}</span>
                   </div>
                 </div>
               </div>

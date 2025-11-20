@@ -19,6 +19,7 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
+import { useCurrency } from "@/components/currency-provider"
 
 import { Session } from "@/types/data"
 
@@ -31,7 +32,9 @@ interface SessionsTableProps {
 
 export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChange }: SessionsTableProps) {
   const [deleteSession, setDeleteSession] = useState<Session | null>(null)
+
   const [isDeleting, setIsDeleting] = useState(false)
+  const { formatCurrency } = useCurrency()
 
   const handleDelete = async () => {
     if (!deleteSession) return
@@ -141,8 +144,8 @@ export function SessionsTable({ sessions, onEdit, onDelete, onPaymentStatusChang
                   <TableCell className="font-medium">{session.student_name}</TableCell>
                   <TableCell className="text-muted-foreground">{formatDate(session.date)}</TableCell>
                   <TableCell className="font-mono">{formatDuration(session.duration_minutes)}</TableCell>
-                  <TableCell className="font-mono">${session.hourly_rate.toFixed(2)}/hr</TableCell>
-                  <TableCell className="font-mono font-semibold">${session.total_amount.toFixed(2)}</TableCell>
+                  <TableCell className="font-mono">{formatCurrency(session.hourly_rate)}/hr</TableCell>
+                  <TableCell className="font-mono font-semibold">{formatCurrency(session.total_amount)}</TableCell>
                   <TableCell>
                     {session.is_cancelled ? (
                       <Badge variant="outline" className="text-amber-600 border-amber-400">

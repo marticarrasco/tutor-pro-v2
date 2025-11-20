@@ -41,6 +41,10 @@ export default function SignUpPage() {
     }
 
     try {
+      // Fetch user location and currency
+      const { fetchUserLocation } = await import("@/lib/currency-utils")
+      const { country, currency } = await fetchUserLocation()
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -49,7 +53,8 @@ export default function SignUpPage() {
           data: {
             full_name: fullName.trim(),
             age: 0,
-            country: "N/A",
+            country: country,
+            currency: currency,
           },
         },
       })

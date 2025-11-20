@@ -19,6 +19,7 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
+import { useCurrency } from "@/components/currency-provider"
 
 import { Student } from "@/types/data"
 
@@ -31,6 +32,7 @@ interface StudentsTableProps {
 export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps) {
   const [deleteStudent, setDeleteStudent] = useState<Student | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const { formatCurrency } = useCurrency()
 
   const handleDelete = async () => {
     if (!deleteStudent) return
@@ -89,7 +91,7 @@ export function StudentsTable({ students, onEdit, onDelete }: StudentsTableProps
                   <TableCell className="font-medium">{student.name}</TableCell>
                   <TableCell className="text-muted-foreground">{student.email || "—"}</TableCell>
                   <TableCell className="text-muted-foreground">{student.phone || "—"}</TableCell>
-                  <TableCell className="font-mono">${student.hourly_rate.toFixed(2)}/hr</TableCell>
+                  <TableCell className="font-mono">{formatCurrency(student.hourly_rate)}/hr</TableCell>
                   <TableCell>
                     <Badge variant={student.is_active ? "default" : "secondary"}>
                       {student.is_active ? "Active" : "Inactive"}

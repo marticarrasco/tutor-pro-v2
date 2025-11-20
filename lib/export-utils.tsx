@@ -20,6 +20,7 @@ export interface InvoiceData {
   sessions: SessionData[]
   total_amount: number
   invoice_number: string
+  currency: "USD" | "EUR"
   date_range: {
     start: string
     end: string
@@ -65,7 +66,8 @@ export function downloadCSV(content: string, filename: string) {
 
 // Generate HTML invoice content
 export function generateInvoiceHTML(invoiceData: InvoiceData): string {
-  const { student_name, student_email, sessions, total_amount, invoice_number, date_range } = invoiceData
+  const { student_name, student_email, sessions, total_amount, invoice_number, date_range, currency } = invoiceData
+  const formatMoney = (amount: number) => currency === "USD" ? `$${amount.toFixed(2)}` : `${amount.toFixed(2)} €`
 
   return `
     <!DOCTYPE html>
@@ -113,22 +115,22 @@ export function generateInvoiceHTML(invoiceData: InvoiceData): string {
         </thead>
         <tbody>
           ${sessions
-            .map(
-              (session) => `
+      .map(
+        (session) => `
             <tr>
               <td>${new Date(session.date).toLocaleDateString()}</td>
               <td>${session.duration} hours</td>
-              <td>$${session.hourly_rate}/hour</td>
-              <td>$${session.total_amount.toFixed(2)}</td>
+              <td>${formatMoney(session.hourly_rate)}/hour</td>
+              <td>${formatMoney(session.total_amount)}</td>
             </tr>
           `,
-            )
-            .join("")}
+      )
+      .join("")}
         </tbody>
       </table>
       
       <div class="total">
-        <p>Total Amount: $${total_amount.toFixed(2)}</p>
+        <p>Total Amount: ${formatMoney(total_amount)}</p>
       </div>
       
       <div class="footer">
@@ -201,16 +203,19 @@ export async function fetchSessionsForExport(filters: {
   if (error) throw error
 
   return (
-    data?.map((session) => ({
-      id: session.id,
-      student_name: session.students?.name || "Unknown",
-      student_email: session.students?.email || "",
-      date: session.date,
-      duration: session.duration_minutes / 60, // Convert minutes to hours
-      hourly_rate: session.hourly_rate,
-      total_amount: session.total_amount,
-      is_paid: session.is_paid,
-      notes: session.notes,
-    })) || []
+    data?.map((session) => {
+      const student = Array.isArray(session.students) ? session.students[0] : session.students
+      return {
+        id: session.id,
+        student_name: student?.name || "Unknown",
+        student_email: student?.email || "",
+        date: session.date,
+        duration: session.duration_minutes / 60, // Convert minutes to hours
+        hourly_rate: session.hourly_rate,
+        total_amount: session.total_amount,
+        is_paid: session.is_paid,
+        notes: session.notes,
+      }
+    }) || []
   )
 }

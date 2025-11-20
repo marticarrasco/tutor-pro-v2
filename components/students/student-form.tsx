@@ -18,6 +18,7 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
+import { useCurrency } from "@/components/currency-provider"
 
 import { Student } from "@/types/data"
 
@@ -40,6 +41,7 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
     is_active: student?.is_active ?? true,
   })
   const [isLoading, setIsLoading] = useState(false)
+  const { currency } = useCurrency()
 
   useEffect(() => {
     if (open) {
@@ -170,7 +172,7 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="hourly_rate">Hourly Rate ($)</Label>
+              <Label htmlFor="hourly_rate">Hourly Rate ({currency === "USD" ? "$" : "€"})</Label>
               <Input
                 id="hourly_rate"
                 type="number"
