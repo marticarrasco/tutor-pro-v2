@@ -28,7 +28,10 @@ interface ChartPeriodSelectorProps {
   className?: string
 }
 
+import { useTranslations } from 'next-intl'
+
 export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodSelectorProps) {
+  const t = useTranslations('StatisticsPage.periodSelector')
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [tempDateFrom, setTempDateFrom] = useState<Date | undefined>(value.customRange?.from)
   const [tempDateTo, setTempDateTo] = useState<Date | undefined>(value.customRange?.to)
@@ -102,15 +105,15 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
     }
     switch (value.type) {
       case "week":
-        return "Last Week"
+        return t('week')
       case "month":
-        return "Last Month"
+        return t('month')
       case "3months":
-        return "Last 3 Months"
+        return t('quarter')
       case "all":
-        return "All Time"
+        return t('all')
       default:
-        return "Select Period"
+        return t('selectPeriod')
     }
   }
 
@@ -121,11 +124,11 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
           <SelectValue>{getDisplayValue()}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="week">Last Week</SelectItem>
-          <SelectItem value="month">Last Month</SelectItem>
-          <SelectItem value="3months">Last 3 Months</SelectItem>
-          <SelectItem value="all">All Time</SelectItem>
-          <SelectItem value="custom">Custom Range</SelectItem>
+          <SelectItem value="week">{t('lastWeek')}</SelectItem>
+          <SelectItem value="month">{t('lastMonth')}</SelectItem>
+          <SelectItem value="3months">{t('last3Months')}</SelectItem>
+          <SelectItem value="all">{t('allTime')}</SelectItem>
+          <SelectItem value="custom">{t('customRange')}</SelectItem>
         </SelectContent>
       </Select>
 
@@ -139,7 +142,7 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
                   {format(value.customRange.from, "MMM d")} - {format(value.customRange.to, "MMM d, yyyy")}
                 </>
               ) : (
-                <span>Pick a date range</span>
+                <span>{t('pickRange')}</span>
               )}
             </Button>
           </PopoverTrigger>
@@ -148,7 +151,7 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
               {currentStep === "to" ? (
                 <>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">To Date (End)</label>
+                    <label className="text-sm font-medium mb-2 block">{t('toDate')}</label>
                     <Input
                       type="text"
                       placeholder="MM/DD/YYYY"
@@ -167,13 +170,13 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
                     />
                   </div>
                   <Button onClick={handleNextStep} disabled={!tempDateTo} className="w-full">
-                    Next: Select Start Date
+                    {t('nextSelectStart')}
                   </Button>
                 </>
               ) : (
                 <>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">From Date (Start)</label>
+                    <label className="text-sm font-medium mb-2 block">{t('fromDate')}</label>
                     <Input
                       type="text"
                       placeholder="MM/DD/YYYY"
@@ -193,10 +196,10 @@ export function ChartPeriodSelector({ value, onChange, className }: ChartPeriodS
                   </div>
                   <div className="flex gap-2">
                     <Button onClick={() => setCurrentStep("to")} variant="outline" className="flex-1">
-                      Back
+                      {t('back')}
                     </Button>
                     <Button onClick={handleApplyCustomRange} disabled={!tempDateFrom} className="flex-1">
-                      Apply
+                      {t('apply')}
                     </Button>
                   </div>
                 </>

@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp } from "lucide-react"
 import { useCurrency } from "@/components/currency-provider"
 
+import { useTranslations } from 'next-intl'
+
 interface StudentRevenue {
   studentId: string
   studentName: string
@@ -16,6 +18,7 @@ interface MonthlyRevenueProps {
 }
 
 export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
+  const t = useTranslations('HomePage.monthlyRevenue')
   const totalRevenue = studentRevenues.reduce((sum, s) => sum + s.totalRevenue, 0)
   const totalSessions = studentRevenues.reduce((sum, s) => sum + s.sessionCount, 0)
   const { formatCurrency } = useCurrency()
@@ -26,13 +29,13 @@ export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            This Month's Revenue
+            {t('title')}
             <span className="text-base font-normal text-green-600">( {formatCurrency(0)} )</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-sm text-muted-foreground text-center py-4">
-            No sessions this month yet
+            {t('noSessions')}
           </div>
         </CardContent>
       </Card>
@@ -44,7 +47,7 @@ export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
-          This Month's Revenue
+          {t('title')}
           <span className="text-base font-normal text-green-600">
             ( {formatCurrency(totalRevenue)} )
           </span>
@@ -60,7 +63,7 @@ export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
               <div className="flex-1 flex items-center gap-2">
                 <span className="font-medium">{student.studentName}</span>
                 <span className="text-sm text-muted-foreground">
-                  {student.sessionCount} session{student.sessionCount !== 1 ? "s" : ""}
+                  {t('sessions', { count: student.sessionCount })}
                 </span>
               </div>
               <div className="text-right">
@@ -75,9 +78,9 @@ export function MonthlyRevenue({ studentRevenues }: MonthlyRevenueProps) {
             <div className="pt-3 mt-3 border-t">
               <div className="flex items-center justify-between p-3 rounded-lg bg-muted">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold">Total</span>
+                  <span className="font-bold">{t('total')}</span>
                   <span className="text-sm text-muted-foreground">
-                    {totalSessions} session{totalSessions !== 1 ? "s" : ""}
+                    {t('sessions', { count: totalSessions })}
                   </span>
                 </div>
                 <div className="font-bold text-xl text-green-600">

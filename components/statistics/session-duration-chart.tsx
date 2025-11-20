@@ -60,7 +60,11 @@ function calculateSummary(values: number[]) {
   }
 }
 
+import { useTranslations } from 'next-intl'
+
 export function SessionDurationChart({ data, period, onPeriodChange }: SessionDurationChartProps) {
+  const t = useTranslations('StatisticsPage.sessionDuration')
+  const tStats = useTranslations('StatisticsPage')
   const distribution = buildDistribution(data)
   const summary = calculateSummary(data)
 
@@ -69,8 +73,8 @@ export function SessionDurationChart({ data, period, onPeriodChange }: SessionDu
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Session Duration Distribution</CardTitle>
-            <CardDescription>How long your lessons typically last</CardDescription>
+            <CardTitle>{t('title')}</CardTitle>
+            <CardDescription>{t('description')}</CardDescription>
           </div>
           <ChartPeriodSelector value={period} onChange={onPeriodChange} />
         </div>
@@ -78,41 +82,41 @@ export function SessionDurationChart({ data, period, onPeriodChange }: SessionDu
       <CardContent className="space-y-6">
         {distribution.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No completed sessions for the selected period.
+            {t('noData')}
           </div>
         ) : (
           <>
             <ChartContainer
               config={{
                 count: {
-                  label: "Sessions",
+                  label: tStats('revenueChart.sessions', { count: 2 }), // Use plural form for label
                   color: "#F97316",
                 },
               }}
             >
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={distribution} margin={{ top: 8, right: 16, left: 16, bottom: 24 }}>
-                  <XAxis 
-                    dataKey="duration" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    stroke="hsl(var(--muted-foreground))" 
-                    angle={-45} 
+                  <XAxis
+                    dataKey="duration"
+                    axisLine={false}
+                    tickLine={false}
+                    stroke="hsl(var(--muted-foreground))"
+                    angle={-45}
                     textAnchor="end"
                     height={60}
                     interval={Math.ceil(distribution.length / 15)}
                   />
-                  <YAxis 
-                    allowDecimals={false} 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <YAxis
+                    allowDecimals={false}
+                    axisLine={false}
+                    tickLine={false}
                     stroke="hsl(var(--muted-foreground))"
-                    label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }}
+                    label={{ value: t('frequency'), angle: -90, position: 'insideLeft' }}
                   />
                   <ChartTooltip
                     content={<ChartTooltipContent />}
-                    formatter={(value) => [`${value} session${Number(value) === 1 ? "" : "s"}`, "Frequency"]}
-                    labelFormatter={(label) => `${label} minutes`}
+                    formatter={(value) => [`${value} ${tStats('revenueChart.sessions', { count: Number(value) })}`, t('frequency')]}
+                    labelFormatter={(label) => `${label} ${t('minutes')}`}
                   />
                   <Bar dataKey="count" radius={[4, 4, 0, 0]} fill="#F97316" />
                 </BarChart>
@@ -121,15 +125,15 @@ export function SessionDurationChart({ data, period, onPeriodChange }: SessionDu
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold">{summary.average.toFixed(0)} min</div>
-                <div className="text-sm text-muted-foreground">Average duration</div>
+                <div className="text-sm text-muted-foreground">{t('averageDuration')}</div>
               </div>
               <div>
                 <div className="text-2xl font-bold">{summary.median.toFixed(0)} min</div>
-                <div className="text-sm text-muted-foreground">Median duration</div>
+                <div className="text-sm text-muted-foreground">{t('medianDuration')}</div>
               </div>
               <div>
                 <div className="text-2xl font-bold">{summary.max.toFixed(0)} min</div>
-                <div className="text-sm text-muted-foreground">Longest session</div>
+                <div className="text-sm text-muted-foreground">{t('longestSession')}</div>
               </div>
             </div>
           </>

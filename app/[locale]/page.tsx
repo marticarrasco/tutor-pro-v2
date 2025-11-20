@@ -77,8 +77,8 @@ interface RecentSession {
 
 export default function HomePage() {
   const t = useTranslations('HomePage');
-  useDocumentTitle(t('title'))
-  useDocumentMeta("Your Derno dashboard - Review today's schedule, log new sessions, and monitor outstanding payments at a glance.")
+  useDocumentTitle(t('documentTitle'))
+  useDocumentMeta(t('documentDescription'))
 
   const [mounted, setMounted] = useState(false)
   const [user, setUser] = useState<User | null>(null)
@@ -162,7 +162,7 @@ export default function HomePage() {
     } catch (error) {
       console.error("Error fetching today's data:", error)
       toast({
-        title: "Error",
+        title: t('logSession.error'),
         description: "Failed to load today's data. Please try again.",
         variant: "destructive",
       })
@@ -204,8 +204,8 @@ export default function HomePage() {
     if (!selectedStudentId || !selectedDate || !hours) {
       console.error("❌ Missing fields validation failed")
       toast({
-        title: "Missing fields",
-        description: "Please fill in all fields",
+        title: t('logSession.missingFields'),
+        description: t('logSession.missingFieldsDescription'),
         variant: "destructive",
       })
       return
@@ -262,8 +262,8 @@ export default function HomePage() {
       } else {
         console.log("✅ Session inserted successfully:", insertedData)
         toast({
-          title: "Session logged successfully",
-          description: `Logged ${hours}h session for ${selectedStudent.name}`
+          title: t('logSession.success'),
+          description: t('logSession.successDescription', { hours, studentName: selectedStudent.name })
         })
         // Reset form
         setSelectedStudentId("")
@@ -282,8 +282,8 @@ export default function HomePage() {
         full: error
       })
       toast({
-        title: "Error",
-        description: error.message || "Failed to log session. Please try again.",
+        title: t('logSession.error'),
+        description: t('logSession.errorDescription'),
         variant: "destructive",
       })
     } finally {
@@ -499,7 +499,7 @@ export default function HomePage() {
             <div className="h-12 w-12 rounded-full border-2 border-primary/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
             <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/10 animate-ping" />
           </div>
-          <p className="text-sm text-muted-foreground animate-pulse">Loading...</p>
+          <p className="text-sm text-muted-foreground animate-pulse">{t('loading')}</p>
         </div>
       </div>
     )
@@ -629,9 +629,9 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <PageHeader
               icon={headerIcon}
-              eyebrow={t('title')}
-              title={`Good ${timeOfDay}${firstName ? `, ${firstName}` : ""}!`}
-              description="Review today's schedule, log new sessions, and monitor outstanding payments at a glance."
+              eyebrow={t('eyebrow')}
+              title={t('greeting.goodTimeOfDay', { timeOfDay: t(`greeting.${timeOfDay}`), name: firstName || 'none' })}
+              description={t('description')}
             />
             <LanguageSwitcher />
           </div>
@@ -641,15 +641,15 @@ export default function HomePage() {
             {/* Log a Session Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl">Log a Session</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">{t('logSession.title')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col">
-                    <Label htmlFor="student" className="mb-2 text-sm">Student</Label>
+                    <Label htmlFor="student" className="mb-2 text-sm">{t('logSession.student')}</Label>
                     <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
                       <SelectTrigger id="student" className="w-full">
-                        <SelectValue placeholder="Select a student" />
+                        <SelectValue placeholder={t('logSession.selectStudent')} />
                       </SelectTrigger>
                       <SelectContent>
                         {students.map((student) => (
@@ -661,7 +661,7 @@ export default function HomePage() {
                     </Select>
                   </div>
                   <div className="flex flex-col">
-                    <Label className="mb-2 text-sm">Date</Label>
+                    <Label className="mb-2 text-sm">{t('logSession.date')}</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -673,7 +673,7 @@ export default function HomePage() {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</span>
+                          <span className="truncate">{selectedDate ? format(selectedDate, "PPP") : t('logSession.pickDate')}</span>
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -690,7 +690,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="hours" className="text-sm">Hours</Label>
+                  <Label htmlFor="hours" className="text-sm">{t('logSession.hours')}</Label>
                   <Input
                     id="hours"
                     type="number"
@@ -698,7 +698,7 @@ export default function HomePage() {
                     min="0.25"
                     value={hours}
                     onChange={(e) => setHours(e.target.value)}
-                    placeholder="1.0"
+                    placeholder={t('logSession.hoursPlaceholder')}
                     className="w-full"
                   />
                 </div>
@@ -711,10 +711,10 @@ export default function HomePage() {
                   {isSubmitting ? (
                     <>
                       <div className="mr-2 h-4 w-4 rounded-full border-2 border-white/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
-                      Logging Session...
+                      {t('logSession.submitting')}
                     </>
                   ) : (
-                    "Log Session"
+                    t('logSession.submit')
                   )}
                 </Button>
               </CardContent>

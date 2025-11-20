@@ -17,12 +17,14 @@ import { toast } from "@/hooks/use-toast"
 import { ExportDialog } from "@/components/export/export-dialog"
 import { PageHeader } from "@/components/page-header"
 import { useCurrency } from "@/components/currency-provider"
+import { useTranslations } from 'next-intl'
 
 import { Session } from "@/types/data"
 
 export default function SessionsPage() {
-  useDocumentTitle("Session Management")
-  useDocumentMeta("View, edit, and export your tutoring sessions. Track payment status and manage lesson notes for all your sessions.")
+  const t = useTranslations('SessionsPage')
+  useDocumentTitle(t('documentTitle'))
+  useDocumentMeta(t('documentDescription'))
 
   const { formatCurrency } = useCurrency()
 
@@ -59,8 +61,8 @@ export default function SessionsPage() {
     } catch (error) {
       console.error("Error fetching sessions:", error)
       toast({
-        title: "Error",
-        description: "Failed to load sessions. Please try again.",
+        title: t('errorLoading'),
+        description: t('errorLoadingDescription'),
         variant: "destructive",
       })
     } finally {
@@ -144,9 +146,9 @@ export default function SessionsPage() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <PageHeader
             icon={<Clock className="h-6 w-6" />}
-            eyebrow="Sessions"
-            title="Session History"
-            description="Filter, edit, and export your tutoring sessions to stay on top of payments and lesson notes."
+            eyebrow={t('eyebrow')}
+            title={t('title')}
+            description={t('description')}
             action={
               <div className="flex items-center gap-2">
                 <ExportDialog
@@ -164,7 +166,7 @@ export default function SessionsPage() {
                 />
                 <Button onClick={() => setShowForm(true)}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Log Session
+                  {t('addSession')}
                 </Button>
               </div>
             }
@@ -173,7 +175,7 @@ export default function SessionsPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalSessions')}</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -183,7 +185,7 @@ export default function SessionsPage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalRevenue')}</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -192,7 +194,7 @@ export default function SessionsPage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Unpaid Amount</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('unpaidAmount')}</CardTitle>
                 <DollarSign className="h-4 w-4 text-destructive" />
               </CardHeader>
               <CardContent>
@@ -201,7 +203,7 @@ export default function SessionsPage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalHours')}</CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -214,8 +216,8 @@ export default function SessionsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>All Sessions</CardTitle>
-                  <CardDescription>A complete log of your tutoring sessions</CardDescription>
+                  <CardTitle>{t('allSessions')}</CardTitle>
+                  <CardDescription>{t('allSessionsDescription')}</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
                   <Select value={paymentFilter} onValueChange={setPaymentFilter}>
@@ -231,7 +233,7 @@ export default function SessionsPage() {
                   <div className="relative w-64">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search sessions..."
+                      placeholder={t('searchPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-8"

@@ -14,7 +14,10 @@ interface StudentPerformanceProps {
   onPeriodChange: (period: ChartPeriod) => void
 }
 
+import { useTranslations } from 'next-intl'
+
 export function StudentPerformance({ studentStats, period, onPeriodChange }: StudentPerformanceProps) {
+  const t = useTranslations('StatisticsPage.studentPerformance')
   const { formatCurrency } = useCurrency()
   const clvData = [...studentStats].sort((a, b) => b.total_revenue - a.total_revenue)
 
@@ -25,7 +28,7 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
 
   const clvChartConfig = {
     total_revenue: {
-      label: "CLV",
+      label: t('clv'),
       color: "#F59E0B",
     },
   } satisfies Record<string, { label: string; color: string }>
@@ -37,15 +40,15 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Student Performance</CardTitle>
-            <CardDescription>Revenue and session statistics by student</CardDescription>
+            <CardTitle>{t('title')}</CardTitle>
+            <CardDescription>{t('description')}</CardDescription>
           </div>
           <ChartPeriodSelector value={period} onChange={onPeriodChange} />
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {studentStats.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">No student data available</div>
+          <div className="text-center py-8 text-muted-foreground">{t('noData')}</div>
         ) : (
           <>
             <div className="space-y-4">
@@ -55,35 +58,35 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{student.name}</span>
                       <Badge variant={student.is_active ? "default" : "secondary"}>
-                        {student.is_active ? "Active" : "Inactive"}
+                        {student.is_active ? t('active') : t('inactive')}
                       </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {formatCurrency(student.total_revenue)} • {student.total_sessions} sessions
+                      {formatCurrency(student.total_revenue)} • {student.total_sessions} {t('sessions')}
                     </div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <div className="text-muted-foreground">Hours</div>
+                      <div className="text-muted-foreground">{t('hours')}</div>
                       <div className="font-medium">{formatHours(student.total_hours)}h</div>
                     </div>
                     <div>
-                      <div className="text-muted-foreground">Avg Session</div>
+                      <div className="text-muted-foreground">{t('avgSession')}</div>
                       <div className="font-medium">{Math.round(student.avg_session_duration)}min</div>
                     </div>
                     <div>
-                      <div className="text-muted-foreground">Freq. (sess./mo)</div>
+                      <div className="text-muted-foreground">{t('freq')}</div>
                       <div className="font-medium">{student.frequency.toFixed(1)}</div>
                     </div>
                     <div>
-                      <div className="text-muted-foreground">Rate</div>
+                      <div className="text-muted-foreground">{t('rate')}</div>
                       <div className="font-medium">
                         {formatCurrency(
                           student.total_hours > 0
                             ? student.total_revenue / (student.total_hours / 60)
                             : 0
                         )}
-                        /hr
+                        {t('perHour')}
                       </div>
                     </div>
                   </div>
@@ -91,7 +94,7 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
               ))}
             </div>
             <div>
-              <h3 className="text-sm font-medium mb-3">Student Lifetime Value (CLV)</h3>
+              <h3 className="text-sm font-medium mb-3">{t('clvTitle')}</h3>
               <ChartContainer config={clvChartConfig}>
                 <ResponsiveContainer width="100%" height={clvChartHeight}>
                   <BarChart
@@ -109,7 +112,7 @@ export function StudentPerformance({ studentStats, period, onPeriodChange }: Stu
                     <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} stroke="hsl(var(--muted-foreground))" width={140} />
                     <ChartTooltip
                       content={<ChartTooltipContent />}
-                      formatter={(value) => [formatCurrency(Number(value)), "CLV"]}
+                      formatter={(value) => [formatCurrency(Number(value)), t('clv')]}
                       labelFormatter={(label) => label}
                     />
                     <Bar dataKey="total_revenue" fill={clvChartConfig.total_revenue.color} radius={[0, 4, 4, 0]} />

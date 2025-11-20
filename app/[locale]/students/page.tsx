@@ -15,12 +15,14 @@ import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { PageHeader } from "@/components/page-header"
 import { useCurrency } from "@/components/currency-provider"
+import { useTranslations } from 'next-intl'
 
 import { Student } from "@/types/data"
 
 export default function StudentsPage() {
-  useDocumentTitle("Student Management")
-  useDocumentMeta("Manage your students with detailed records, contact information, and hourly rates. Keep track of all your tutoring relationships.")
+  const t = useTranslations('StudentsPage')
+  useDocumentTitle(t('documentTitle'))
+  useDocumentMeta(t('documentDescription'))
 
   const { formatCurrency } = useCurrency()
 
@@ -47,8 +49,8 @@ export default function StudentsPage() {
     } catch (error) {
       console.error("Error fetching students:", error)
       toast({
-        title: "Error",
-        description: "Failed to load students. Please try again.",
+        title: t('errorLoading'),
+        description: t('errorLoadingDescription'),
         variant: "destructive",
       })
     } finally {
@@ -111,13 +113,13 @@ export default function StudentsPage() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <PageHeader
             icon={<Users className="h-6 w-6" />}
-            eyebrow="People"
-            title="Student Directory"
-            description="Organize student details, track contact information, and keep billing preferences up to date."
+            eyebrow={t('eyebrow')}
+            title={t('title')}
+            description={t('description')}
             action={
               <Button onClick={() => setShowForm(true)}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add student
+                {t('addStudent')}
               </Button>
             }
           />
@@ -125,7 +127,7 @@ export default function StudentsPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalStudents')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalStudents}</div>
@@ -133,7 +135,7 @@ export default function StudentsPage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Students</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('activeStudents')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{activeStudents}</div>
@@ -141,7 +143,7 @@ export default function StudentsPage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Inactive Students</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('inactiveStudents')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalStudents - activeStudents}</div>
@@ -149,7 +151,7 @@ export default function StudentsPage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Avg. Rate</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('avgRate')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -167,13 +169,13 @@ export default function StudentsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>All Students</CardTitle>
-                  <CardDescription>A list of all your students and their details</CardDescription>
+                  <CardTitle>{t('allStudents')}</CardTitle>
+                  <CardDescription>{t('allStudentsDescription')}</CardDescription>
                 </div>
                 <div className="relative w-64">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search students..."
+                    placeholder={t('searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-8"

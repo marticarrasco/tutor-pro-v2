@@ -18,15 +18,19 @@ const COLORS = {
   unpaid: "#EF4444", // Red
 }
 
+import { useTranslations } from 'next-intl'
+
 export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, period, onPeriodChange }) => {
+  const t = useTranslations('StatisticsPage.paymentOverview')
+  const tStats = useTranslations('StatisticsPage')
   const { formatCurrency } = useCurrency()
   const chartConfig = {
     paid: {
-      label: "Paid",
+      label: t('paid'),
       color: COLORS.paid,
     },
     unpaid: {
-      label: "Unpaid",
+      label: t('unpaid'),
       color: COLORS.unpaid,
     },
   };
@@ -34,7 +38,7 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
   const totalAmount = paymentData.overview.reduce((sum, item) => sum + item.amount, 0);
   const debtChartConfig = {
     totalUnpaid: {
-      label: "Outstanding",
+      label: t('outstanding'),
       color: "#10B981",
     },
   } satisfies Record<string, { label: string; color: string }>;
@@ -44,22 +48,22 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Payment Status</CardTitle>
-            <CardDescription>Overview of paid vs unpaid sessions</CardDescription>
+            <CardTitle>{t('paymentStatus')}</CardTitle>
+            <CardDescription>{t('statusDescription')}</CardDescription>
           </div>
           <ChartPeriodSelector value={period} onChange={onPeriodChange} />
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {paymentData.overview.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">No payment data for the selected period.</div>
+          <div className="text-center py-8 text-muted-foreground">{t('noData')}</div>
         ) : (
           <>
             <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={paymentData.overview}
+                    data={paymentData.overview as any[]}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -73,9 +77,9 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
                   </Pie>
                   <ChartTooltip
                     content={<ChartTooltipContent />}
-                    formatter={(value, name) => [formatCurrency(Number(value)), name]}
+                    formatter={(value, name) => [formatCurrency(Number(value)), name === "Paid" ? t('paid') : t('unpaid')]}
                   />
-                  <Legend />
+                  <Legend formatter={(value) => value === "Paid" ? t('paid') : t('unpaid')} />
                 </PieChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -84,10 +88,10 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
                 <div key={item.name} className="text-center">
                   <div className="text-2xl font-bold">{formatCurrency(item.amount)}</div>
                   <div className="text-sm text-muted-foreground">
-                    {item.name} ({item.value} sessions)
+                    {item.name === "Paid" ? t('paid') : t('unpaid')} ({item.value} {tStats('revenueChart.sessions', { count: item.value })})
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {totalAmount > 0 ? ((item.amount / totalAmount) * 100).toFixed(1) : 0}% of total
+                    {totalAmount > 0 ? ((item.amount / totalAmount) * 100).toFixed(1) : 0}% {t('ofTotal')}
                   </div>
                 </div>
               ))}
@@ -95,9 +99,9 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
           </>
         )}
         <div>
-          <h3 className="text-sm font-medium mb-3">Outstanding Debt by Student</h3>
+          <h3 className="text-sm font-medium mb-3">{t('outstandingByStudent')}</h3>
           {paymentData.byStudent.length === 0 ? (
-            <div className="text-sm text-muted-foreground">All sessions are paid for the selected period.</div>
+            <div className="text-sm text-muted-foreground">{t('allPaid')}</div>
           ) : (
             <ChartContainer config={debtChartConfig}>
               <ResponsiveContainer width="100%" height={barHeight}>
@@ -116,10 +120,10 @@ export const PaymentOverview: React.FC<PaymentOverviewProps> = ({ paymentData, p
                   <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} stroke="hsl(var(--muted-foreground))" width={140} />
                   <ChartTooltip
                     content={<ChartTooltipContent />}
-                    formatter={(value) => [formatCurrency(Number(value)), "Outstanding"]}
+                    formatter={(value) => [formatCurrency(Number(value)), t('outstanding')]}
                     labelFormatter={(label, payload) => {
                       const unpaidSessions = payload?.[0]?.payload?.unpaidSessions || 0
-                      return `${label} • ${unpaidSessions} session${unpaidSessions === 1 ? "" : "s"}`
+                      return `${label} • ${unpaidSessions} ${tStats('revenueChart.sessions', { count: unpaidSessions })}`
                     }}
                   />
                   <Bar dataKey="totalUnpaid" fill={debtChartConfig.totalUnpaid.color} radius={[0, 4, 4, 0]} />

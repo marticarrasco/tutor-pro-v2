@@ -21,10 +21,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Currency } from "@/lib/currency-utils"
+import { useTranslations } from 'next-intl'
 
 export default function SettingsPage() {
-  useDocumentTitle("Account Settings")
-  useDocumentMeta("Manage your Derno account settings, profile information, and preferences.")
+  const t = useTranslations('SettingsPage')
+  const tProfile = useTranslations('SettingsPage.profileInformation')
+  const tAccount = useTranslations('SettingsPage.accountInformation')
+  useDocumentTitle(t('documentTitle'))
+  useDocumentMeta(t('documentDescription'))
 
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -75,7 +79,7 @@ export default function SettingsPage() {
 
       const trimmedName = fullName.trim()
       if (!trimmedName) {
-        throw new Error("Please enter your name")
+        throw new Error(tProfile('nameRequired'))
       }
 
       const { data, error } = await supabase.auth.updateUser({
@@ -100,15 +104,15 @@ export default function SettingsPage() {
       if (profileError) throw profileError
 
       toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully.",
+        title: tProfile('updateSuccess'),
+        description: tProfile('updateSuccessDescription'),
       })
     } catch (error) {
       console.error("Error updating profile:", error)
       toast({
-        title: "Error",
+        title: tProfile('updateError'),
         description:
-          error instanceof Error ? error.message : "Failed to update profile. Please try again.",
+          error instanceof Error ? error.message : tProfile('updateErrorDescription'),
         variant: "destructive",
       })
     } finally {
@@ -149,46 +153,46 @@ export default function SettingsPage() {
           <PageHeader
             className="pt-0"
             icon={<SettingsIcon className="h-6 w-6" />}
-            eyebrow="Account"
-            title="Settings & Preferences"
-            description="Update your personal information, manage authentication details, and review account history."
+            eyebrow={t('eyebrow')}
+            title={t('title')}
+            description={t('description')}
           />
 
           <Card>
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>Update your personal information</CardDescription>
+              <CardTitle>{tProfile('title')}</CardTitle>
+              <CardDescription>{tProfile('description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="full-name">Full Name</Label>
+                  <Label htmlFor="full-name">{tProfile('fullName')}</Label>
                   <Input
                     id="full-name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
+                    placeholder={tProfile('fullNamePlaceholder')}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="currency">Currency</Label>
+                  <Label htmlFor="currency">{tProfile('currency')}</Label>
                   <Select value={currency} onValueChange={(value: Currency) => setCurrency(value)}>
                     <SelectTrigger id="currency">
-                      <SelectValue placeholder="Select currency" />
+                      <SelectValue placeholder={tProfile('selectCurrency')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="USD">USD ($)</SelectItem>
-                      <SelectItem value="EUR">EUR (€)</SelectItem>
+                      <SelectItem value="USD">{tProfile('usd')}</SelectItem>
+                      <SelectItem value="EUR">{tProfile('eur')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{tProfile('email')}</Label>
                   <Input id="email" value={email} disabled className="bg-muted" />
-                  <p className="text-sm text-muted-foreground">Email cannot be changed</p>
+                  <p className="text-sm text-muted-foreground">{tProfile('emailCannotChange')}</p>
                 </div>
                 <Button type="submit" disabled={updating}>
-                  {updating ? "Updating..." : "Update Profile"}
+                  {updating ? tProfile('updating') : tProfile('updateProfile')}
                 </Button>
               </form>
             </CardContent>
@@ -196,20 +200,20 @@ export default function SettingsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Account Information</CardTitle>
-              <CardDescription>Your account details</CardDescription>
+              <CardTitle>{tAccount('title')}</CardTitle>
+              <CardDescription>{tAccount('description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex justify-between py-2 border-b">
-                <span className="text-muted-foreground">User ID</span>
+                <span className="text-muted-foreground">{tAccount('userId')}</span>
                 <span className="font-mono text-sm">{user?.id.slice(0, 8)}...</span>
               </div>
               <div className="flex justify-between py-2 border-b">
-                <span className="text-muted-foreground">Account Created</span>
+                <span className="text-muted-foreground">{tAccount('accountCreated')}</span>
                 <span className="text-sm">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}</span>
               </div>
               <div className="flex justify-between py-2">
-                <span className="text-muted-foreground">Last Sign In</span>
+                <span className="text-muted-foreground">{tAccount('lastSignIn')}</span>
                 <span className="text-sm">
                   {user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : "N/A"}
                 </span>

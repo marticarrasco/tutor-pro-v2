@@ -48,7 +48,11 @@ interface MonthDetail {
   weekBreakdown: WeekRevenue[]
 }
 
+import { useTranslations } from 'next-intl'
+
 export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps) => {
+  const t = useTranslations('StatisticsPage.revenueChart')
+  const tStats = useTranslations('StatisticsPage')
   const { formatCurrency } = useCurrency()
   const [selectedMonth, setSelectedMonth] = useState<MonthDetail | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -56,7 +60,7 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
 
   const chartConfig = {
     revenue: {
-      label: "Revenue",
+      label: t('revenue'),
       color: "#8B5CF6",
     },
   } satisfies Record<string, { label: string; color: string }>;
@@ -98,7 +102,7 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
       // Calculate student breakdown
       const studentMap = new Map<string, { revenue: number; sessions: number }>()
       sessions?.forEach((session: any) => {
-        const studentName = session.students?.name || "Unknown Student"
+        const studentName = session.students?.name || t('unknownStudent')
         const existing = studentMap.get(studentName) || { revenue: 0, sessions: 0 }
         studentMap.set(studentName, {
           revenue: existing.revenue + session.total_amount,
@@ -167,8 +171,8 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Monthly Revenue</CardTitle>
-            <CardDescription>Your earnings over time</CardDescription>
+            <CardTitle>{t('monthlyRevenue')}</CardTitle>
+            <CardDescription>{t('earningsOverTime')}</CardDescription>
           </div>
           <ChartPeriodSelector value={period} onChange={onPeriodChange} />
         </div>
@@ -187,7 +191,7 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
               />
               <ChartTooltip
                 content={<ChartTooltipContent />}
-                formatter={(value, name) => [formatCurrency(Number(value)), "Revenue"]}
+                formatter={(value, name) => [formatCurrency(Number(value)), t('revenue')]}
               />
               <Bar
                 dataKey="revenue"
@@ -204,9 +208,9 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Revenue Details - {selectedMonth?.month}</DialogTitle>
+            <DialogTitle>{t('detailsTitle', { month: selectedMonth?.month || '' })}</DialogTitle>
             <DialogDescription>
-              Detailed breakdown by student and by week
+              {t('detailsDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -216,7 +220,7 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
                 <div className="h-12 w-12 rounded-full border-2 border-primary/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
                 <div className="absolute inset-0 h-12 w-12 rounded-full border-2 border-primary/10 animate-ping" />
               </div>
-              <div className="text-sm text-muted-foreground animate-pulse">Loading revenue details...</div>
+              <div className="text-sm text-muted-foreground animate-pulse">{t('loadingDetails')}</div>
             </div>
           ) : selectedMonth ? (
             <div className="space-y-6">
@@ -225,27 +229,27 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-2xl font-bold">{formatCurrency(selectedMonth.totalRevenue)}</div>
-                    <div className="text-sm text-muted-foreground">Total Revenue</div>
+                    <div className="text-sm text-muted-foreground">{tStats('totalRevenue')}</div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-2xl font-bold">{selectedMonth.totalSessions}</div>
-                    <div className="text-sm text-muted-foreground">Total Sessions</div>
+                    <div className="text-sm text-muted-foreground">{tStats('totalSessions')}</div>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Revenue by Student */}
               <div>
-                <h3 className="text-lg font-semibold mb-3">Revenue by Student</h3>
+                <h3 className="text-lg font-semibold mb-3">{t('revenueByStudent')}</h3>
                 <div className="space-y-2">
                   {selectedMonth.studentBreakdown.map((student, idx) => (
                     <div key={idx} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div>
                         <div className="font-medium">{student.studentName}</div>
                         <div className="text-sm text-muted-foreground">
-                          {student.sessions} session{student.sessions !== 1 ? "s" : ""}
+                          {tStats('revenueChart.sessions', { count: student.sessions })}
                         </div>
                       </div>
                       <div className="text-lg font-semibold">{formatCurrency(student.revenue)}</div>
@@ -256,7 +260,7 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
 
               {/* Revenue by Week */}
               <div>
-                <h3 className="text-lg font-semibold mb-3">Revenue by Week</h3>
+                <h3 className="text-lg font-semibold mb-3">{t('revenueByWeek')}</h3>
                 <ChartContainer config={chartConfig}>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={selectedMonth.weekBreakdown}>
@@ -279,7 +283,7 @@ export const RevenueChart = ({ data, period, onPeriodChange }: RevenueChartProps
                       />
                       <ChartTooltip
                         content={<ChartTooltipContent />}
-                        formatter={(value, name) => [formatCurrency(Number(value)), "Revenue"]}
+                        formatter={(value, name) => [formatCurrency(Number(value)), t('revenue')]}
                       />
                       <Bar dataKey="revenue" fill={chartConfig.revenue.color} radius={[4, 4, 0, 0]} />
                     </BarChart>
