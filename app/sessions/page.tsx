@@ -17,26 +17,12 @@ import { toast } from "@/hooks/use-toast"
 import { ExportDialog } from "@/components/export/export-dialog"
 import { PageHeader } from "@/components/page-header"
 
-interface Session {
-  id: string
-  student_id: string
-  student_name: string
-  date: string
-  duration_minutes: number
-  hourly_rate: number
-  total_amount: number
-  is_paid: boolean
-  notes: string
-  created_at: string
-  is_cancelled: boolean
-  cancelled_by?: "teacher" | "student" | null
-  user_id: string
-}
+import { Session } from "@/types/data"
 
 export default function SessionsPage() {
   useDocumentTitle("Session Management")
   useDocumentMeta("View, edit, and export your tutoring sessions. Track payment status and manage lesson notes for all your sessions.")
-  
+
   const [sessions, setSessions] = useState<Session[]>([])
   const [filteredSessions, setFilteredSessions] = useState<Session[]>([])
   const [searchQuery, setSearchQuery] = useState("")

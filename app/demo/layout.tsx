@@ -1,8 +1,8 @@
-"use client"
-
 import { DemoProvider } from "@/lib/demo-context"
+import { DemoErrorBoundary } from "@/components/demo/demo-error-boundary"
 import { ThemeProvider } from "@/components/theme-provider"
-import "@/app/globals.css"
+import { DemoSignUpProvider } from "@/lib/demo-signup-context"
+import { DemoToastProvider } from "@/lib/demo-toast-context"
 
 export default function DemoLayout({
   children,
@@ -10,15 +10,17 @@ export default function DemoLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} themes={["dark", "light"]}>
-          <DemoProvider>
-            {children}
-          </DemoProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <DemoErrorBoundary>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} themes={["dark", "light"]}>
+        <DemoProvider>
+          <DemoSignUpProvider>
+            <DemoToastProvider>
+              {children}
+            </DemoToastProvider>
+          </DemoSignUpProvider>
+        </DemoProvider>
+      </ThemeProvider>
+    </DemoErrorBoundary>
   )
 }
 

@@ -20,21 +20,7 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
-interface Session {
-  id: string
-  student_id: string
-  student_name: string
-  date: string
-  duration_minutes: number
-  hourly_rate: number
-  total_amount: number
-  is_paid: boolean
-  notes: string
-  created_at: string
-  is_cancelled: boolean
-  cancelled_by?: "teacher" | "student" | null
-  user_id: string
-}
+import { Session } from "@/types/data"
 
 interface SessionsTableProps {
   sessions: Session[]

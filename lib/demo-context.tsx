@@ -12,6 +12,7 @@ export interface DemoStudent {
   subject: string
   hourly_rate: number
   notes?: string
+  is_active: boolean
   created_at: string
 }
 
@@ -31,15 +32,30 @@ export interface DemoSession {
   created_at: string
 }
 
+export interface DemoScheduledClass {
+  id: string
+  student_id: string
+  student_name: string
+  day_of_week: number // 0-6, 0 is Sunday
+  start_time: string
+  duration_minutes: number
+  is_active: boolean
+  created_at: string
+}
+
 interface DemoContextType {
   students: DemoStudent[]
   sessions: DemoSession[]
-  addStudent: (student: Omit<DemoStudent, 'id' | 'created_at'>) => void
+  scheduledClasses: DemoScheduledClass[]
+  addStudent: (student: Omit<DemoStudent, 'id' | 'created_at' | 'is_active'>) => void
   updateStudent: (id: string, student: Partial<DemoStudent>) => void
   deleteStudent: (id: string) => void
   addSession: (session: Omit<DemoSession, 'id' | 'created_at'>) => void
   updateSession: (id: string, session: Partial<DemoSession>) => void
   deleteSession: (id: string) => void
+  addScheduledClass: (scheduledClass: Omit<DemoScheduledClass, 'id' | 'created_at'>) => void
+  updateScheduledClass: (id: string, scheduledClass: Partial<DemoScheduledClass>) => void
+  deleteScheduledClass: (id: string) => void
 }
 
 const DemoContext = createContext<DemoContextType | undefined>(undefined)
@@ -55,6 +71,7 @@ const initialStudents: DemoStudent[] = [
     subject: 'Mathematics',
     hourly_rate: 50,
     notes: 'Struggling with algebra, needs extra help with quadratic equations',
+    is_active: true,
     created_at: '2024-09-15T10:00:00Z',
   },
   {
@@ -66,6 +83,7 @@ const initialStudents: DemoStudent[] = [
     subject: 'Physics',
     hourly_rate: 60,
     notes: 'Excellent student, preparing for AP Physics exam',
+    is_active: true,
     created_at: '2024-09-20T14:30:00Z',
   },
   {
@@ -77,6 +95,7 @@ const initialStudents: DemoStudent[] = [
     subject: 'Chemistry',
     hourly_rate: 55,
     notes: 'Needs help with chemical equations and stoichiometry',
+    is_active: true,
     created_at: '2024-10-01T09:00:00Z',
   },
   {
@@ -88,6 +107,7 @@ const initialStudents: DemoStudent[] = [
     subject: 'English',
     hourly_rate: 45,
     notes: 'Working on college essays and SAT prep',
+    is_active: true,
     created_at: '2024-10-05T16:00:00Z',
   },
   {
@@ -98,6 +118,7 @@ const initialStudents: DemoStudent[] = [
     grade: '10th Grade',
     subject: 'History',
     hourly_rate: 48,
+    is_active: true,
     created_at: '2024-10-10T11:00:00Z',
   },
 ]
@@ -210,29 +231,75 @@ const initialSessions: DemoSession[] = [
   },
 ]
 
+const initialScheduledClasses: DemoScheduledClass[] = [
+  {
+    id: '1',
+    student_id: '1',
+    student_name: 'Sarah Johnson',
+    day_of_week: 1, // Monday
+    start_time: '16:00',
+    duration_minutes: 60,
+    is_active: true,
+    created_at: '2024-09-15T10:00:00Z',
+  },
+  {
+    id: '2',
+    student_id: '2',
+    student_name: 'David Chen',
+    day_of_week: 3, // Wednesday
+    start_time: '15:30',
+    duration_minutes: 90,
+    is_active: true,
+    created_at: '2024-09-20T14:30:00Z',
+  },
+  {
+    id: '3',
+    student_id: '3',
+    student_name: 'Emma Wilson',
+    day_of_week: 4, // Thursday
+    start_time: '16:00',
+    duration_minutes: 60,
+    is_active: true,
+    created_at: '2024-10-01T09:00:00Z',
+  },
+  {
+    id: '4',
+    student_id: '1',
+    student_name: 'Sarah Johnson',
+    day_of_week: 4, // Thursday
+    start_time: '17:30',
+    duration_minutes: 60,
+    is_active: true,
+    created_at: '2024-09-15T10:00:00Z',
+  },
+]
+
 export function DemoProvider({ children }: { children: ReactNode }) {
   const [students, setStudents] = useState<DemoStudent[]>(initialStudents)
   const [sessions, setSessions] = useState<DemoSession[]>(initialSessions)
+  const [scheduledClasses, setScheduledClasses] = useState<DemoScheduledClass[]>(initialScheduledClasses)
 
-  const addStudent = useCallback((studentData: Omit<DemoStudent, 'id' | 'created_at'>) => {
+  const addStudent = useCallback((studentData: Omit<DemoStudent, 'id' | 'created_at' | 'is_active'>) => {
     const newStudent: DemoStudent = {
       ...studentData,
       id: `student-${Date.now()}`,
+      is_active: true,
       created_at: new Date().toISOString(),
     }
     setStudents(prev => [...prev, newStudent])
   }, [])
 
   const updateStudent = useCallback((id: string, updates: Partial<DemoStudent>) => {
-    setStudents(prev => prev.map(student => 
+    setStudents(prev => prev.map(student =>
       student.id === id ? { ...student, ...updates } : student
     ))
   }, [])
 
   const deleteStudent = useCallback((id: string) => {
     setStudents(prev => prev.filter(student => student.id !== id))
-    // Also remove associated sessions
+    // Also remove associated sessions and scheduled classes
     setSessions(prev => prev.filter(session => session.student_id !== id))
+    setScheduledClasses(prev => prev.filter(cls => cls.student_id !== id))
   }, [])
 
   const addSession = useCallback((sessionData: Omit<DemoSession, 'id' | 'created_at'>) => {
@@ -245,7 +312,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const updateSession = useCallback((id: string, updates: Partial<DemoSession>) => {
-    setSessions(prev => prev.map(session => 
+    setSessions(prev => prev.map(session =>
       session.id === id ? { ...session, ...updates } : session
     ))
   }, [])
@@ -254,15 +321,38 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     setSessions(prev => prev.filter(session => session.id !== id))
   }, [])
 
+  const addScheduledClass = useCallback((classData: Omit<DemoScheduledClass, 'id' | 'created_at'>) => {
+    const newClass: DemoScheduledClass = {
+      ...classData,
+      id: `class-${Date.now()}`,
+      created_at: new Date().toISOString(),
+    }
+    setScheduledClasses(prev => [...prev, newClass])
+  }, [])
+
+  const updateScheduledClass = useCallback((id: string, updates: Partial<DemoScheduledClass>) => {
+    setScheduledClasses(prev => prev.map(cls =>
+      cls.id === id ? { ...cls, ...updates } : cls
+    ))
+  }, [])
+
+  const deleteScheduledClass = useCallback((id: string) => {
+    setScheduledClasses(prev => prev.filter(cls => cls.id !== id))
+  }, [])
+
   const value: DemoContextType = {
     students,
     sessions,
+    scheduledClasses,
     addStudent,
     updateStudent,
     deleteStudent,
     addSession,
     updateSession,
     deleteSession,
+    addScheduledClass,
+    updateScheduledClass,
+    deleteScheduledClass,
   }
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>

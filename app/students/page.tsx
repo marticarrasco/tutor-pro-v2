@@ -15,21 +15,12 @@ import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { PageHeader } from "@/components/page-header"
 
-interface Student {
-  id: string
-  name: string
-  email: string
-  phone: string
-  hourly_rate: number
-  is_active: boolean
-  created_at: string
-  user_id: string
-}
+import { Student } from "@/types/data"
 
 export default function StudentsPage() {
   useDocumentTitle("Student Management")
   useDocumentMeta("Manage your students with detailed records, contact information, and hourly rates. Keep track of all your tutoring relationships.")
-  
+
   const [students, setStudents] = useState<Student[]>([])
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([])
   const [searchQuery, setSearchQuery] = useState("")
@@ -145,8 +136,8 @@ export default function StudentsPage() {
                   $
                   {activeStudents > 0
                     ? (
-                        students.filter((s) => s.is_active).reduce((sum, s) => sum + s.hourly_rate, 0) / activeStudents
-                      ).toFixed(0)
+                      students.filter((s) => s.is_active).reduce((sum, s) => sum + s.hourly_rate, 0) / activeStudents
+                    ).toFixed(0)
                     : "0"}
                 </div>
               </CardContent>

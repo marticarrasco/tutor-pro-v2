@@ -19,15 +19,7 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
-interface Student {
-  id?: string
-  name: string
-  email: string
-  phone: string
-  hourly_rate: number
-  is_active: boolean
-  user_id?: string
-}
+import { Student } from "@/types/data"
 
 interface StudentFormProps {
   student?: Student
@@ -37,7 +29,7 @@ interface StudentFormProps {
 }
 
 export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentFormProps) {
-  const [formData, setFormData] = useState<Student>({
+  const [formData, setFormData] = useState<Partial<Student>>({
     name: student?.name || "",
     email: student?.email || "",
     phone: student?.phone || "",

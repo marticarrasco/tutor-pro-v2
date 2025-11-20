@@ -20,16 +20,7 @@ import { createClient } from "@/lib/supabase/client"
 import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 
-interface Student {
-  id: string
-  name: string
-  email: string
-  phone: string
-  hourly_rate: number
-  is_active: boolean
-  created_at: string
-  user_id: string
-}
+import { Student } from "@/types/data"
 
 interface StudentsTableProps {
   students: Student[]
