@@ -35,6 +35,10 @@
         "en": "English",
         "es": "Spanish"
     },
+    "Footer": {
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy"
+    },
     "Navigation": {
         "darkMode": "Dark Mode",
         "lightMode": "Light Mode",
@@ -687,6 +691,10 @@
             "error": "An error occurred"
         },
         "signUp": {
+            "acceptTerms": "I accept the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
+            "acceptEmails": "I agree to receive emails from Derno",
+            "errorTerms": "You must accept the Terms of Service and Privacy Policy",
+            "errorEmails": "You must agree to receive emails",
             "title": "Sign up",
             "subtitle": "Create your account",
             "fullName": "Full Name",
