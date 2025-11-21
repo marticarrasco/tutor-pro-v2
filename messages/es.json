@@ -30,6 +30,10 @@
         "hours": "Horas",
         "amount": "Cantidad"
     },
+    "Footer": {
+        "terms": "Términos de Servicio",
+        "privacy": "Política de Privacidad"
+    },
     "LocaleSwitcher": {
         "label": "Change language",
         "en": "Inglés",
@@ -687,6 +691,10 @@
             "error": "Ocurrió un error"
         },
         "signUp": {
+            "acceptTerms": "Acepto los <terms>Términos de Servicio</terms> y la <privacy>Política de Privacidad</privacy>",
+            "acceptEmails": "Acepto recibir correos electrónicos de Derno",
+            "errorTerms": "Debes aceptar los Términos de Servicio y la Política de Privacidad",
+            "errorEmails": "Debes aceptar recibir correos electrónicos",
             "title": "Regístrate",
             "subtitle": "Crea tu cuenta",
             "fullName": "Nombre Completo",

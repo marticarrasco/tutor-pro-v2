@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Calendar, DollarSign, TrendingUp, Clock, Users, BarChart3, Play, Menu, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 
 export function LandingPage() {
+  const t = useTranslations()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   const heroRef = useRef(null)
@@ -48,7 +50,7 @@ export function LandingPage() {
 
       // Seamless infinite scroll: Reset to start when halfway through duplicated content
       const maxScroll = scrollContainer.scrollWidth / 2 // Since content is duplicated
-      
+
       if (scrollContainer.scrollLeft >= maxScroll) {
         // Seamlessly jump back to the start of the original content
         scrollContainer.scrollLeft = 0
@@ -81,7 +83,7 @@ export function LandingPage() {
     // Handle manual wheel scrolling with smoother feel
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
-      
+
       // Reduce the scroll amount for finer control and add to velocity
       const scrollAmount = e.deltaY * 0.5 // Smoother, less jumpy
       velocity = scrollAmount
@@ -102,9 +104,9 @@ export function LandingPage() {
   }, [])
 
   return (
-    <div 
-      className="light min-h-screen bg-[oklch(0.98_0_0)] text-[oklch(0.15_0_0)] overflow-x-hidden" 
-      style={{ 
+    <div
+      className="light min-h-screen bg-[oklch(0.98_0_0)] text-[oklch(0.15_0_0)] overflow-x-hidden"
+      style={{
         colorScheme: 'light',
         // Force light theme CSS variables
         '--background': 'oklch(0.98 0 0)',
@@ -130,7 +132,7 @@ export function LandingPage() {
               className="h-8 md:h-10 w-auto"
             />
           </div>
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4">
             <Button variant="outline" size="sm" className="border-2 bg-transparent" asChild>
@@ -199,7 +201,7 @@ export function LandingPage() {
                 </motion.div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-balance">
                   Track sessions. Manage payments. Grow your tutoring.
-          </h1>
+                </h1>
                 <p className="text-base sm:text-lg text-muted-foreground text-pretty max-w-2xl mx-auto lg:mx-0">
                   Streamline your tutoring business with powerful session logging, payment tracking, and analytics.
                   Focus on teaching while Derno handles the rest.
@@ -208,11 +210,11 @@ export function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
                 <Button size="lg" className="text-base w-full sm:w-auto" asChild>
                   <Link href="/auth/sign-up">Start for Free</Link>
-            </Button>
+                </Button>
                 <Button size="lg" variant="outline" className="text-base bg-transparent w-full sm:w-auto" asChild>
                   <Link href="/auth/login">See Demo</Link>
-            </Button>
-          </div>
+                </Button>
+              </div>
               <div className="space-y-2">
                 <p className="text-xs sm:text-sm text-muted-foreground">
                   Join over 1,000+ tutors organizing their business with Derno
@@ -291,12 +293,12 @@ export function LandingPage() {
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">Total Sessions</p>
                     <p className="text-2xl font-bold">42</p>
-            </div>
+                  </div>
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">Revenue</p>
                     <p className="text-2xl font-bold">$2,450</p>
-            </div>
-            </div>
+                  </div>
+                </div>
               </motion.div>
             </div>
           </div>
@@ -357,13 +359,13 @@ export function LandingPage() {
                         <p className="text-sm text-muted-foreground mb-1">This Week</p>
                         <p className="text-3xl font-bold">$850</p>
                         <p className="text-xs text-muted-foreground">earned</p>
-          </div>
+                      </div>
                       <div className="rounded-lg bg-amber-500/10 p-4">
                         <p className="text-sm text-muted-foreground mb-1">Active</p>
                         <p className="text-3xl font-bold">12</p>
                         <p className="text-xs text-muted-foreground">students</p>
-          </div>
-        </div>
+                      </div>
+                    </div>
                     <div className="h-32 rounded-lg bg-muted/50 flex items-center justify-center">
                       <BarChart3 className="h-12 w-12 text-muted-foreground/30" />
                     </div>
@@ -425,21 +427,21 @@ export function LandingPage() {
                           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                             <Calendar className="h-5 w-5 text-primary" />
                           </div>
-                  <div>
+                          <div>
                             <p className="font-semibold">{session.student}</p>
                             <p className="text-sm text-muted-foreground">
                               {session.subject} • {session.time}
                             </p>
-                  </div>
-                </div>
+                          </div>
+                        </div>
                         <div className="text-right">
                           <p className="font-bold">{session.amount}</p>
                           <p className="text-xs text-muted-foreground">{session.status}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                    ))}
-              </div>
-            </div>
               </motion.div>
 
               {/* Payments View */}
@@ -459,7 +461,7 @@ export function LandingPage() {
                     <span className="text-sm font-medium ml-4">Payments</span>
                   </div>
                   <div className="p-8 space-y-6">
-                  <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                       <h3 className="text-2xl font-bold">Payment Tracking</h3>
                       <Button size="sm">Export</Button>
                     </div>
@@ -474,8 +476,8 @@ export function LandingPage() {
                         <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">$420</p>
                         <p className="text-xs text-muted-foreground mt-1">3 pending</p>
                       </div>
-                  </div>
-                  <div className="space-y-3">
+                    </div>
+                    <div className="space-y-3">
                       {[
                         { name: "Michael Brown", amount: "$75", status: "Paid", date: "Jan 15" },
                         { name: "Lisa Anderson", amount: "$60", status: "Paid", date: "Jan 14" },
@@ -496,12 +498,12 @@ export function LandingPage() {
                             >
                               {payment.status}
                             </p>
-                      </div>
-                    </div>
+                          </div>
+                        </div>
                       ))}
-                      </div>
                     </div>
                   </div>
+                </div>
               </motion.div>
 
               {/* Analytics View */}
@@ -917,16 +919,16 @@ export function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2 sm:pt-4">
                 <Button size="lg" variant="secondary" className="text-base w-full sm:w-auto" asChild>
                   <Link href="/auth/sign-up">Start for Free</Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
                   className="text-base bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10 w-full sm:w-auto"
-              asChild
-            >
+                  asChild
+                >
                   <Link href="/auth/login">Launch Demo Account</Link>
-            </Button>
-          </div>
+                </Button>
+              </div>
             </div>
             {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-primary-foreground/10 rounded-full blur-3xl" />
@@ -948,7 +950,15 @@ export function LandingPage() {
                 className="h-6 sm:h-8 w-auto"
               />
             </div>
-            <p className="text-xs sm:text-sm text-muted-foreground">© 2025 Derno. All rights reserved.</p>
+            <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
+              <Link href="/legal/terms" className="hover:text-foreground transition-colors">
+                {t('Footer.terms')}
+              </Link>
+              <Link href="/legal/privacy" className="hover:text-foreground transition-colors">
+                {t('Footer.privacy')}
+              </Link>
+              <p>© 2025 Derno. All rights reserved.</p>
+            </div>
           </div>
         </div>
       </footer>

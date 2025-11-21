@@ -9,6 +9,7 @@ interface PageHeaderProps {
   icon?: ReactNode
   action?: ReactNode
   className?: string
+  hideSidebarTrigger?: boolean
 }
 
 export function PageHeader({
@@ -18,6 +19,7 @@ export function PageHeader({
   icon,
   action,
   className,
+  hideSidebarTrigger = false,
 }: PageHeaderProps) {
   return (
     <div
@@ -28,7 +30,7 @@ export function PageHeader({
     >
       <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3 sm:items-center">
-          <SidebarTrigger className="sm:hidden" />
+          {!hideSidebarTrigger && <SidebarTrigger className="sm:hidden" />}
           {icon ? (
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
               {icon}

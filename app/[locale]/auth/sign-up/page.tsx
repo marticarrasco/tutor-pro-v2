@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -21,6 +22,8 @@ export default function SignUpPage() {
   const [fullName, setFullName] = useState("")
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [emailsAccepted, setEmailsAccepted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
@@ -46,6 +49,18 @@ export default function SignUpPage() {
 
     if (password !== repeatPassword) {
       setError(t('errorPasswordMatch'))
+      setIsLoading(false)
+      return
+    }
+
+    if (!termsAccepted) {
+      setError(t('errorTerms'))
+      setIsLoading(false)
+      return
+    }
+
+    if (!emailsAccepted) {
+      setError(t('errorEmails'))
       setIsLoading(false)
       return
     }
@@ -168,6 +183,35 @@ export default function SignUpPage() {
                       value={repeatPassword}
                       onChange={(e) => setRepeatPassword(e.target.value)}
                     />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="terms"
+                      checked={termsAccepted}
+                      onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                    />
+                    <Label
+                      htmlFor="terms"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {t.rich('acceptTerms', {
+                        terms: (chunks) => <Link href="/legal/terms" target="_blank" className="underline hover:text-primary">{chunks}</Link>,
+                        privacy: (chunks) => <Link href="/legal/privacy" target="_blank" className="underline hover:text-primary">{chunks}</Link>
+                      })}
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="emails"
+                      checked={emailsAccepted}
+                      onCheckedChange={(checked) => setEmailsAccepted(checked as boolean)}
+                    />
+                    <Label
+                      htmlFor="emails"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {t('acceptEmails')}
+                    </Label>
                   </div>
                   {error && <p className="text-sm text-destructive">{error}</p>}
                   <Button type="submit" className="w-full" disabled={isLoading}>
