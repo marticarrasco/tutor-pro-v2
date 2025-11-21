@@ -25,7 +25,7 @@ import { toast } from "@/hooks/use-toast"
 import type { User } from "@supabase/supabase-js"
 import { PageHeader } from "@/components/page-header"
 import { useTranslations } from 'next-intl';
-import LanguageSwitcher from '@/components/language-switcher';
+
 
 interface TodayClass {
   id: string
@@ -633,7 +633,7 @@ export default function HomePage() {
               title={t('greeting.goodTimeOfDay', { timeOfDay: t(`greeting.${timeOfDay}`), name: firstName || 'none' })}
               description={t('description')}
             />
-            <LanguageSwitcher />
+
           </div>
 
           {/* Top Section - Log a Session and Today's Classes */}

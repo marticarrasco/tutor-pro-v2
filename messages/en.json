@@ -30,7 +30,14 @@
         "warning": "Warning",
         "info": "Info"
     },
+    "LocaleSwitcher": {
+        "label": "Change language",
+        "en": "English",
+        "es": "Spanish"
+    },
     "Navigation": {
+        "darkMode": "Dark Mode",
+        "lightMode": "Light Mode",
         "loading": "Loading...",
         "home": "Home",
         "students": "Students",
@@ -43,10 +50,6 @@
         "profileSettings": "Profile Settings",
         "logout": "Log out",
         "login": "Log in"
-    },
-    "LocaleSwitcher": {
-        "label": "Change language",
-        "locale": "{locale, select, en {English} es {Spanish} other {Unknown}}"
     },
     "HomePage": {
         "loading": "Loading...",
@@ -303,6 +306,7 @@
         }
     },
     "StudentsPage": {
+        "documentTitle": "Students",
         "loading": "Loading...",
         "eyebrow": "",
         "title": "Students",
@@ -317,6 +321,12 @@
         "searchPlaceholder": "Search students..."
     },
     "SessionsPage": {
+        "cancelled": "cancelled",
+        "filterAll": "All",
+        "filterPaid": "Paid",
+        "filterUnpaid": "Unpaid",
+        "loadingSessions": "Loading sessions...",
+        "documentTitle": "Sessions",
         "loading": "Loading...",
         "eyebrow": "",
         "title": "Session History",
@@ -414,30 +424,27 @@
         }
     },
     "ScheduleForm": {
-        "loading": "Loading...",
         "createTitle": "Add Scheduled Class",
         "editTitle": "Edit Scheduled Class",
+        "createDescription": "Create a new recurring weekly class schedule.",
+        "editDescription": "Update the recurring class schedule.",
         "student": "Student",
         "selectStudent": "Select a student",
         "dayOfWeek": "Day of Week",
-        "selectDay": "Select a day",
         "startTime": "Start Time",
-        "selectTime": "Select time",
-        "durationMinutes": "Duration (minutes)",
-        "durationPlaceholder": "60",
-        "isActive": "Active",
+        "durationHours": "Duration (hours)",
+        "durationPlaceholder": "1.00",
+        "classTime": "Class Time",
+        "isActive": "Active Schedule",
         "cancel": "Cancel",
-        "save": "Save Class",
         "saving": "Saving...",
-        "success": "Success",
+        "createButton": "Create Class",
+        "updateButton": "Update Class",
         "classCreated": "Scheduled class created successfully",
         "classUpdated": "Scheduled class updated successfully",
         "error": "Error",
         "errorSaving": "Failed to save scheduled class. Please try again.",
-        "studentRequired": "Please select a student",
-        "dayRequired": "Please select a day",
-        "timeRequired": "Please select a start time",
-        "durationRequired": "Please enter a duration"
+        "errorLoadingStudents": "Failed to load students. Please try again."
     },
     "ScheduleTable": {
         "loading": "Loading...",
@@ -537,6 +544,28 @@
         "minutes": "{count}min",
         "sessions": "{count} {count, plural, one {session} other {sessions}}",
         "students": "{count} {count, plural, one {student} other {students}}"
+    },
+    "MonthlyEarningsPage": {
+        "eyebrow": "Revenue",
+        "title": "Monthly Earnings Overview",
+        "description": "Visualise lessons delivered, revenue earned, and student activity across the current month.",
+        "loading": "Loading monthly earnings...",
+        "error": "Error",
+        "errorLoading": "Failed to load monthly earnings data. Please try again.",
+        "summary": "Summary",
+        "weeklyEarnings": "Weekly Earnings",
+        "week": "Week {number}",
+        "totalMonthlyEarnings": "Total Monthly Earnings",
+        "earningsByStudent": "Earnings by Student",
+        "weekdays": {
+            "mon": "Mon",
+            "tue": "Tue",
+            "wed": "Wed",
+            "thu": "Thu",
+            "fri": "Fri",
+            "sat": "Sat",
+            "sun": "Sun"
+        }
     },
     "StatisticsPage": {
         "min": " min",

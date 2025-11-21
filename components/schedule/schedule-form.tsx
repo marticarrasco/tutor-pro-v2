@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -57,6 +58,19 @@ const DAYS_OF_WEEK = [
 ]
 
 export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: ScheduleFormProps) {
+  const t = useTranslations('ScheduleForm')
+  const tSchedule = useTranslations('SchedulePage.weekdays')
+
+  const DAYS_OF_WEEK = [
+    { value: 1, label: tSchedule('monday') },
+    { value: 2, label: tSchedule('tuesday') },
+    { value: 3, label: tSchedule('wednesday') },
+    { value: 4, label: tSchedule('thursday') },
+    { value: 5, label: tSchedule('friday') },
+    { value: 6, label: tSchedule('saturday') },
+    { value: 0, label: tSchedule('sunday') },
+  ]
+
   const [students, setStudents] = useState<Student[]>([])
   const [formData, setFormData] = useState<ScheduledClass>({
     student_id: scheduledClass?.student_id || "",
@@ -85,8 +99,8 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
       } catch (error) {
         console.error("Error fetching students for schedule form:", error)
         toast({
-          title: "Error",
-          description: "Failed to load students. Please try again.",
+          title: t('error'),
+          description: t('errorLoadingStudents'),
           variant: "destructive",
         })
       }
@@ -95,7 +109,7 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
     if (open) {
       fetchStudents()
     }
-  }, [open])
+  }, [open, t, tSchedule])
 
   useEffect(() => {
     if (open) {
@@ -143,7 +157,7 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
 
         if (error) throw error
         savedClass = data ?? null
-        toast({ title: "Scheduled class updated successfully" })
+        toast({ title: t('classUpdated') })
       } else {
         // Create new scheduled class
         const { data, error } = await supabase
@@ -164,7 +178,7 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
 
         if (error) throw error
         savedClass = data ?? null
-        toast({ title: "Scheduled class created successfully" })
+        toast({ title: t('classCreated') })
       }
 
       if (savedClass) {
@@ -190,8 +204,8 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
     } catch (error: any) {
       console.error("Error saving scheduled class:", error)
       toast({
-        title: "Error",
-        description: "Failed to save scheduled class. Please try again.",
+        title: t('error'),
+        description: t('errorSaving'),
         variant: "destructive",
       })
     } finally {
@@ -228,24 +242,24 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{scheduledClass?.id ? "Edit Scheduled Class" : "Add Scheduled Class"}</DialogTitle>
+          <DialogTitle>{scheduledClass?.id ? t('editTitle') : t('createTitle')}</DialogTitle>
           <DialogDescription>
             {scheduledClass?.id
-              ? "Update the recurring class schedule."
-              : "Create a new recurring weekly class schedule."}
+              ? t('editDescription')
+              : t('createDescription')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="student_id">Student</Label>
+              <Label htmlFor="student_id">{t('student')}</Label>
               <Select
                 value={formData.student_id}
                 onValueChange={(value) => setFormData({ ...formData, student_id: value })}
                 required
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a student" />
+                  <SelectValue placeholder={t('selectStudent')} />
                 </SelectTrigger>
                 <SelectContent>
                   {students.map((student) => (
@@ -258,7 +272,7 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="day_of_week">Day of Week</Label>
+              <Label htmlFor="day_of_week">{t('dayOfWeek')}</Label>
               <Select
                 value={formData.day_of_week.toString()}
                 onValueChange={(value) => setFormData({ ...formData, day_of_week: Number.parseInt(value) })}
@@ -278,7 +292,7 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="start_time">Start Time</Label>
+              <Label htmlFor="start_time">{t('startTime')}</Label>
               <Input
                 id="start_time"
                 type="time"
@@ -289,7 +303,7 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="duration_hours">Duration (hours)</Label>
+              <Label htmlFor="duration_hours">{t('durationHours')}</Label>
               <Input
                 id="duration_hours"
                 type="number"
@@ -305,13 +319,13 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
                     setFormData({ ...formData, duration_minutes: minutes })
                   }
                 }}
-                placeholder="1.00"
+                placeholder={t('durationPlaceholder')}
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label className="text-sm font-medium">Class Time</Label>
+              <Label className="text-sm font-medium">{t('classTime')}</Label>
               <div className="text-sm text-muted-foreground">
                 {formatTime(formData.start_time)} - {formatTime(endTime())} ({formattedDuration})
               </div>
@@ -323,21 +337,21 @@ export function ScheduleForm({ scheduledClass, open, onOpenChange, onSuccess }: 
                 checked={formData.is_active}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
               />
-              <Label htmlFor="is_active">Active Schedule</Label>
+              <Label htmlFor="is_active">{t('isActive')}</Label>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button type="submit" disabled={isLoading} className="relative">
               {isLoading ? (
                 <>
                   <div className="mr-2 h-4 w-4 rounded-full border-2 border-primary-foreground/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
-                  Saving...
+                  {t('saving')}
                 </>
               ) : (
-                scheduledClass?.id ? "Update Class" : "Create Class"
+                scheduledClass?.id ? t('updateButton') : t('createButton')
               )}
             </Button>
           </DialogFooter>

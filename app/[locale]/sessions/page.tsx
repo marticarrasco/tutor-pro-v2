@@ -180,7 +180,7 @@ export default function SessionsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalSessions}</div>
-                <p className="text-xs text-muted-foreground">{cancelledSessions.length} cancelled</p>
+                <p className="text-xs text-muted-foreground">{cancelledSessions.length} {t('cancelled')}</p>
               </CardContent>
             </Card>
             <Card>
@@ -225,9 +225,9 @@ export default function SessionsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All</SelectItem>
-                      <SelectItem value="paid">Paid</SelectItem>
-                      <SelectItem value="unpaid">Unpaid</SelectItem>
+                      <SelectItem value="all">{t('filterAll')}</SelectItem>
+                      <SelectItem value="paid">{t('filterPaid')}</SelectItem>
+                      <SelectItem value="unpaid">{t('filterUnpaid')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <div className="relative w-64">
@@ -244,7 +244,7 @@ export default function SessionsPage() {
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="text-center py-8 text-muted-foreground">Loading sessions...</div>
+                <div className="text-center py-8 text-muted-foreground">{t('loadingSessions')}</div>
               ) : (
                 <SessionsTable
                   sessions={filteredSessions}

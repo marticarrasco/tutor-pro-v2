@@ -33,6 +33,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { useTheme } from "next-themes"
 import { MobileNav } from "@/components/mobile-nav"
 import { useTranslations } from 'next-intl'
+import LanguageSwitcher from "@/components/language-switcher"
 
 
 
@@ -149,8 +150,13 @@ export function AppSidebar() {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter className="border-t border-sidebar-border space-y-2">
-          <div className="px-4 pt-3">
-            <ThemeToggle />
+          <div className="px-4 pt-3 flex gap-2 items-center">
+            <div className="flex-1">
+              <ThemeToggle />
+            </div>
+            <div>
+              <LanguageSwitcher />
+            </div>
           </div>
           {user ? (
             <DropdownMenu>

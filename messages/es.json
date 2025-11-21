@@ -30,7 +30,14 @@
         "hours": "Horas",
         "amount": "Cantidad"
     },
+    "LocaleSwitcher": {
+        "label": "Change language",
+        "en": "Inglés",
+        "es": "Español"
+    },
     "Navigation": {
+        "darkMode": "Modo Oscuro",
+        "lightMode": "Modo Claro",
         "loading": "Cargando...",
         "home": "Inicio",
         "students": "Estudiantes",
@@ -44,10 +51,6 @@
         "logout": "Cerrar sesión",
         "login": "Iniciar sesión"
     },
-    "LocaleSwitcher": {
-        "label": "Cambiar idioma",
-        "locale": "{locale, select, en {Inglés} es {Español} other {Desconocido}}"
-    },
     "HomePage": {
         "loading": "Cargando...",
         "title": "¡Hola mundo!",
@@ -55,11 +58,11 @@
         "documentTitle": "Panel de Control",
         "documentDescription": "Tu panel de control de Derno - Revisa el horario de hoy, registra nuevas sesiones y supervisa los pagos pendientes de un vistazo.",
         "greeting": {
-            "morning": "mañana",
-            "afternoon": "tarde",
-            "evening": "noches",
-            "night": "noches",
-            "goodTimeOfDay": "¡Buenas {timeOfDay}{name, select, none {} other {, {name}}}!"
+            "morning": "Buenos días",
+            "afternoon": "Buenas tardes",
+            "evening": "Buenas noches",
+            "night": "Buenas noches",
+            "goodTimeOfDay": "¡{timeOfDay}{name, select, none {} other {, {name}}}!"
         },
         "eyebrow": "Panel de Control",
         "description": "Revisa el horario de hoy, registra nuevas sesiones y supervisa los pagos pendientes de un vistazo.",
@@ -303,6 +306,7 @@
         }
     },
     "StudentsPage": {
+        "documentTitle": "Estudiantes",
         "loading": "Cargando...",
         "eyebrow": "",
         "title": "Estudiantes",
@@ -317,6 +321,12 @@
         "searchPlaceholder": "Buscar estudiantes..."
     },
     "SessionsPage": {
+        "cancelled": "cancelled",
+        "filterAll": "Todas",
+        "filterPaid": "Pagadas",
+        "filterUnpaid": "Pendientes",
+        "loadingSessions": "Cargando...",
+        "documentTitle": "Sessiones",
         "loading": "Cargando...",
         "eyebrow": "",
         "title": "Historial de Sesiones",
@@ -413,31 +423,50 @@
             "saturday": "Sábado"
         }
     },
+    "MonthlyEarningsPage": {
+        "eyebrow": "Ingresos",
+        "title": "Resumen de Ingresos Mensuales",
+        "description": "Visualiza las lecciones impartidas, los ingresos obtenidos y la actividad de los estudiantes durante el mes actual.",
+        "loading": "Cargando ingresos mensuales...",
+        "error": "Error",
+        "errorLoading": "Fallo al cargar datos de ingresos mensuales. Por favor, inténtalo de nuevo.",
+        "summary": "Resumen",
+        "weeklyEarnings": "Ingresos Semanales",
+        "week": "Semana {number}",
+        "totalMonthlyEarnings": "Ingresos Mensuales Totales",
+        "earningsByStudent": "Ingresos por Estudiante",
+        "weekdays": {
+            "mon": "Lun",
+            "tue": "Mar",
+            "wed": "Mié",
+            "thu": "Jue",
+            "fri": "Vie",
+            "sat": "Sáb",
+            "sun": "Dom"
+        }
+    },
     "ScheduleForm": {
-        "loading": "Cargando...",
         "createTitle": "Añadir Clase Programada",
         "editTitle": "Editar Clase Programada",
+        "createDescription": "Crea un nuevo horario de clase semanal recurrente.",
+        "editDescription": "Actualiza el horario de clase recurrente.",
         "student": "Estudiante",
         "selectStudent": "Selecciona un estudiante",
         "dayOfWeek": "Día de la Semana",
-        "selectDay": "Selecciona un día",
         "startTime": "Hora de Inicio",
-        "selectTime": "Selecciona hora",
-        "durationMinutes": "Duración (minutos)",
-        "durationPlaceholder": "60",
-        "isActive": "Activa",
+        "durationHours": "Duración (horas)",
+        "durationPlaceholder": "1.00",
+        "classTime": "Horario de Clase",
+        "isActive": "Horario Activo",
         "cancel": "Cancelar",
-        "save": "Guardar Clase",
         "saving": "Guardando...",
-        "success": "Éxito",
+        "createButton": "Crear Clase",
+        "updateButton": "Actualizar Clase",
         "classCreated": "Clase programada creada con éxito",
         "classUpdated": "Clase programada actualizada con éxito",
         "error": "Error",
         "errorSaving": "Fallo al guardar clase programada. Por favor, inténtalo de nuevo.",
-        "studentRequired": "Por favor, selecciona un estudiante",
-        "dayRequired": "Por favor, selecciona un día",
-        "timeRequired": "Por favor, selecciona una hora de inicio",
-        "durationRequired": "Por favor, ingresa una duración"
+        "errorLoadingStudents": "Fallo al cargar estudiantes. Por favor, inténtalo de nuevo."
     },
     "ScheduleTable": {
         "loading": "Cargando...",

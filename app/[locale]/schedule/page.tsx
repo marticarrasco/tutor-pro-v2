@@ -39,13 +39,21 @@ interface ScheduledClass {
   user_id: string
 }
 
-const WEEKDAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-
 export default function SchedulePage() {
   const t = useTranslations('SchedulePage')
   const tWeekdays = useTranslations('SchedulePage.weekdays')
   useDocumentTitle(t('documentTitle'))
   useDocumentMeta(t('documentDescription'))
+
+  const WEEKDAY_LABELS = [
+    tWeekdays('sunday'),
+    tWeekdays('monday'),
+    tWeekdays('tuesday'),
+    tWeekdays('wednesday'),
+    tWeekdays('thursday'),
+    tWeekdays('friday'),
+    tWeekdays('saturday'),
+  ]
 
   const [scheduledClasses, setScheduledClasses] = useState<ScheduledClass[]>([])
   const [isLoading, setIsLoading] = useState(true)

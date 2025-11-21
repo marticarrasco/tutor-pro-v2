@@ -10,15 +10,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
-const themeOptions = [
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "light", label: "Light", icon: Sun },
-]
+import { useTranslations } from "next-intl"
 
 export function ThemeToggle() {
+  const t = useTranslations('Navigation')
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+
+  const themeOptions = [
+    { value: "dark", label: t('darkMode'), icon: Moon },
+    { value: "light", label: t('lightMode'), icon: Sun },
+  ]
 
   useEffect(() => {
     setMounted(true)
@@ -36,7 +38,7 @@ export function ThemeToggle() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="w-full justify-start gap-2" aria-label="Change theme">
           <ActiveIcon className="h-4 w-4" />
-          <span>{activeTheme.label} mode</span>
+          <span>{activeTheme.label}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
