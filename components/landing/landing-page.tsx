@@ -9,7 +9,7 @@ import Link from "next/link"
 import { useTranslations } from "next-intl"
 
 export function LandingPage() {
-  const t = useTranslations()
+  const t = useTranslations('LandingPage')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   const heroRef = useRef(null)
@@ -136,10 +136,10 @@ export function LandingPage() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4">
             <Button variant="outline" size="sm" className="border-2 bg-transparent" asChild>
-              <Link href="/auth/login">Sign In</Link>
+              <Link href="/auth/login">{t('Header.signIn')}</Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href="/auth/sign-up">Start Free</Link>
+              <Link href="/auth/sign-up">{t('Header.startFree')}</Link>
             </Button>
           </nav>
 
@@ -164,12 +164,12 @@ export function LandingPage() {
             <div className="container max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3">
               <Button variant="outline" className="w-full border-2" asChild>
                 <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
-                  Sign In
+                  {t('Header.signIn')}
                 </Link>
               </Button>
               <Button className="w-full" asChild>
                 <Link href="/auth/sign-up" onClick={() => setMobileMenuOpen(false)}>
-                  Start Free
+                  {t('Header.startFree')}
                 </Link>
               </Button>
             </div>
@@ -196,31 +196,30 @@ export function LandingPage() {
                   className="inline-block"
                 >
                   <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/20 px-3 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm font-semibold text-primary">
-                    Free Forever • No Credit Card Required
+                    {t('Hero.badge')}
                   </span>
                 </motion.div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-balance">
-                  Track sessions. Manage payments. Grow your tutoring.
+                  {t('Hero.title')}
                 </h1>
                 <p className="text-base sm:text-lg text-muted-foreground text-pretty max-w-2xl mx-auto lg:mx-0">
-                  Streamline your tutoring business with powerful session logging, payment tracking, and analytics.
-                  Focus on teaching while Derno handles the rest.
+                  {t('Hero.description')}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
                 <Button size="lg" className="text-base w-full sm:w-auto" asChild>
-                  <Link href="/auth/sign-up">Start for Free</Link>
+                  <Link href="/auth/sign-up">{t('Hero.startFree')}</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-base bg-transparent w-full sm:w-auto" asChild>
-                  <Link href="/auth/login">See Demo</Link>
+                  <Link href="/auth/login">{t('Hero.seeDemo')}</Link>
                 </Button>
               </div>
               <div className="space-y-2">
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  Join over 1,000+ tutors organizing their business with Derno
+                  {t('Hero.socialProof')}
                 </p>
                 <p className="text-xs sm:text-sm font-medium text-primary">
-                  ✓ Always free • ✓ No credit card • ✓ Setup in 2 minutes
+                  {t('Hero.features')}
                 </p>
               </div>
             </motion.div>
@@ -235,7 +234,7 @@ export function LandingPage() {
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <Calendar className="h-5 w-5 text-primary" />
                   </div>
-                  <h3 className="font-bold text-lg">Upcoming Sessions</h3>
+                  <h3 className="font-bold text-lg">{t('Hero.cards.upcoming.title')}</h3>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -261,7 +260,7 @@ export function LandingPage() {
                   <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
                     <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
                   </div>
-                  <h3 className="font-bold text-lg">Recent Payments</h3>
+                  <h3 className="font-bold text-lg">{t('Hero.cards.payments.title')}</h3>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -287,15 +286,15 @@ export function LandingPage() {
                   <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
                     <TrendingUp className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                   </div>
-                  <h3 className="font-bold text-lg">This Month</h3>
+                  <h3 className="font-bold text-lg">{t('Hero.cards.month.title')}</h3>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">Total Sessions</p>
+                    <p className="text-sm text-muted-foreground">{t('Hero.cards.month.totalSessions')}</p>
                     <p className="text-2xl font-bold">42</p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">Revenue</p>
+                    <p className="text-sm text-muted-foreground">{t('Hero.cards.month.revenue')}</p>
                     <p className="text-2xl font-bold">$2,450</p>
                   </div>
                 </div>
@@ -313,12 +312,12 @@ export function LandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12 sm:mb-16 space-y-3 sm:space-y-4 px-4 md:px-6"
           >
-            <span className="text-xs sm:text-sm font-bold text-primary tracking-widest uppercase">See It In Action</span>
+            <span className="text-xs sm:text-sm font-bold text-primary tracking-widest uppercase">{t('Showcase.eyebrow')}</span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance px-4">
-              A beautiful interface designed for tutors
+              {t('Showcase.title')}
             </h2>
             <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto text-pretty px-4">
-              Intuitive dashboards and powerful features that make managing your tutoring business effortless
+              {t('Showcase.description')}
             </p>
           </motion.div>
 
@@ -342,28 +341,28 @@ export function LandingPage() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500" />
                       <div className="w-3 h-3 rounded-full bg-green-500" />
                     </div>
-                    <span className="text-sm font-medium ml-4">Dashboard</span>
+                    <span className="text-sm font-medium ml-4">{t('Showcase.dashboard.title')}</span>
                   </div>
                   <div className="p-8 space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-2xl font-bold">Welcome back, Alex!</h3>
-                      <Button size="sm">New Session</Button>
+                      <h3 className="text-2xl font-bold">{t('Showcase.dashboard.welcome')}</h3>
+                      <Button size="sm">{t('Showcase.dashboard.newSession')}</Button>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
                       <div className="rounded-lg bg-primary/10 p-4">
-                        <p className="text-sm text-muted-foreground mb-1">Today</p>
+                        <p className="text-sm text-muted-foreground mb-1">{t('Showcase.dashboard.stats.today')}</p>
                         <p className="text-3xl font-bold">5</p>
-                        <p className="text-xs text-muted-foreground">sessions</p>
+                        <p className="text-xs text-muted-foreground">{t('Showcase.dashboard.stats.sessions')}</p>
                       </div>
                       <div className="rounded-lg bg-green-500/10 p-4">
-                        <p className="text-sm text-muted-foreground mb-1">This Week</p>
+                        <p className="text-sm text-muted-foreground mb-1">{t('Showcase.dashboard.stats.thisWeek')}</p>
                         <p className="text-3xl font-bold">$850</p>
-                        <p className="text-xs text-muted-foreground">earned</p>
+                        <p className="text-xs text-muted-foreground">{t('Showcase.dashboard.stats.earned')}</p>
                       </div>
                       <div className="rounded-lg bg-amber-500/10 p-4">
-                        <p className="text-sm text-muted-foreground mb-1">Active</p>
+                        <p className="text-sm text-muted-foreground mb-1">{t('Showcase.dashboard.stats.active')}</p>
                         <p className="text-3xl font-bold">12</p>
-                        <p className="text-xs text-muted-foreground">students</p>
+                        <p className="text-xs text-muted-foreground">{t('Showcase.dashboard.stats.students')}</p>
                       </div>
                     </div>
                     <div className="h-32 rounded-lg bg-muted/50 flex items-center justify-center">
@@ -387,35 +386,35 @@ export function LandingPage() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500" />
                       <div className="w-3 h-3 rounded-full bg-green-500" />
                     </div>
-                    <span className="text-sm font-medium ml-4">Sessions</span>
+                    <span className="text-sm font-medium ml-4">{t('Showcase.sessions.title')}</span>
                   </div>
                   <div className="p-8 space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-2xl font-bold">Recent Sessions</h3>
+                      <h3 className="text-2xl font-bold">{t('Showcase.sessions.recentSessions')}</h3>
                       <Button size="sm" variant="outline">
-                        Filter
+                        {t('Showcase.sessions.filter')}
                       </Button>
                     </div>
                     {[
                       {
                         student: "Sarah Johnson",
-                        subject: "Mathematics",
+                        subject: t('Showcase.sessions.subjects.math'),
                         time: "2:00 PM - 3:00 PM",
-                        status: "Completed",
+                        status: t('Showcase.sessions.status.completed'),
                         amount: "$50",
                       },
                       {
                         student: "David Chen",
-                        subject: "Physics",
+                        subject: t('Showcase.sessions.subjects.physics'),
                         time: "3:30 PM - 4:30 PM",
-                        status: "Completed",
+                        status: t('Showcase.sessions.status.completed'),
                         amount: "$60",
                       },
                       {
                         student: "Emma Wilson",
-                        subject: "Chemistry",
+                        subject: t('Showcase.sessions.subjects.chemistry'),
                         time: "5:00 PM - 6:00 PM",
-                        status: "Upcoming",
+                        status: t('Showcase.sessions.status.upcoming'),
                         amount: "$55",
                       },
                     ].map((session, i) => (
@@ -458,30 +457,30 @@ export function LandingPage() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500" />
                       <div className="w-3 h-3 rounded-full bg-green-500" />
                     </div>
-                    <span className="text-sm font-medium ml-4">Payments</span>
+                    <span className="text-sm font-medium ml-4">{t('Showcase.payments.title')}</span>
                   </div>
                   <div className="p-8 space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-2xl font-bold">Payment Tracking</h3>
-                      <Button size="sm">Export</Button>
+                      <h3 className="text-2xl font-bold">{t('Showcase.payments.tracking')}</h3>
+                      <Button size="sm">{t('Showcase.payments.export')}</Button>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="rounded-lg bg-green-500/10 p-4 border border-green-500/20">
-                        <p className="text-sm text-muted-foreground mb-1">Total Received</p>
+                        <p className="text-sm text-muted-foreground mb-1">{t('Showcase.payments.totalReceived')}</p>
                         <p className="text-3xl font-bold text-green-600 dark:text-green-400">$3,240</p>
-                        <p className="text-xs text-muted-foreground mt-1">This month</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('Showcase.payments.thisMonth')}</p>
                       </div>
                       <div className="rounded-lg bg-amber-500/10 p-4 border border-amber-500/20">
-                        <p className="text-sm text-muted-foreground mb-1">Outstanding</p>
+                        <p className="text-sm text-muted-foreground mb-1">{t('Showcase.payments.outstanding')}</p>
                         <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">$420</p>
-                        <p className="text-xs text-muted-foreground mt-1">3 pending</p>
+                        <p className="text-xs text-muted-foreground mt-1">{t('Showcase.payments.pendingCount')}</p>
                       </div>
                     </div>
                     <div className="space-y-3">
                       {[
-                        { name: "Michael Brown", amount: "$75", status: "Paid", date: "Jan 15" },
-                        { name: "Lisa Anderson", amount: "$60", status: "Paid", date: "Jan 14" },
-                        { name: "James Taylor", amount: "$50", status: "Pending", date: "Jan 13" },
+                        { name: "Michael Brown", amount: "$75", status: t('Showcase.payments.status.paid'), date: t('Showcase.payments.dates.jan15') },
+                        { name: "Lisa Anderson", amount: "$60", status: t('Showcase.payments.status.paid'), date: t('Showcase.payments.dates.jan14') },
+                        { name: "James Taylor", amount: "$50", status: t('Showcase.payments.status.pending'), date: t('Showcase.payments.dates.jan13') },
                       ].map((payment, i) => (
                         <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border">
                           <div className="flex items-center gap-3">
@@ -494,7 +493,7 @@ export function LandingPage() {
                           <div className="text-right">
                             <p className="font-bold">{payment.amount}</p>
                             <p
-                              className={`text-xs ${payment.status === "Paid" ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}
+                              className={`text-xs ${payment.status === t('Showcase.payments.status.paid') ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}
                             >
                               {payment.status}
                             </p>
@@ -520,13 +519,13 @@ export function LandingPage() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500" />
                       <div className="w-3 h-3 rounded-full bg-green-500" />
                     </div>
-                    <span className="text-sm font-medium ml-4">Analytics</span>
+                    <span className="text-sm font-medium ml-4">{t('Showcase.analytics.title')}</span>
                   </div>
                   <div className="p-8 space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-2xl font-bold">Growth Insights</h3>
+                      <h3 className="text-2xl font-bold">{t('Showcase.analytics.insights')}</h3>
                       <Button size="sm" variant="outline">
-                        This Month
+                        {t('Showcase.analytics.thisMonth')}
                       </Button>
                     </div>
                     <div className="h-48 rounded-lg bg-muted/50 flex items-center justify-center relative overflow-hidden">
@@ -535,14 +534,14 @@ export function LandingPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Total Hours</p>
+                        <p className="text-sm text-muted-foreground">{t('Showcase.analytics.totalHours')}</p>
                         <p className="text-2xl font-bold">124.5</p>
-                        <p className="text-xs text-green-600 dark:text-green-400">↑ 12% from last month</p>
+                        <p className="text-xs text-green-600 dark:text-green-400">↑ 12% {t('Showcase.analytics.increase')}</p>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Avg. Rate</p>
+                        <p className="text-sm text-muted-foreground">{t('Showcase.analytics.avgRate')}</p>
                         <p className="text-2xl font-bold">$52/hr</p>
-                        <p className="text-xs text-green-600 dark:text-green-400">↑ 8% from last month</p>
+                        <p className="text-xs text-green-600 dark:text-green-400">↑ 8% {t('Showcase.analytics.increase')}</p>
                       </div>
                     </div>
                   </div>
@@ -599,13 +598,13 @@ export function LandingPage() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500" />
                       <div className="w-3 h-3 rounded-full bg-green-500" />
                     </div>
-                    <span className="text-sm font-medium ml-4">Sessions</span>
+                    <span className="text-sm font-medium ml-4">{t('Showcase.sessions.title')}</span>
                   </div>
                   <div className="p-8 space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-2xl font-bold">Recent Sessions</h3>
+                      <h3 className="text-2xl font-bold">{t('Showcase.sessions.recentSessions')}</h3>
                       <Button size="sm" variant="outline">
-                        Filter
+                        {t('Showcase.sessions.filter')}
                       </Button>
                     </div>
                     {[
@@ -613,21 +612,21 @@ export function LandingPage() {
                         student: "Sarah Johnson",
                         subject: "Mathematics",
                         time: "2:00 PM - 3:00 PM",
-                        status: "Completed",
+                        status: t('Showcase.sessions.status.completed'),
                         amount: "$50",
                       },
                       {
                         student: "David Chen",
                         subject: "Physics",
                         time: "3:30 PM - 4:30 PM",
-                        status: "Completed",
+                        status: t('Showcase.sessions.status.completed'),
                         amount: "$60",
                       },
                       {
                         student: "Emma Wilson",
                         subject: "Chemistry",
                         time: "5:00 PM - 6:00 PM",
-                        status: "Upcoming",
+                        status: t('Showcase.sessions.status.upcoming'),
                         amount: "$55",
                       },
                     ].map((session, i) => (
@@ -769,14 +768,13 @@ export function LandingPage() {
                 <Play className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance px-4">
-                Try Derno Right Now
+                {t('Demo.title')}
               </h2>
               <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto text-pretty px-4">
-                Explore the full application with live demo data. Add students, log sessions, and see how Derno
-                simplifies your tutoring business—no sign-up required.
+                {t('Demo.description')}
               </p>
               <p className="text-xs sm:text-sm text-primary font-semibold px-4">
-                ✓ Fully interactive • ✓ All features unlocked • ✓ Changes don't persist
+                {t('Demo.features')}
               </p>
             </div>
 
@@ -791,7 +789,7 @@ export function LandingPage() {
                 <div className="flex-1 flex items-center justify-center">
                   <div className="bg-background/80 px-2 sm:px-4 py-0.5 sm:py-1 rounded-md text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
                     <Play className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary" />
-                    <span className="hidden xs:inline">Live Demo</span>
+                    <span className="hidden xs:inline">{t('Demo.liveDemo')}</span>
                     <span className="xs:hidden">Demo</span>
                   </div>
                 </div>
@@ -806,14 +804,14 @@ export function LandingPage() {
 
             <div className="text-center px-4">
               <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
-                Like what you see? Create your own account to save your data and get started for real.
+                {t('Demo.ctaText')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <Button size="lg" className="w-full sm:w-auto" asChild>
-                  <Link href="/auth/sign-up">Create Free Account</Link>
+                  <Link href="/auth/sign-up">{t('Demo.createAccount')}</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
-                  <Link href="/auth/login">Sign In</Link>
+                  <Link href="/auth/login">{t('Demo.signIn')}</Link>
                 </Button>
               </div>
             </div>
@@ -830,12 +828,12 @@ export function LandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12 sm:mb-16 space-y-3 sm:space-y-4"
           >
-            <span className="text-xs sm:text-sm font-bold text-primary tracking-widest uppercase">Everything You Need</span>
+            <span className="text-xs sm:text-sm font-bold text-primary tracking-widest uppercase">{t('Features.eyebrow')}</span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance px-4">
-              Built for tutors who want to focus on teaching
+              {t('Features.title')}
             </h2>
             <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto text-pretty px-4">
-              All the tools you need to run a successful tutoring business, in one simple platform
+              {t('Features.description')}
             </p>
           </motion.div>
 
@@ -843,38 +841,38 @@ export function LandingPage() {
             {[
               {
                 icon: Calendar,
-                title: "Session Logging",
-                description: "Quickly log every tutoring session with student details, duration, and notes.",
+                title: t('Features.items.sessionLogging.title'),
+                description: t('Features.items.sessionLogging.description'),
                 delay: 0.1,
               },
               {
                 icon: DollarSign,
-                title: "Payment Tracking",
-                description: "Track payments, outstanding balances, and generate invoices automatically.",
+                title: t('Features.items.paymentTracking.title'),
+                description: t('Features.items.paymentTracking.description'),
                 delay: 0.2,
               },
               {
                 icon: Clock,
-                title: "Time Analytics",
-                description: "See how much time you spend with each student and optimize your schedule.",
+                title: t('Features.items.timeAnalytics.title'),
+                description: t('Features.items.timeAnalytics.description'),
                 delay: 0.3,
               },
               {
                 icon: Users,
-                title: "Student Management",
-                description: "Keep all student information, progress notes, and history in one place.",
+                title: t('Features.items.studentManagement.title'),
+                description: t('Features.items.studentManagement.description'),
                 delay: 0.4,
               },
               {
                 icon: BarChart3,
-                title: "Revenue Reports",
-                description: "Visualize your earnings over time with beautiful charts and insights.",
+                title: t('Features.items.revenueReports.title'),
+                description: t('Features.items.revenueReports.description'),
                 delay: 0.5,
               },
               {
                 icon: TrendingUp,
-                title: "Growth Insights",
-                description: "Understand your business trends and make data-driven decisions.",
+                title: t('Features.items.growthInsights.title'),
+                description: t('Features.items.growthInsights.description'),
                 delay: 0.6,
               },
             ].map((feature, index) => (
@@ -908,17 +906,17 @@ export function LandingPage() {
           >
             <div className="relative z-10 space-y-4 sm:space-y-6">
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground text-balance px-4">
-                Ready to organize your tutoring business?
+                {t('CTA.title')}
               </h2>
               <p className="text-base sm:text-lg text-primary-foreground/90 max-w-2xl mx-auto text-pretty px-4">
-                Join thousands of tutors who trust Derno to manage their sessions and payments
+                {t('CTA.description')}
               </p>
               <p className="text-base sm:text-xl font-semibold text-primary-foreground/95 px-4">
-                100% Free Forever • No Credit Card Required
+                {t('CTA.subtext')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2 sm:pt-4">
                 <Button size="lg" variant="secondary" className="text-base w-full sm:w-auto" asChild>
-                  <Link href="/auth/sign-up">Start for Free</Link>
+                  <Link href="/auth/sign-up">{t('CTA.startFree')}</Link>
                 </Button>
                 <Button
                   size="lg"
@@ -926,7 +924,7 @@ export function LandingPage() {
                   className="text-base bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10 w-full sm:w-auto"
                   asChild
                 >
-                  <Link href="/auth/login">Launch Demo Account</Link>
+                  <Link href="/auth/login">{t('CTA.launchDemo')}</Link>
                 </Button>
               </div>
             </div>
@@ -957,7 +955,7 @@ export function LandingPage() {
               <Link href="/legal/privacy" className="hover:text-foreground transition-colors">
                 {t('Footer.privacy')}
               </Link>
-              <p>© 2025 Derno. All rights reserved.</p>
+              <p>{t('Footer.copyright')}</p>
             </div>
           </div>
         </div>

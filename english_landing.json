@@ -1,0 +1,140 @@
+{
+    "LandingPage": {
+        "Header": {
+            "signIn": "Sign In",
+            "startFree": "Start Free"
+        },
+        "Hero": {
+            "badge": "Free Forever • No Credit Card Required",
+            "title": "Track sessions. Manage payments. Grow your tutoring.",
+            "description": "Streamline your tutoring business with powerful session logging, payment tracking, and analytics. Focus on teaching while Derno handles the rest.",
+            "startFree": "Start for Free",
+            "seeDemo": "See Demo",
+            "socialProof": "Join over 1,000+ tutors organizing their business with Derno",
+            "features": "✓ Always free • ✓ No credit card • ✓ Setup in 2 minutes",
+            "cards": {
+                "upcoming": {
+                    "title": "Upcoming Sessions"
+                },
+                "payments": {
+                    "title": "Recent Payments"
+                },
+                "month": {
+                    "title": "This Month",
+                    "totalSessions": "Total Sessions",
+                    "revenue": "Revenue"
+                }
+            }
+        },
+        "Showcase": {
+            "eyebrow": "See It In Action",
+            "title": "A beautiful interface designed for tutors",
+            "description": "Intuitive dashboards and powerful features that make managing your tutoring business effortless",
+            "dashboard": {
+                "title": "Dashboard",
+                "welcome": "Welcome back, Alex!",
+                "newSession": "New Session",
+                "stats": {
+                    "today": "Today",
+                    "sessions": "sessions",
+                    "thisWeek": "This Week",
+                    "earned": "earned",
+                    "active": "Active",
+                    "students": "students"
+                }
+            },
+            "sessions": {
+                "title": "Sessions",
+                "recentSessions": "Recent Sessions",
+                "filter": "Filter",
+                "subjects": {
+                    "math": "Mathematics",
+                    "physics": "Physics",
+                    "chemistry": "Chemistry"
+                },
+                "status": {
+                    "completed": "Completed",
+                    "upcoming": "Upcoming"
+                }
+            },
+            "payments": {
+                "title": "Payments",
+                "tracking": "Payment Tracking",
+                "export": "Export",
+                "totalReceived": "Total Received",
+                "thisMonth": "This month",
+                "outstanding": "Outstanding",
+                "pendingCount": "3 pending",
+                "dates": {
+                    "jan13": "Jan 13",
+                    "jan14": "Jan 14",
+                    "jan15": "Jan 15"
+                },
+                "status": {
+                    "paid": "Paid",
+                    "pending": "Pending"
+                }
+            },
+            "analytics": {
+                "title": "Analytics",
+                "insights": "Growth Insights",
+                "thisMonth": "This Month",
+                "totalHours": "Total Hours",
+                "avgRate": "Avg. Rate",
+                "increase": "from last month"
+            }
+        },
+        "Features": {
+            "eyebrow": "Everything You Need",
+            "title": "Built for tutors who want to focus on teaching",
+            "description": "All the tools you need to run a successful tutoring business, in one simple platform",
+            "items": {
+                "sessionLogging": {
+                    "title": "Session Logging",
+                    "description": "Quickly log every tutoring session with student details, duration, and notes."
+                },
+                "paymentTracking": {
+                    "title": "Payment Tracking",
+                    "description": "Track payments, outstanding balances, and generate invoices automatically."
+                },
+                "timeAnalytics": {
+                    "title": "Time Analytics",
+                    "description": "See how much time you spend with each student and optimize your schedule."
+                },
+                "studentManagement": {
+                    "title": "Student Management",
+                    "description": "Keep all student information, progress notes, and history in one place."
+                },
+                "revenueReports": {
+                    "title": "Revenue Reports",
+                    "description": "Visualize your earnings over time with beautiful charts and insights."
+                },
+                "growthInsights": {
+                    "title": "Growth Insights",
+                    "description": "Understand your business trends and make data-driven decisions."
+                }
+            }
+        },
+        "Demo": {
+            "title": "Try Derno Right Now",
+            "description": "Explore the full application with live demo data. Add students, log sessions, and see how Derno simplifies your tutoring business—no sign-up required.",
+            "features": "✓ Fully interactive • ✓ All features unlocked • ✓ Changes don't persist",
+            "liveDemo": "Live Demo",
+            "ctaText": "Like what you see? Create your own account to save your data and get started for real.",
+            "createAccount": "Create Free Account",
+            "signIn": "Sign In"
+        },
+        "CTA": {
+            "title": "Ready to organize your tutoring business?",
+            "description": "Join thousands of tutors who trust Derno to manage their sessions and payments",
+            "subtext": "100% Free Forever • No Credit Card Required",
+            "startFree": "Start for Free",
+            "launchDemo": "Launch Demo Account"
+        },
+        "Footer": {
+            "terms": "Terms of Service",
+            "privacy": "Privacy Policy",
+            "copyright": "© 2025 Derno. All rights reserved."
+        }
+    }
+}

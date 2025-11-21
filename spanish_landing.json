@@ -1,0 +1,140 @@
+{
+    "LandingPage": {
+        "Header": {
+            "signIn": "Iniciar Sesión",
+            "startFree": "Empezar Gratis"
+        },
+        "Hero": {
+            "badge": "Gratis para siempre • No requiere tarjeta",
+            "title": "Gestiona sesiones. Controla pagos. Haz crecer tus clases.",
+            "description": "Optimiza tu negocio de clases particulares con registro de sesiones, seguimiento de pagos y análisis potentes. Céntrate en enseñar mientras Derno se encarga del resto.",
+            "startFree": "Empezar Gratis",
+            "seeDemo": "Ver Demo",
+            "socialProof": "Únete a más de 1.000 profesores que organizan su negocio con Derno",
+            "features": "✓ Siempre gratis • ✓ Sin tarjeta • ✓ Configuración en 2 minutos",
+            "cards": {
+                "upcoming": {
+                    "title": "Próximas Sesiones"
+                },
+                "payments": {
+                    "title": "Pagos Recientes"
+                },
+                "month": {
+                    "title": "Este Mes",
+                    "totalSessions": "Sesiones Totales",
+                    "revenue": "Ingresos"
+                }
+            }
+        },
+        "Showcase": {
+            "eyebrow": "Míralo en Acción",
+            "title": "Una interfaz hermosa diseñada para profesores",
+            "description": "Paneles intuitivos y funciones potentes que hacen que gestionar tu negocio sea fácil",
+            "dashboard": {
+                "title": "Panel",
+                "welcome": "¡Hola de nuevo, Alex!",
+                "newSession": "Nueva Sesión",
+                "stats": {
+                    "today": "Hoy",
+                    "sessions": "sesiones",
+                    "thisWeek": "Esta Semana",
+                    "earned": "ganado",
+                    "active": "Activos",
+                    "students": "alumnos"
+                }
+            },
+            "sessions": {
+                "title": "Sesiones",
+                "recentSessions": "Sesiones Recientes",
+                "filter": "Filtrar",
+                "subjects": {
+                    "math": "Matemáticas",
+                    "physics": "Física",
+                    "chemistry": "Química"
+                },
+                "status": {
+                    "completed": "Completada",
+                    "upcoming": "Próxima"
+                }
+            },
+            "payments": {
+                "title": "Pagos",
+                "tracking": "Seguimiento de Pagos",
+                "export": "Exportar",
+                "totalReceived": "Total Recibido",
+                "thisMonth": "Este mes",
+                "outstanding": "Pendiente",
+                "pendingCount": "3 pendientes",
+                "dates": {
+                    "jan13": "13 Ene",
+                    "jan14": "14 Ene",
+                    "jan15": "15 Ene"
+                },
+                "status": {
+                    "paid": "Pagado",
+                    "pending": "Pendiente"
+                }
+            },
+            "analytics": {
+                "title": "Análisis",
+                "insights": "Insights de Crecimiento",
+                "thisMonth": "Este Mes",
+                "totalHours": "Horas Totales",
+                "avgRate": "Tarifa Media",
+                "increase": "vs mes anterior"
+            }
+        },
+        "Features": {
+            "eyebrow": "Todo lo que Necesitas",
+            "title": "Creado para profesores que quieren centrarse en enseñar",
+            "description": "Todas las herramientas que necesitas para gestionar un negocio de clases exitoso, en una plataforma simple",
+            "items": {
+                "sessionLogging": {
+                    "title": "Registro de Sesiones",
+                    "description": "Registra rápidamente cada sesión con detalles del alumno, duración y notas."
+                },
+                "paymentTracking": {
+                    "title": "Seguimiento de Pagos",
+                    "description": "Controla pagos, saldos pendientes y genera facturas automáticamente."
+                },
+                "timeAnalytics": {
+                    "title": "Análisis de Tiempo",
+                    "description": "Mira cuánto tiempo dedicas a cada alumno y optimiza tu horario."
+                },
+                "studentManagement": {
+                    "title": "Gestión de Alumnos",
+                    "description": "Mantén toda la información de los alumnos, notas de progreso e historial en un solo lugar."
+                },
+                "revenueReports": {
+                    "title": "Informes de Ingresos",
+                    "description": "Visualiza tus ganancias a lo largo del tiempo con gráficos e insights hermosos."
+                },
+                "growthInsights": {
+                    "title": "Insights de Crecimiento",
+                    "description": "Entiende las tendencias de tu negocio y toma decisiones basadas en datos."
+                }
+            }
+        },
+        "Demo": {
+            "title": "Prueba Derno Ahora Mismo",
+            "description": "Explora la aplicación completa con datos de demostración. Añade alumnos, registra sesiones y ve cómo Derno simplifica tu negocio—sin necesidad de registrarse.",
+            "features": "✓ Totalmente interactivo • ✓ Todas las funciones desbloqueadas • ✓ Los cambios no se guardan",
+            "liveDemo": "Demo en Vivo",
+            "ctaText": "¿Te gusta lo que ves? Crea tu propia cuenta para guardar tus datos y empezar de verdad.",
+            "createAccount": "Crear Cuenta Gratis",
+            "signIn": "Iniciar Sesión"
+        },
+        "CTA": {
+            "title": "¿Listo para organizar tu negocio de clases?",
+            "description": "Únete a miles de profesores que confían en Derno para gestionar sus sesiones y pagos",
+            "subtext": "100% Gratis para siempre • No requiere tarjeta",
+            "startFree": "Empezar Gratis",
+            "launchDemo": "Lanzar Cuenta Demo"
+        },
+        "Footer": {
+            "terms": "Términos de Servicio",
+            "privacy": "Política de Privacidad",
+            "copyright": "© 2025 Derno. Todos los derechos reservados."
+        }
+    }
+}
