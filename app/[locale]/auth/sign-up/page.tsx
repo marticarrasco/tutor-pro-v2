@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useTheme } from "next-themes"
 
 import { useTranslations } from 'next-intl'
 
@@ -24,6 +25,12 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const router = useRouter()
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -95,14 +102,18 @@ export default function SignUpPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center text-center">
-            <Image
-              src="/logo derno.png"
-              alt="Derno Logo"
-              width={150}
-              height={120}
-              className="mb-2"
-              priority
-            />
+            {mounted ? (
+              <Image
+                src={resolvedTheme === "dark" ? "/logo derno_dark.png" : "/logo derno.png"}
+                alt="Derno Logo"
+                width={150}
+                height={120}
+                className="mb-2"
+                priority
+              />
+            ) : (
+              <div className="w-[150px] h-[120px] mb-2" /> // Placeholder to prevent layout shift
+            )}
             <p className="text-muted-foreground">{t('subtitle')}</p>
           </div>
           <Card>
