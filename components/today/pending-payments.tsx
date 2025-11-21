@@ -12,6 +12,8 @@ import { toast } from "@/hooks/use-toast"
 import { format } from "date-fns"
 import { useCurrency } from "@/components/currency-provider"
 
+import { useTranslations } from 'next-intl'
+
 interface SessionDetail {
   id: string
   date: string
@@ -32,6 +34,8 @@ interface PendingPaymentsProps {
 }
 
 export function PendingPayments({ studentsWithPendingPayments, onRefresh }: PendingPaymentsProps) {
+  const t = useTranslations('HomePage.pendingPayments')
+  const tCommon = useTranslations('Common')
   const [selectedStudent, setSelectedStudent] = useState<{ id: string; name: string } | null>(null)
   const [sessionDetails, setSessionDetails] = useState<SessionDetail[]>([])
   const [isLoadingDetails, setIsLoadingDetails] = useState(false)
@@ -61,7 +65,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
     } catch (error) {
       console.error("Error fetching session details:", error)
       toast({
-        title: "Error",
+        title: tCommon('error'),
         description: "Failed to load session details. Please try again.",
         variant: "destructive",
       })
@@ -87,8 +91,8 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
       if (error) throw error
 
       toast({
-        title: "Success",
-        description: `All sessions marked as paid for ${studentName}`,
+        title: t('markAllPaidSuccess'),
+        description: t('markAllPaidDescription', { studentName }),
       })
 
       setIsDialogOpen(false)
@@ -96,8 +100,8 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
     } catch (error) {
       console.error("Error updating payment status:", error)
       toast({
-        title: "Error",
-        description: "Failed to update payment status. Please try again.",
+        title: tCommon('error'),
+        description: t('paymentUpdateError'),
         variant: "destructive",
       })
     }
@@ -112,13 +116,13 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
-            Pending Payments
+            {t('title')}
             <span className="text-base font-normal text-red-600">( {formatCurrency(0)} )</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-sm text-muted-foreground text-center py-4">
-            No pending payments! All caught up 🎉
+            {t('allCaughtUp')}
           </div>
         </CardContent>
       </Card>
@@ -130,7 +134,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <DollarSign className="h-5 w-5" />
-          Pending Payments
+          {t('title')}
           <span className="text-base font-normal text-red-600">
             ( {formatCurrency(studentsWithPendingPayments.reduce((sum, s) => sum + s.totalUnpaid, 0))} )
           </span>
@@ -146,7 +150,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
               <div className="flex-1 flex items-center gap-2">
                 <span className="font-medium">{student.studentName}</span>
                 <span className="text-sm text-muted-foreground">
-                  {student.unpaidSessions} session{student.unpaidSessions !== 1 ? "s" : ""} unpaid
+                  {t('unpaidSessions', { count: student.unpaidSessions })}
                 </span>
               </div>
               <div className="flex items-center gap-3">
@@ -165,10 +169,10 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
                   {isLoadingDetails ? (
                     <>
                       <div className="mr-1.5 h-3 w-3 rounded-full border-2 border-foreground/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
-                      Loading
+                      {t('loading')}
                     </>
                   ) : (
-                    "Show"
+                    t('show')
                   )}
                 </Button>
                 <Button
@@ -176,7 +180,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
                   onClick={() => handleMarkAllPaid(student.studentId, student.studentName)}
                   className="bg-green-600 hover:bg-green-700"
                 >
-                  Pay All
+                  {t('payAll')}
                 </Button>
               </div>
             </div>
@@ -189,22 +193,22 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              Unpaid Sessions - {selectedStudent?.name}
+              {t('dialogTitle', { studentName: selectedStudent?.name || '' })}
             </DialogTitle>
           </DialogHeader>
           <div className="mt-4">
             {sessionDetails.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                No unpaid sessions found
+                {t('noUnpaidFound')}
               </div>
             ) : (
               <>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Hours</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead>{tCommon('date')}</TableHead>
+                      <TableHead className="text-right">{tCommon('hours')}</TableHead>
+                      <TableHead className="text-right">{tCommon('amount')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -222,7 +226,7 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
                       </TableRow>
                     ))}
                     <TableRow className="font-bold bg-muted">
-                      <TableCell>Total</TableCell>
+                      <TableCell>{t('total')}</TableCell>
                       <TableCell className="text-right">
                         {totalHours.toFixed(2)}h
                       </TableCell>
@@ -237,13 +241,13 @@ export function PendingPayments({ studentsWithPendingPayments, onRefresh }: Pend
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
                   >
-                    Close
+                    {tCommon('close')}
                   </Button>
                   <Button
                     onClick={() => selectedStudent && handleMarkAllPaid(selectedStudent.id, selectedStudent.name)}
                     className="bg-green-600 hover:bg-green-700"
                   >
-                    Pay All
+                    {t('payAll')}
                   </Button>
                 </div>
               </>

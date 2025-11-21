@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { PageHeader } from "@/components/page-header"
 import { useCurrency } from "@/components/currency-provider"
+import { useTranslations } from 'next-intl'
 import {
   CancellationData,
   PaymentOverviewData,
@@ -38,8 +39,9 @@ interface OverallStats {
 }
 
 export default function StatisticsPage() {
-  useDocumentTitle("Statistics & Analytics")
-  useDocumentMeta("Monitor revenue trends, student performance, and teaching hours with comprehensive analytics. Understand how your tutoring business is evolving.")
+  const t = useTranslations('StatisticsPage')
+  useDocumentTitle(t('documentTitle'))
+  useDocumentMeta(t('documentDescription'))
 
   const { formatCurrency } = useCurrency()
 
@@ -180,8 +182,8 @@ export default function StatisticsPage() {
     } catch (error) {
       console.error("Error fetching overall stats:", error)
       toast({
-        title: "Error",
-        description: "Failed to load statistics. Please try again.",
+        title: t('errorLoading'),
+        description: t('errorLoadingDescription'),
         variant: "destructive",
       })
     }
@@ -597,15 +599,15 @@ export default function StatisticsPage() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <PageHeader
             icon={<TrendingUp className="h-6 w-6" />}
-            eyebrow="Insights"
-            title="Performance Analytics"
-            description="Monitor revenue trends, student outcomes, and teaching hours to understand how your tutoring business is evolving."
+            eyebrow={t('eyebrow')}
+            title={t('title')}
+            description={t('description')}
             action={
               <div className="flex gap-2">
                 <Button asChild variant="outline">
                   <Link href="/statistics/montly-earnings">
                     <CalendarDays className="mr-2 h-4 w-4" />
-                    Monthly Earnings
+                    {t('monthlyEarnings')}
                   </Link>
                 </Button>
                 <ExportDialog students={students} />
@@ -617,37 +619,37 @@ export default function StatisticsPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalRevenue')}</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{formatCurrency(overallStats.totalRevenue)}</div>
-                <p className="text-xs text-muted-foreground">{formatCurrency(overallStats.unpaidAmount)} unpaid</p>
+                <p className="text-xs text-muted-foreground">{formatCurrency(overallStats.unpaidAmount)} {t('unpaid')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalSessions')}</CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{overallStats.totalSessions}</div>
-                <p className="text-xs text-muted-foreground">{overallStats.totalHours.toFixed(1)} hours taught</p>
+                <p className="text-xs text-muted-foreground">{overallStats.totalHours.toFixed(1)} {t('hoursTaught')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Students</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('activeStudents')}</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{overallStats.activeStudents}</div>
-                <p className="text-xs text-muted-foreground">{formatCurrency(overallStats.avgHourlyRate)} avg rate</p>
+                <p className="text-xs text-muted-foreground">{formatCurrency(overallStats.avgHourlyRate)} {t('avgRate')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Avg Session</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('avgSession')}</CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -655,9 +657,9 @@ export default function StatisticsPage() {
                   {overallStats.totalSessions > 0
                     ? Math.round((overallStats.totalHours * 60) / overallStats.totalSessions)
                     : 0}
-                  min
+                  {t('min')}
                 </div>
-                <p className="text-xs text-muted-foreground">per session</p>
+                <p className="text-xs text-muted-foreground">{t('perSession')}</p>
               </CardContent>
             </Card>
           </div>

@@ -17,10 +17,13 @@ interface TimeAnalysisProps {
   onPeriodChange: (period: ChartPeriod) => void
 }
 
+import { useTranslations } from 'next-intl'
+
 export function TimeAnalysis({ weeklyData, period, onPeriodChange }: TimeAnalysisProps) {
+  const t = useTranslations('StatisticsPage.timeAnalysis')
   const chartConfig = {
     hours: {
-      label: "Hours",
+      label: t('hours'),
       color: "#8B5CF6",
     },
   } satisfies Record<string, { label: string; color: string }>
@@ -34,8 +37,8 @@ export function TimeAnalysis({ weeklyData, period, onPeriodChange }: TimeAnalysi
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Time Distribution</CardTitle>
-            <CardDescription>Analysis of hours taught per day</CardDescription>
+            <CardTitle>{t('title')}</CardTitle>
+            <CardDescription>{t('description')}</CardDescription>
           </div>
           <ChartPeriodSelector value={period} onChange={onPeriodChange} />
         </div>
@@ -54,7 +57,7 @@ export function TimeAnalysis({ weeklyData, period, onPeriodChange }: TimeAnalysi
               />
               <ChartTooltip
                 content={<ChartTooltipContent />}
-                formatter={(value, name) => [`${Number(value).toFixed(1)} hours`, "Hours Taught"]}
+                formatter={(value, name) => [`${Number(value).toFixed(1)} ${t('hours')}`, t('hoursTaught')]}
               />
               <Line
                 type="monotone"
@@ -69,15 +72,15 @@ export function TimeAnalysis({ weeklyData, period, onPeriodChange }: TimeAnalysi
         <div className="mt-4 grid grid-cols-3 gap-4 text-center">
           <div>
             <div className="text-2xl font-bold">{totalHours.toFixed(1)}h</div>
-            <div className="text-sm text-muted-foreground">Total Hours</div>
+            <div className="text-sm text-muted-foreground">{t('totalHours')}</div>
           </div>
           <div>
             <div className="text-2xl font-bold">{avgHoursPerDay.toFixed(1)}h</div>
-            <div className="text-sm text-muted-foreground">Avg Hours/Day</div>
+            <div className="text-sm text-muted-foreground">{t('avgHoursPerDay')}</div>
           </div>
           <div>
             <div className="text-2xl font-bold">{peakDay ? `${peakDay.hours.toFixed(1)}h` : "-"}</div>
-            <div className="text-sm text-muted-foreground">Peak Day</div>
+            <div className="text-sm text-muted-foreground">{t('peakDay')}</div>
           </div>
         </div>
       </CardContent>

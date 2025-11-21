@@ -21,8 +21,7 @@ import { requireAuthUser } from "@/lib/supabase/user"
 import { toast } from "@/hooks/use-toast"
 import { PageHeader } from "@/components/page-header"
 import { CalendarDays } from "lucide-react"
-
-const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const
+import { useTranslations } from "next-intl"
 
 // Define a color palette for students
 const STUDENT_COLOR_PALETTE = [
@@ -55,6 +54,19 @@ const getStudentColor = (index: number): string => {
 }
 
 export default function MonthlyEarningsPage() {
+  const t = useTranslations('MonthlyEarningsPage')
+  const tWeekdays = useTranslations('MonthlyEarningsPage.weekdays')
+
+  const WEEKDAY_LABELS = [
+    tWeekdays('mon'),
+    tWeekdays('tue'),
+    tWeekdays('wed'),
+    tWeekdays('thu'),
+    tWeekdays('fri'),
+    tWeekdays('sat'),
+    tWeekdays('sun'),
+  ]
+
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [sessionsForMonth, setSessionsForMonth] = useState<MonthSessions>({})
   const [studentColorMap, setStudentColorMap] = useState<Record<string, string>>({})
@@ -124,8 +136,8 @@ export default function MonthlyEarningsPage() {
       } catch (error) {
         console.error("Error fetching monthly sessions:", error)
         toast({
-          title: "Error",
-          description: "Failed to load monthly earnings data. Please try again.",
+          title: t('error'),
+          description: t('errorLoading'),
           variant: "destructive",
         })
       } finally {
@@ -134,7 +146,7 @@ export default function MonthlyEarningsPage() {
     }
 
     fetchMonthSessions()
-  }, [currentMonth])
+  }, [currentMonth, t])
 
   const calendarWeeks = useMemo(() => {
     const weeks: {
@@ -145,7 +157,7 @@ export default function MonthlyEarningsPage() {
 
     const monthStart = startOfMonth(currentMonth)
     const monthEnd = endOfMonth(currentMonth)
-    
+
     // Get the day of week for the first day (0 = Sunday, 1 = Monday, etc.)
     const firstDayOfWeek = monthStart.getDay()
     // Convert Sunday (0) to 7 for Monday-start weeks
@@ -246,11 +258,11 @@ export default function MonthlyEarningsPage() {
           <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
             <PageHeader
               icon={<CalendarDays className="h-6 w-6" />}
-              eyebrow="Revenue"
-              title="Monthly Earnings Overview"
-              description="Visualise lessons delivered, revenue earned, and student activity across the current month."
+              eyebrow={t('eyebrow')}
+              title={t('title')}
+              description={t('description')}
             />
-            <div className="text-center py-8 text-muted-foreground">Loading monthly earnings...</div>
+            <div className="text-center py-8 text-muted-foreground">{t('loading')}</div>
           </div>
         </SidebarInset>
       </SidebarProvider>
@@ -264,9 +276,9 @@ export default function MonthlyEarningsPage() {
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
           <PageHeader
             icon={<CalendarDays className="h-6 w-6" />}
-            eyebrow="Revenue"
-            title="Monthly Earnings Overview"
-            description="Visualise lessons delivered, revenue earned, and student activity across the current month."
+            eyebrow={t('eyebrow')}
+            title={t('title')}
+            description={t('description')}
           />
 
           <div className="flex flex-1 flex-col gap-6 lg:flex-row">
@@ -324,7 +336,7 @@ export default function MonthlyEarningsPage() {
 
             <div className="w-full max-w-sm rounded-lg border bg-card p-4 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
-                <span className="text-lg font-semibold">Summary</span>
+                <span className="text-lg font-semibold">{t('summary')}</span>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
@@ -346,11 +358,11 @@ export default function MonthlyEarningsPage() {
               </div>
 
               <div>
-                <h3 className="text-sm font-semibold uppercase text-muted-foreground">Weekly Earnings</h3>
+                <h3 className="text-sm font-semibold uppercase text-muted-foreground">{t('weeklyEarnings')}</h3>
                 <div className="mt-2 space-y-2">
                   {weeklyEarnings.map((amount, index) => (
                     <div key={index} className="flex items-center justify-between text-sm">
-                      <span>Week {index + 1}</span>
+                      <span>{t('week', { number: index + 1 })}</span>
                       <span>{formatCurrency(amount)}</span>
                     </div>
                   ))}
@@ -359,13 +371,13 @@ export default function MonthlyEarningsPage() {
 
               <div className="mt-6 border-t pt-4">
                 <h3 className="text-sm font-semibold uppercase text-muted-foreground">
-                  Total Monthly Earnings
+                  {t('totalMonthlyEarnings')}
                 </h3>
                 <div className="mt-2 text-2xl font-bold">{formatCurrency(totalMonthlyEarnings)}</div>
               </div>
 
               <div className="mt-6 border-t pt-4">
-                <h3 className="text-sm font-semibold uppercase text-muted-foreground">Earnings by Student</h3>
+                <h3 className="text-sm font-semibold uppercase text-muted-foreground">{t('earningsByStudent')}</h3>
                 <div className="mt-2 space-y-2 text-sm">
                   {earningsByStudent.map((entry) => (
                     <div key={entry.student} className="flex items-center justify-between">

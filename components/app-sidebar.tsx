@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -32,40 +32,45 @@ import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useTheme } from "next-themes"
 import { MobileNav } from "@/components/mobile-nav"
+import { useTranslations } from 'next-intl'
+import LanguageSwitcher from "@/components/language-switcher"
 
-const items = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Students",
-    url: "/students",
-    icon: Users,
-  },
-  {
-    title: "Sessions",
-    url: "/sessions",
-    icon: BookOpen,
-  },
-  {
-    title: "Schedule",
-    url: "/schedule",
-    icon: Calendar,
-  },
-  {
-    title: "Statistics",
-    url: "/statistics",
-    icon: BarChart3,
-  },
-]
+
 
 export function AppSidebar() {
+  const t = useTranslations('Navigation')
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const router = useRouter()
   const supabase = createClient()
   const { theme } = useTheme()
+
+  const items = [
+    {
+      title: t('home'),
+      url: "/",
+      icon: Home,
+    },
+    {
+      title: t('students'),
+      url: "/students",
+      icon: Users,
+    },
+    {
+      title: t('sessions'),
+      url: "/sessions",
+      icon: BookOpen,
+    },
+    {
+      title: t('schedule'),
+      url: "/schedule",
+      icon: Calendar,
+    },
+    {
+      title: t('statistics'),
+      url: "/statistics",
+      icon: BarChart3,
+    },
+  ]
 
   useEffect(() => {
     // Get initial user
@@ -127,7 +132,7 @@ export function AppSidebar() {
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroupLabel>{t('navigation')}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => (
@@ -145,8 +150,13 @@ export function AppSidebar() {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter className="border-t border-sidebar-border space-y-2">
-          <div className="px-4 pt-3">
-            <ThemeToggle />
+          <div className="px-4 pt-3 flex gap-2 items-center">
+            <div className="flex-1">
+              <ThemeToggle />
+            </div>
+            <div>
+              <LanguageSwitcher />
+            </div>
           </div>
           {user ? (
             <DropdownMenu>
@@ -165,25 +175,25 @@ export function AppSidebar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{t('myAccount')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/settings" className="flex items-center gap-2">
                     <User className="h-4 w-4" />
-                    Profile Settings
+                    {t('profileSettings')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-red-600">
                   <LogOut className="h-4 w-4" />
-                  Log out
+                  {t('logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="px-4 py-2">
               <Button asChild className="w-full">
-                <Link href="/auth/login">Log in</Link>
+                <Link href="/auth/login">{t('login')}</Link>
               </Button>
             </div>
           )}

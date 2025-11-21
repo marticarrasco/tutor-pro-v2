@@ -25,6 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { useTranslations } from 'next-intl'
 
 interface ScheduledClass {
   id: string
@@ -38,12 +39,22 @@ interface ScheduledClass {
   user_id: string
 }
 
-const WEEKDAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-
 export default function SchedulePage() {
-  useDocumentTitle("Schedule Management")
-  useDocumentMeta("Manage your tutoring schedule with recurring classes and weekly calendar view. Plan lessons and adjust availability.")
-  
+  const t = useTranslations('SchedulePage')
+  const tWeekdays = useTranslations('SchedulePage.weekdays')
+  useDocumentTitle(t('documentTitle'))
+  useDocumentMeta(t('documentDescription'))
+
+  const WEEKDAY_LABELS = [
+    tWeekdays('sunday'),
+    tWeekdays('monday'),
+    tWeekdays('tuesday'),
+    tWeekdays('wednesday'),
+    tWeekdays('thursday'),
+    tWeekdays('friday'),
+    tWeekdays('saturday'),
+  ]
+
   const [scheduledClasses, setScheduledClasses] = useState<ScheduledClass[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -76,8 +87,8 @@ export default function SchedulePage() {
     } catch (error) {
       console.error("Error fetching scheduled classes:", error)
       toast({
-        title: "Error",
-        description: "Failed to load scheduled classes. Please try again.",
+        title: t('errorLoading'),
+        description: t('errorLoadingDescription'),
         variant: "destructive",
       })
     } finally {
@@ -143,14 +154,14 @@ export default function SchedulePage() {
 
       if (error) throw error
 
-      toast({ title: "Scheduled class deleted successfully" })
+      toast({ title: t('deleteSuccess') })
       handleClassDeleted(classToDelete.id)
       setClassToDelete(null)
     } catch (error) {
       console.error("Error deleting scheduled class:", error)
       toast({
-        title: "Error",
-        description: "Failed to delete scheduled class. Please try again.",
+        title: t('errorLoading'),
+        description: t('deleteError'),
         variant: "destructive",
       })
     } finally {
@@ -174,13 +185,13 @@ export default function SchedulePage() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <PageHeader
             icon={<Calendar className="h-6 w-6" />}
-            eyebrow="Planning"
-            title="Weekly Teaching Schedule"
-            description="Plan recurring lessons, adjust availability, and keep your tutoring week organised."
+            eyebrow={t('eyebrow')}
+            title={t('title')}
+            description={t('description')}
             action={
               <Button onClick={() => setShowForm(true)}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add Class
+                {t('addClass')}
               </Button>
             }
           />
@@ -188,7 +199,7 @@ export default function SchedulePage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Classes</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalClasses')}</CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -197,7 +208,7 @@ export default function SchedulePage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Classes</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('activeClasses')}</CardTitle>
                 <ToggleLeft className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -206,7 +217,7 @@ export default function SchedulePage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Weekly Hours</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('weeklyHours')}</CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -215,7 +226,7 @@ export default function SchedulePage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Students</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('activeStudents')}</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -226,19 +237,19 @@ export default function SchedulePage() {
 
           <Tabs defaultValue="calendar" className="space-y-4">
             <TabsList>
-              <TabsTrigger value="calendar">Calendar View</TabsTrigger>
-              <TabsTrigger value="list">List View</TabsTrigger>
+              <TabsTrigger value="calendar">{t('calendarView')}</TabsTrigger>
+              <TabsTrigger value="list">{t('listView')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="calendar" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Weekly Schedule</CardTitle>
-                  <CardDescription>Your recurring classes organized by day of the week</CardDescription>
+                  <CardTitle>{t('weeklySchedule')}</CardTitle>
+                  <CardDescription>{t('weeklyScheduleDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {isLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">Loading schedule...</div>
+                    <div className="text-center py-8 text-muted-foreground">{t('loadingSchedule')}</div>
                   ) : (
                     <WeeklyCalendar scheduledClasses={scheduledClasses} onEdit={handleEdit} onDelete={handleDelete} />
                   )}
@@ -249,12 +260,12 @@ export default function SchedulePage() {
             <TabsContent value="list" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>All Scheduled Classes</CardTitle>
-                  <CardDescription>A complete list of your recurring classes</CardDescription>
+                  <CardTitle>{t('allScheduledClasses')}</CardTitle>
+                  <CardDescription>{t('allScheduledClassesDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {isLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">Loading schedule...</div>
+                    <div className="text-center py-8 text-muted-foreground">{t('loadingSchedule')}</div>
                   ) : (
                     <ScheduleTable
                       scheduledClasses={scheduledClasses}
@@ -279,20 +290,19 @@ export default function SchedulePage() {
         <AlertDialog open={!!classToDelete} onOpenChange={() => setClassToDelete(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete scheduled class?</AlertDialogTitle>
+              <AlertDialogTitle>{t('deleteConfirm')}</AlertDialogTitle>
               <AlertDialogDescription>
-                This will remove the recurring class for {classToDelete?.student_name} on{" "}
-                {classToDelete !== null ? WEEKDAY_LABELS[classToDelete.day_of_week] : ""} at {classToDelete?.start_time}.
+                {classToDelete ? t('deleteDescription').replace('{studentName}', classToDelete.student_name).replace('{dayOfWeek}', WEEKDAY_LABELS[classToDelete.day_of_week]).replace('{time}', classToDelete.start_time) : ''}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogCancel disabled={isDeleting}>{t('cancel') || 'Cancel'}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                {isDeleting ? "Deleting..." : "Delete"}
+                {isDeleting ? t('deleting') || 'Deleting...' : t('delete') || 'Delete'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

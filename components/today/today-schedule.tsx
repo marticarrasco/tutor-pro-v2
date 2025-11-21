@@ -12,6 +12,8 @@ import { toast } from "@/hooks/use-toast"
 import { CancelSessionDialog, type CancelSessionForm } from "@/components/today/cancel-session-dialog"
 import { useCurrency } from "@/components/currency-provider"
 
+import { useTranslations } from 'next-intl'
+
 interface TodayClass {
   id: string
   student_id: string
@@ -33,6 +35,8 @@ interface TodayScheduleProps {
 }
 
 export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
+  const t = useTranslations('HomePage.todaySchedule')
+  const tCommon = useTranslations('Common')
   const [showSessionForm, setShowSessionForm] = useState(false)
   const [selectedClass, setSelectedClass] = useState<TodayClass | null>(null)
   const [payingStudentId, setPayingStudentId] = useState<string | null>(null)
@@ -103,21 +107,21 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
 
       if (!data || data.length === 0) {
         toast({
-          title: "No unpaid sessions",
-          description: `There were no outstanding sessions for ${todayClass.student_name}.`,
+          title: t('noUnpaid'),
+          description: t('noUnpaidDescription', { studentName: todayClass.student_name }),
         })
       } else {
         toast({
-          title: "Payments updated",
-          description: `All unpaid sessions for ${todayClass.student_name} are now marked as paid.`,
+          title: t('markPaidSuccess'),
+          description: t('markPaidDescription', { studentName: todayClass.student_name }),
         })
       }
       await onRefresh()
     } catch (error) {
       console.error("Error marking sessions as paid", error)
       toast({
-        title: "Unable to mark sessions paid",
-        description: "Please try again in a moment.",
+        title: tCommon('error'),
+        description: "Unable to mark sessions paid. Please try again in a moment.",
         variant: "destructive",
       })
     } finally {
@@ -171,8 +175,8 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
       }
 
       toast({
-        title: "Class cancelled",
-        description: `${classToCancel.student_name}'s class has been marked as cancelled.`,
+        title: t('cancelSuccess'),
+        description: t('cancelDescription', { studentName: classToCancel.student_name }),
       })
       setCancelDialogOpen(false)
       setClassToCancel(null)
@@ -180,8 +184,8 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
     } catch (error) {
       console.error("Error cancelling class", error)
       toast({
-        title: "Unable to cancel class",
-        description: "Please try again in a moment.",
+        title: tCommon('error'),
+        description: "Unable to cancel class. Please try again in a moment.",
         variant: "destructive",
       })
     } finally {
@@ -195,14 +199,14 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Today's Schedule
+            {t('title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
             <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No classes scheduled for today</p>
-            <p className="text-sm">Enjoy your free day!</p>
+            <p>{t('noClasses')}</p>
+            <p className="text-sm">{t('enjoyFreeDay')}</p>
           </div>
         </CardContent>
       </Card>
@@ -215,7 +219,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Today's Schedule
+            {t('title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -242,14 +246,14 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
 
                     {todayClass.status === "completed" && todayClass.session_amount !== undefined && (
                       <div className="text-xs">
-                        Logged: <span className="font-semibold">{formatCurrency(todayClass.session_amount)}</span>{" "}
+                        {t('logged')}: <span className="font-semibold">{formatCurrency(todayClass.session_amount)}</span>{" "}
 
                       </div>
                     )}
 
                     {todayClass.status === "cancelled" && (
                       <div className="text-[10px] text-amber-600 dark:text-amber-300">
-                        Cancelled by {todayClass.cancelled_by === "teacher" ? "teacher" : "student"}
+                        {t('cancelledBy', { role: todayClass.cancelled_by === "teacher" ? t('teacher') : t('student') })}
                       </div>
                     )}
                   </div>
@@ -262,7 +266,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
                     className={todayClass.status === "completed" ? "bg-green-600 hover:bg-green-700 text-white px-4 py-1 text-xs" : "px-9 py-1 text-xs"}
                     disabled={todayClass.status === "cancelled"}
                   >
-                    {todayClass.status === "completed" ? "Logged" : "Log"}
+                    {todayClass.status === "completed" ? t('logged') : t('log')}
                   </Button>
                   <Button
                     variant="ghost"
@@ -272,7 +276,7 @@ export function TodaySchedule({ todayClasses, onRefresh }: TodayScheduleProps) {
                     className="px-2 py-1 text-xs"
                   >
                     <Ban className="mr-1 h-3 w-3" />
-                    Cancel
+                    {t('cancel')}
                   </Button>
                 </div>
               </div>

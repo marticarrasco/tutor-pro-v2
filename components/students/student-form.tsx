@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -33,6 +34,7 @@ interface StudentFormProps {
 }
 
 export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentFormProps) {
+  const t = useTranslations('HomePage.StudentForm')
   const [formData, setFormData] = useState<Partial<Student>>({
     name: student?.name || "",
     email: student?.email || "",
@@ -85,7 +87,7 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
 
         if (error) throw error
         savedStudent = data ?? null
-        toast({ title: "Student updated successfully" })
+        toast({ title: t('studentUpdated') })
       } else {
         // Create new student
         const { data, error } = await supabase
@@ -101,7 +103,7 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
 
         if (error) throw error
         savedStudent = data ?? null
-        toast({ title: "Student created successfully" })
+        toast({ title: t('studentCreated') })
       }
 
       if (savedStudent) {
@@ -122,8 +124,8 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
     } catch (error) {
       console.error("Error saving student:", error)
       toast({
-        title: "Error",
-        description: "Failed to save student. Please try again.",
+        title: t('error'),
+        description: t('errorSaving'),
         variant: "destructive",
       })
     } finally {
@@ -135,44 +137,44 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{student?.id ? "Edit Student" : "Add New Student"}</DialogTitle>
+          <DialogTitle>{student?.id ? t('editTitle') : t('createTitle')}</DialogTitle>
           <DialogDescription>
-            {student?.id ? "Update the student's information below." : "Enter the details for the new student."}
+            {student?.id ? t('editDescription') : t('createDescription')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">{t('name')}</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Student's full name"
+                placeholder={t('namePlaceholder')}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="student@example.com"
+                placeholder={t('emailPlaceholder')}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t('phone')}</Label>
               <Input
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="+1-555-0123"
+                placeholder={t('phonePlaceholder')}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="hourly_rate">Hourly Rate ({currency === "USD" ? "$" : "€"})</Label>
+              <Label htmlFor="hourly_rate">{t('hourlyRate')} ({currency === "USD" ? "$" : "€"})</Label>
               <Input
                 id="hourly_rate"
                 type="number"
@@ -180,7 +182,7 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
                 min="0"
                 value={formData.hourly_rate}
                 onChange={(e) => setFormData({ ...formData, hourly_rate: Number.parseFloat(e.target.value) || 0 })}
-                placeholder="45.00"
+                placeholder={t('hourlyRatePlaceholder')}
                 required
               />
             </div>
@@ -190,21 +192,21 @@ export function StudentForm({ student, open, onOpenChange, onSuccess }: StudentF
                 checked={formData.is_active}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
               />
-              <Label htmlFor="is_active">Active Student</Label>
+              <Label htmlFor="is_active">{t('isActive')}</Label>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button type="submit" disabled={isLoading} className="relative">
               {isLoading ? (
                 <>
                   <div className="mr-2 h-4 w-4 rounded-full border-2 border-primary-foreground/30 animate-spin" style={{ borderTopColor: 'transparent' }} />
-                  Saving...
+                  {t('saving')}
                 </>
               ) : (
-                student?.id ? "Update Student" : "Create Student"
+                student?.id ? t('updateButton') : t('createButton')
               )}
             </Button>
           </DialogFooter>

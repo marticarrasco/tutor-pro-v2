@@ -8,6 +8,7 @@ import { requireAuthUser } from "@/lib/supabase/user"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useCurrency } from "@/components/currency-provider"
+import { useTranslations } from 'next-intl'
 
 interface RecentSession {
   id: string
@@ -26,6 +27,9 @@ interface RecentActivityProps {
 }
 
 export function RecentActivity({ recentSessions }: RecentActivityProps) {
+  const t = useTranslations('HomePage.recentActivity')
+  const tCommon = useTranslations('Common')
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     const today = new Date()
@@ -33,9 +37,9 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
     yesterday.setDate(yesterday.getDate() - 1)
 
     if (date.toDateString() === today.toDateString()) {
-      return "Today"
+      return t('today')
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return "Yesterday"
+      return t('yesterday')
     } else {
       return date.toLocaleDateString("en-US", {
         month: "short",
@@ -71,8 +75,8 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
         .eq("user_id", user.id)
       if (error) throw error
       toast({
-        title: !session.is_paid ? "Marked as paid" : "Marked as unpaid",
-        description: `Session with ${session.student_name} updated.`,
+        title: !session.is_paid ? t('markedPaid') : t('markedUnpaid'),
+        description: t('paymentUpdateSuccess', { studentName: session.student_name }),
       })
       // Update UI immediately
       setSessions((prev) =>
@@ -82,8 +86,8 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
       )
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update payment status. Please try again.",
+        title: tCommon('error'),
+        description: t('paymentUpdateError'),
         variant: "destructive",
       })
     } finally {
@@ -96,16 +100,16 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          Recent Activity
+          {t('title')}
         </CardTitle>
-        <CardDescription>Your latest tutoring sessions</CardDescription>
+        <CardDescription>{t('description')}</CardDescription>
       </CardHeader>
       <CardContent>
         {sessions.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No recent sessions</p>
-            <p className="text-sm">Your completed sessions will appear here</p>
+            <p>{t('noSessions')}</p>
+            <p className="text-sm">{t('noSessionsDescription')}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -123,7 +127,7 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
                     </div>
                     {session.is_cancelled ? (
                       <div className="text-sm text-amber-600 dark:text-amber-300">
-                        Cancelled by {session.cancelled_by === "teacher" ? "teacher" : "student"}
+                        {t('cancelledBy', { role: session.cancelled_by === "teacher" ? t('teacher') : t('student') })}
                       </div>
                     ) : null}
                     {session.notes && (
@@ -138,7 +142,7 @@ export function RecentActivity({ recentSessions }: RecentActivityProps) {
                       className={`text-xs cursor-pointer${updatingId === session.id ? ' opacity-50 pointer-events-none' : ''}`}
                       onClick={() => updatingId !== session.id && handleTogglePaid(session)}
                     >
-                      {session.is_cancelled ? "Cancelled" : session.is_paid ? "Paid" : "Unpaid"}
+                      {session.is_cancelled ? tCommon('status') : session.is_paid ? t('paid') : t('unpaid')}
                     </Badge>
                     <span className="font-semibold">{formatCurrency(session.total_amount)}</span>
                   </div>

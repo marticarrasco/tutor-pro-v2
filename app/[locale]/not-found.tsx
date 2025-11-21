@@ -1,9 +1,12 @@
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 export default function NotFound() {
+    const t = useTranslations('Errors.notFound')
+
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground relative overflow-hidden">
             {/* Background effects */}
@@ -36,10 +39,10 @@ export default function NotFound() {
                         404
                     </h1>
                     <h2 className="text-3xl font-semibold tracking-tight">
-                        Page not found
+                        {t('title')}
                     </h2>
                     <p className="text-muted-foreground max-w-[400px] mx-auto">
-                        Sorry, we couldn't find the page you're looking for. It might have been moved or doesn't exist.
+                        {t('description')}
                     </p>
                 </div>
 
@@ -48,7 +51,7 @@ export default function NotFound() {
                     <Button asChild size="lg" className="group">
                         <Link href="/">
                             <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                            Return Home
+                            {t('returnHome')}
                         </Link>
                     </Button>
                 </div>
