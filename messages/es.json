@@ -731,13 +731,13 @@
             "startFree": "Empezar Gratis"
         },
         "Hero": {
-            "badge": "Gratis para siempre • No requiere tarjeta",
+            "badge": "Gratis para siempre",
             "title": "Gestiona sesiones. Controla pagos. Haz crecer tus clases.",
             "description": "Optimiza tu negocio de clases particulares con registro de sesiones, seguimiento de pagos y análisis potentes. Céntrate en enseñar mientras Derno se encarga del resto.",
             "startFree": "Empezar Gratis",
             "seeDemo": "Ver Demo",
             "socialProof": "Únete a más de 1.000 profesores que organizan su negocio con Derno",
-            "features": "✓ Siempre gratis • ✓ Sin tarjeta • ✓ Configuración en 2 minutos",
+            "features": "✓ Siempre gratis • ✓ Sin tarjeta de crédito • ✓ Configuración en 2 minutos",
             "cards": {
                 "upcoming": {
                     "title": "Próximas Sesiones"
