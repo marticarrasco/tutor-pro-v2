@@ -15,7 +15,7 @@ interface CurrencyContextType {
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined)
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-    const [currency, setCurrency] = useState<Currency>("USD")
+    const [currency, setCurrency] = useState<Currency>("EUR")
     const [isLoading, setIsLoading] = useState(true)
     const supabase = createClient()
 
@@ -35,7 +35,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
                         setCurrency(profile.currency as Currency)
                     } else {
                         // Fallback to metadata
-                        setCurrency((user.user_metadata?.currency as Currency) || "USD")
+                        setCurrency((user.user_metadata?.currency as Currency) || "EUR")
                     }
                 }
             } catch (error) {
